@@ -1,41 +1,41 @@
-var Nightmare = require('nightmare');
-var nightmare = new Nightmare();
+//Helpers
+var _ = require('lodash');
 
+//Config
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
 
-nightmare
-  .goto('https://gun.io/accounts/signin/')
-  .type('#id_identification', nconf.get('gunio:username'))
-  .type('#id_password', nconf.get('gunio:password'))
-  .click('input[value="Sign in"]')
-  .wait()
-  .evaluate(function(){
-    var t = function(el, binding){
-      return el.querySelector('[data-bind="text: '+binding+'"]').innerText
-    }
-    return Array.prototype.slice
-      .call(document.querySelectorAll('#contractjobs_container .row.bs-docs'))
-      .map(function(el){
-        var id = el.querySelector('[data-bind="attr: { class: \'jobbody\' + id }"]').className.replace('jobbody','');
-        return {
-          id: id,
-          title: t(el,'title'),
-          company: t(el,'company_name'),
-          url: 'https://gun.io/dash3/gig/' + id,
-          description: t(el,'blurb'),
-          location: t(el,'city') + ',' + t(el,'state'),
-          budget: el.querySelector('h2.variable span').innerText,
-          tags: Array.prototype.slice
-            .call(el.querySelector('[data-bind="html: tagify(tags)"]').querySelectorAll('a'))
-            .map(function(tag){
-            return tag.innerText;
-          })
-        }
-      })
-  }, function(jobs){
-    console.log(jobs);
+//Adaptors
+var gunio = require('./adaptors/gunio');
+
+//Firebase
+var Firebase = require("firebase");
+var ref = new Firebase("https://lefnire-test.firebaseIO.com/jobs");
+
+//Express
+var express = require('express');
+var app = express();
+app
+.set('views', './views')
+.set('view engine', 'jade')
+.use('/bower_components', express.static('bower_components'))
+
+.get('/', function(req, res) {
+  res.render('index');
+})
+
+.post('/jobs', function(req, res, next){
+  gunio(function(err, jobs){
+    if (err) return next(err);
+    ref.set(
+      _.reduce(jobs, function(m,v,k){
+        // job ids in database are alphanumeric URLs (in case of repeats from other websites)
+        //TODO set each object field-by-field, so we can keep other attrs (discarded, saved, etc)
+        m[v.url.replace(/\W+/g, "")] = v;return m;
+      }, {})
+    );
   })
-  .run(function(err, nightmare){
-    console.log('Done.');
-  });
+  res.sendStatus(200);
+})
+
+.listen(3000);

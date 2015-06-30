@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.13.0",
+    "firebase": "^2.2.7",
+    "jade": "^1.11.0",
     "lodash": "^3.10.0",
     "nconf": "^0.7.1",
     "nightmare": "^1.8.2"

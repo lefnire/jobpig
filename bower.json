@@ -1,0 +1,23 @@
+{
+  "name": "jobs",
+  "main": "index.js",
+  "version": "0.0.0",
+  "authors": [
+    "Tyler Renelle <tylerrenelle@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angularfire": "~1.1.2",
+    "angular-bootstrap": "~0.13.0",
+    "bootstrap": "~3.3.5",
+    "angular-lodash": "~0.1.2",
+    "lodash": "~3.10.0"
+  }
+}
