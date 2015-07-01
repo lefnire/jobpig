@@ -32,9 +32,9 @@ app
   _.each(adaptors, function(adaptor){
     adaptor.list(function(err, jobs){
       if (err) return next(err);
-      ref.update( //TODO set each object field-by-field, so we can keep other attrs (discarded, saved, etc)
-        _.indexBy(jobs, 'id')
-      );
+      _.each(jobs, function(job){
+        ref.child(job.id).update(job);
+      })
     })
   })
   res.sendStatus(200);
