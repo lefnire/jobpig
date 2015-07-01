@@ -1,3 +1,5 @@
+'use strict';
+
 //Helpers
 var _ = require('lodash');
 
@@ -6,7 +8,9 @@ var nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
 
 //Adaptors
-var gunio = require('./adaptors/gunio');
+var adaptors = ['gunio', 'remoteok'].map(function(a){
+  return new (require(`./adaptors/${a}`))();
+})
 
 //Firebase
 var Firebase = require("firebase");
@@ -25,15 +29,13 @@ app
 })
 
 .post('/jobs', function(req, res, next){
-  gunio(function(err, jobs){
-    if (err) return next(err);
-    ref.set(
-      _.reduce(jobs, function(m,v,k){
-        // job ids in database are alphanumeric URLs (in case of repeats from other websites)
-        //TODO set each object field-by-field, so we can keep other attrs (discarded, saved, etc)
-        m[v.url.replace(/\W+/g, "")] = v;return m;
-      }, {})
-    );
+  adaptors.forEach(function(adaptor){
+    adaptor.list(function(err, jobs){
+      if (err) return next(err);
+      ref.update( //TODO set each object field-by-field, so we can keep other attrs (discarded, saved, etc)
+        _.indexBy(jobs, 'id')
+      );
+    })
   })
   res.sendStatus(200);
 })
