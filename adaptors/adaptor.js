@@ -1,11 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
-var Nightmare = require('nightmare');
+var nightmare = new (require('nightmare'))();
 
 class Adaptor {
-  constructor(){
-    this.nightmare = new Nightmare();
+  constructor() {
+    this.nightmare = nightmare;
   }
   list(done, err, jobs){
     _.each(jobs, function(job){

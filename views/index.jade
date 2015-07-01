@@ -18,12 +18,22 @@ html(lang="en")
 
     script.
       var app = angular.module("app", ["firebase", "ui.bootstrap", "angular-lodash"]);
-      app.controller("JobsController", function ($scope, $firebaseArray, $http) {
+      app.controller("JobsController", function ($scope, $firebaseArray, $http, $sce) {
         var ref = new Firebase('https://lefnire-test.firebaseIO.com/jobs');
         $scope.jobs = $firebaseArray(ref);
 
         $scope.refresh = function(){
           $http.post('/jobs');
+        }
+        $scope.expand = function(job){
+          $http.get('/jobs/'+job.id).success(function(res){
+            job.expanded = $sce.trustAsHtml(res);
+          });
+        }
+        $scope.save = function(job) {
+          ref.child(job.$id + '/saved').once('value', function(snap){
+            ref.child(job.$id + '/saved').set(!snap.val()); //toggle
+          })
         }
         $scope.hide = function(job) {
           ref.child(job.$id + '/hide').set(true);
@@ -38,10 +48,16 @@ html(lang="en")
           li: a.btn(ng-click='refresh()') Refresh
 
     .container-fluid
-      .row
-        .well(ng-repeat='job in jobs | filter:{hide:"!"}')
-          a.pull-right.glyphicon.glyphicon-remove(ng-click="hide(job)")
-          h2
-            a(href='{{job.url}}') {{job.title}}
-          h3 {{job.location}}
-          p {{job.description}}
+      table.table.table-striped
+        tr(ng-repeat='job in jobs | filter:{hide:"!"}', ng-class="{success: job.saved}")
+          td
+            div
+              div.pull-right
+                a.glyphicon.glyphicon-remove(ng-click="hide(job)")
+                a.glyphicon.glyphicon-chevron-down(ng-click="expand(job)")
+                a.glyphicon(ng-click="save(job)", ng-class="{'glyphicon-star':job.saved, 'glyphicon-star-empty':!job.saved}")
+              h4
+                a(href='{{job.url}}') {{job.title}}
+              h5 {{job.location}}
+              p {{job.description}}
+            div(ng-if='job.expanded', ng-bind-html='job.expanded')

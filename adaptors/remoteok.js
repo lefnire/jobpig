@@ -11,9 +11,11 @@ class RemoteOK extends Adaptor {
           .call(document.querySelectorAll('tr.job'))
           .map(function (el) {
             return {
+              source: 'remoteok',
               title: el.querySelector('.company h2').innerText,
               company: el.querySelector('.company h3').innerText,
               url: el.querySelector('.company a').getAttribute('href'),
+              follow: '', // figure out how to get the link's redirect, use that for id
               description: '',
               location: '',
               budget: '',
@@ -30,6 +32,20 @@ class RemoteOK extends Adaptor {
       .run(function (err, nightmare) {
         Adaptor.prototype.list(done, err, jobs);
       });
+  }
+  expand(job, done){
+    let deets;
+    this.nightmare
+      .goto(`https://remoteok.io${job.url}`)
+      .evaluate(function(){
+        return document.querySelector('.expandContents').innerHTML
+      }, function(_deets){
+        deets = _deets;
+      })
+    .run(function(err, nightmare){
+        done(err, deets);
+      })
+
   }
 }
 

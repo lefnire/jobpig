@@ -21,6 +21,7 @@ class GunIO extends Adaptor {
         .map(function (el) {
           var id = el.querySelector('[data-bind="attr: { class: \'jobbody\' + id }"]').className.replace('jobbody', '');
           return {
+            source: 'gunio',
             title: t(el, 'title'),
             company: t(el, 'company_name'),
             url: 'https://gun.io/dash3/gig/' + id,
@@ -40,6 +41,8 @@ class GunIO extends Adaptor {
     .run(function (err, nightmare) {
         Adaptor.prototype.list(done, err, jobs);
     });
+  }
+  expand(job, done){
   }
 }
 
