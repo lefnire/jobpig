@@ -33,15 +33,15 @@ app
     adaptor.list(function(err, jobs){
       if (err) return next(err);
       _.each(jobs, function(job){
-        ref.child(job.id).update(job);
+        ref.child(job.key).update(job);
       })
     })
   })
   res.sendStatus(200);
 })
 
-.get('/jobs/:id', function(req, res, next){
-  ref.child(req.params.id).once('value', function(snap){
+.get('/jobs/:key', function(req, res, next){
+  ref.child(req.params.key).once('value', function(snap){
     let job = snap.val();
     adaptors[job.source].expand(job, function(err, deets){
       if (err) return next(err);

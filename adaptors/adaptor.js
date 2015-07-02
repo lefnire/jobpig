@@ -10,7 +10,7 @@ class Adaptor {
   list(done, err, jobs){
     _.each(jobs, function(job){
       // job ids in database are alphanumeric URLs (in case of repeats from other websites)
-      job.id = job.url.replace(/\W+/g, "");
+      job.key = job.url.replace(/\W+/g, "");
     })
     console.log('Done');
     done(err, jobs);

@@ -4,6 +4,7 @@ html(lang="en")
     title Jobs
 
     link(rel='stylesheet', href="/bower_components/bootstrap/dist/css/bootstrap.css")
+    link(href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", type="text/css" rel="stylesheet")
 
     // Scripts
     script(src="/bower_components/firebase/firebase.js")
@@ -26,38 +27,55 @@ html(lang="en")
           $http.post('/jobs');
         }
         $scope.expand = function(job){
-          $http.get('/jobs/'+job.id).success(function(res){
+          if (job.expanded) return job.expanded=undefined;
+          job.expanding = true;
+          $http.get('/jobs/'+job.key).success(function(res){
+            job.expanding = false;
             job.expanded = $sce.trustAsHtml(res);
           });
         }
-        $scope.save = function(job) {
-          ref.child(job.$id + '/saved').once('value', function(snap){
-            ref.child(job.$id + '/saved').set(!snap.val()); //toggle
+        $scope.setStatus = function(job, status) {
+          ref.child(job.key + '/status').once('value', function(snap){
+            ref.child(job.key + '/status').set( snap.val()==status ? null : status );
           })
         }
-        $scope.hide = function(job) {
-          ref.child(job.$id + '/hide').set(true);
-        }
+        $scope.search = {status:undefined};
       });
   body(ng-app='app', ng-controller='JobsController')
     nav.navbar.navbar-default
       .container-fluid
         .navbar-header
           a.navbar-brand(href='#') Jobs
+        .navbar-form.navbar-left
+          .btn-group
+            label.btn.btn-default(ng-model='search.status', btn-radio="") Inbox
+            label.btn.btn-default(ng-model='search.status', btn-radio="'saved'") Saved
+            label.btn.btn-default(ng-model='search.status', btn-radio="'applied'") Applied
+            label.btn.btn-default(ng-model='search.status', btn-radio="'hidden'") Hidden
+
         ul.nav.navbar-nav.navbar-right
           li: a.btn(ng-click='refresh()') Refresh
 
     .container-fluid
+
+      // j=nav-down, k=nav-up, s=save, h=hide, a=apply, I=inbox,S=saved,A=applied,H=hidden
       table.table.table-striped
-        tr(ng-repeat='job in jobs | filter:{hide:"!"}', ng-class="{success: job.saved}")
+        tr(ng-repeat='job in jobs | filter:{status: search.status || "!"}', ng-class="{info:job.status=='applied', success:job.status=='saved', danger:job.status=='hidden'}")
           td
             div
-              div.pull-right
-                a.glyphicon.glyphicon-remove(ng-click="hide(job)")
-                a.glyphicon.glyphicon-chevron-down(ng-click="expand(job)")
-                a.glyphicon(ng-click="save(job)", ng-class="{'glyphicon-star':job.saved, 'glyphicon-star-empty':!job.saved}")
+              .pull-left.btn-group-vertical.btn-group-sm(style='margin-right:5px')
+                a.btn.btn-default(ng-click="setStatus(job, 'saved')", ng-class='{active:job.status=="saved"}')
+                  span.glyphicon.glyphicon-thumbs-up
+                a.btn.btn-default(ng-click="setStatus(job, 'hidden')", ng-class='{active:job.status=="hidden"}')
+                  span.glyphicon.glyphicon-thumbs-down
+                a.btn.btn-default(ng-click="setStatus(job, 'applied')", ng-class='{active:job.status=="applied"}')
+                  span.glyphicon.glyphicon-check
+                a.btn.btn-default(ng-click="expand(job)")
+                  i.glyphicon(class="{{job.expanding ? 'glyphicon-refresh fa-spin' : 'glyphicon-option-horizontal'}}")
               h4
-                a(href='{{job.url}}') {{job.title}}
-              h5 {{job.location}}
-              p {{job.description}}
+                a(href='{{::job.url}}') {{::job.title}}
+              h5 {{::job.company || "-"}} | {{::job.location || "-"}} | ${{::job.budget || "-"}}
+              p {{::job.description}}
+              p
+                span.label.label-default(ng-repeat='tag in job.tags',style='margin-right:2px') {{::tag}}
             div(ng-if='job.expanded', ng-bind-html='job.expanded')

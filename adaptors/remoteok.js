@@ -12,8 +12,8 @@ class RemoteOK extends Adaptor {
         var el = $(this);
         return {
           source: 'remoteok',
-          title: el.find('.company h2').text(),
-          company: el.find('.company h3').text(),
+          title: el.find('.company_and_position h2').text(),
+          company: el.find('.company_and_position.company h3').text(),
           url: 'https://remoteok.io' + el.find('.company a').attr('href'),
           follow: '', // figure out how to get the link's redirect, use that for id
           description: '',

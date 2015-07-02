@@ -2,6 +2,7 @@
 
 var Adaptor = require('./adaptor');
 var nconf = require('nconf');
+var request = require('request');
 
 class GunIO extends Adaptor {
   list(done) {
@@ -21,6 +22,7 @@ class GunIO extends Adaptor {
         .map(function (el) {
           var id = el.querySelector('[data-bind="attr: { class: \'jobbody\' + id }"]').className.replace('jobbody', '');
           return {
+            id: id,
             source: 'gunio',
             title: t(el, 'title'),
             company: t(el, 'company_name'),
@@ -31,7 +33,7 @@ class GunIO extends Adaptor {
             tags: Array.prototype.slice
               .call(el.querySelector('[data-bind="html: tagify(tags)"]').querySelectorAll('a'))
               .map(function (tag) {
-                return tag.innerText;
+                return tag.innerText.replace(/\,/g,'');
               })
           }
         })
@@ -43,6 +45,10 @@ class GunIO extends Adaptor {
     });
   }
   expand(job, done){
+    //https://gun.io/api2/contractbody/1005/
+    request(`https://gun.io/api2/contractbody/${job.id}/`, function(err, response, html){
+      done(err, JSON.parse(html).description);
+    })
   }
 }
 
