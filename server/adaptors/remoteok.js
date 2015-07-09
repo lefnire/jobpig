@@ -14,7 +14,8 @@ class RemoteOK extends Adaptor {
           source: 'remoteok',
           title: el.find('.company_and_position h2').text(),
           company: el.find('.company_and_position.company h3').text(),
-          url: 'https://remoteok.io' + el.find('.company a').attr('href'),
+          //url: 'https://remoteok.io' + el.find('.company a').attr('href'),
+          url: 'https://remoteok.io' + el.find('td.source a').attr('href'),
           follow: '', // figure out how to get the link's redirect, use that for id
           description: '',
           location: '',
@@ -28,9 +29,10 @@ class RemoteOK extends Adaptor {
     })
   }
   expand(job, done){
-    request(job.url, function(error, response, html){
-      done(error, cheerio.load(html)('.expandContents').html());
-    })
+    done(null,'<h2>Contents not supported</h2>');
+    //request(job.url, function(error, response, html){
+    //  done(error, cheerio.load(html)('.expandContents').html());
+    //})
   }
 }
 
