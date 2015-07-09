@@ -12,16 +12,18 @@ var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
 var _ = require('lodash');
 var Job = require('./job.jsx');
 var request = require('superagent');
+var Prospects = require('./prospects.jsx');
 
 // Simple "name:key sequence/s" to create a hotkey map
 const keyMap = {
   up: 'k',
   down: 'j',
-  showInbox: 'shift+i',
-  showSaved: 'shift+s',
-  showHidden: 'shift+h',
-  showApplied: 'shift+a',
-  refresh: 'shift+r'
+  showInbox: 'ctrl+i',
+  showSaved: 'ctrl+s',
+  showHidden: 'ctrl+h',
+  showApplied: 'ctrl+a',
+  showPropsects: 'ctrl+p',
+  refresh: 'ctrl+r'
 };
 
 let Main = React.createClass({
@@ -76,6 +78,9 @@ let Main = React.createClass({
   action_showApplied(){
     this.setState({focus:0, filter:'applied'});
   },
+  action_showPropsects(){
+    this.setState({focus:0, filter:'prospects'});
+  },
   action_refresh(){
     request.post('http://localhost:3001/jobs').end(()=>{});
   },
@@ -100,6 +105,9 @@ let Main = React.createClass({
 
     // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
     window.setTimeout( ()=> this.jobsLen<1 && this.refs.hotkeys.getDOMNode().focus() );
+
+    if (this.state.filter=='prospects')
+      jobs = <Prospects />
 
     return (
       <HotKeys handlers={handlers} ref='hotkeys'>

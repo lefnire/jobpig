@@ -5,6 +5,7 @@ var Firebase = require('reactfire/node_modules/firebase');
 var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
 var _ = require('lodash');
 var request = require('superagent');
+var Thumb = require('./thumbs.jsx');
 
 const keyMap = {
   save: 's',
@@ -13,6 +14,8 @@ const keyMap = {
   open: 'enter',
   hide: 'h',
   inbox: 'i',
+  thumbsUp: 'shift+s',
+  thumbsDown: 'shift+h'
 }
 
 module.exports = React.createClass({
@@ -48,24 +51,33 @@ module.exports = React.createClass({
       this.setState({expanded: res.text});
     });
   },
+  action_thumbsUp(){
+    this.refs.thumb.show('Like');
+  },
+  action_thumbsDown(){
+    this.refs.thumb.show('Dislike');
+  },
 
   render() {
-    const handlers = _.transform(keyMap, (m,v,k)=> m[k] = this['action_'+k]);
     let job = this.props.job;
+    let mainSection = (
+      <mui.Card>
+        <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
+        <mui.CardText>
+          <b>{job.tags.join(', ')}</b>
+          <p>{job.description}</p>
+          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
+        </mui.CardText>
+      </mui.Card>
+    );
+    if (!this.props.focus) return mainSection;
 
-    // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
-    window.setTimeout( ()=> this.props.focus && this.refs.jobref.getDOMNode().focus() );
-
+    const handlers = _.transform(keyMap, (m,v,k)=> m[k] = this['action_'+k]);
+    window.setTimeout(()=> this.refs.jobref.getDOMNode().focus()); // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
     return (
       <HotKeys tabIndex="0" handlers={handlers} ref={/*this._setFocus*/"jobref"}>
-        <mui.Card>
-          <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
-          <mui.CardText>
-            <b>{job.tags.join(', ')}</b>
-            <p>{job.description}</p>
-            <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
-          </mui.CardText>
-        </mui.Card>
+        <Thumb ref='thumb' job={this.state.job} />
+        {mainSection}
       </HotKeys>
     )
   }
