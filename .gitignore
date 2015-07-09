@@ -1,4 +1,4 @@
 .idea
 node_modules
 config.json
-bower_components
+client/build

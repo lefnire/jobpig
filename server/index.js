@@ -20,12 +20,12 @@ var ref = new Firebase("https://lefnire-test.firebaseIO.com/jobs");
 var express = require('express');
 var app = express();
 app
-.set('views', './views')
-.set('view engine', 'jade')
-.use('/bower_components', express.static('bower_components'))
+//.set('views', './views')
+//.set('view engine', 'jade')
+//.use('/bower_components', express.static('bower_components'))
 
 .get('/', function(req, res) {
-  res.render('index');
+  res.send('System go.');
 })
 
 .post('/jobs', function(req, res, next){
@@ -50,4 +50,4 @@ app
   })
 })
 
-.listen(3000);
+.listen(3001);
