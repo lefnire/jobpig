@@ -4,6 +4,7 @@ var ReactFireMixin = require('reactfire');
 var Firebase = require('reactfire/node_modules/firebase');
 var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
 var _ = require('lodash');
+var request = require('superagent');
 
 const keyMap = {
   save: 's',
@@ -11,13 +12,14 @@ const keyMap = {
   expand: 'e',
   open: 'enter',
   hide: 'h',
+  inbox: 'i',
 }
 
 module.exports = React.createClass({
   mixins: [ReactFireMixin, HotKeyMapMixin(keyMap)],
 
   _subtitle(job){
-    return (job.company || '-') +' | '+ (job.location || '-') +' | $'+ (job.budget || '-');
+    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
   },
   _setFocus: function(c){
     this.props.focus && c.getDOMNode().focus();
@@ -30,20 +32,21 @@ module.exports = React.createClass({
 
   // Actions
   _setStatus(status){
-    let s = this.firebaseRefs.job.child('status');
-    s.once('value', (snap)=> s.set(snap.val()==status ? null : status)  );
+    this.firebaseRefs.job.child('status').set(status);
   },
+  action_inbox(){this._setStatus('inbox')},
   action_save(){this._setStatus('saved')},
   action_apply(){this._setStatus('applied')},
   action_hide(){this._setStatus('hidden')},
   action_open(){window.open(this.props.job.url,'_blank')},
   action_expand(){
-    //if (job.expanded) return job.expanded=undefined;
+    if (this.state.expanded)
+      return this.setState({expanded:undefined});
     //job.expanding = true;
-    //$http.get('/jobs/'+job.key).success(function(res){
-    //  job.expanding = false;
-    //  job.expanded = $sce.trustAsHtml(res);
-    //});
+    request.get(`http://localhost:3001/jobs/${this.state.job.key}`).end((err, res) => {
+      //job.expanding = false;
+      this.setState({expanded: res.text});
+    });
   },
 
   render() {
@@ -60,13 +63,8 @@ module.exports = React.createClass({
           <mui.CardText>
             <b>{job.tags.join(', ')}</b>
             <p>{job.description}</p>
+            <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
           </mui.CardText>
-          {/*<mui.CardActions>
-           <mui.RaisedButton label="Save"  secondary={true} />
-           <mui.RaisedButton label="Hide" secondary={true} />
-           <mui.RaisedButton label="Applied" secondary={true} />
-           <mui.RaisedButton label="Expand" secondary={true} />
-           </mui.CardActions>*/}
         </mui.Card>
       </HotKeys>
     )

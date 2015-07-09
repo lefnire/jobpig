@@ -1,7 +1,8 @@
 'use strict';
 
 //Helpers
-var _ = require('lodash');
+var _ = require('lodash'),
+    cors = require('cors');
 
 //Config
 var nconf = require('nconf');
@@ -20,9 +21,7 @@ var ref = new Firebase("https://lefnire-test.firebaseIO.com/jobs");
 var express = require('express');
 var app = express();
 app
-//.set('views', './views')
-//.set('view engine', 'jade')
-//.use('/bower_components', express.static('bower_components'))
+.use(cors())
 
 .get('/', function(req, res) {
   res.send('System go.');
@@ -33,7 +32,12 @@ app
     adaptor.list(function(err, jobs){
       if (err) return next(err);
       _.each(jobs, function(job){
-        ref.child(job.key).update(job);
+        let c = ref.child(job.key);
+        c.once('value', function(snap){
+          let v = snap.val();
+          if (!(v && v.status)) job.status='inbox';
+          c.update(job);
+        })
       })
     })
   })

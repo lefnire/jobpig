@@ -12,7 +12,7 @@ class Adaptor {
       // job ids in database are alphanumeric URLs (in case of repeats from other websites)
       job.key = job.url.replace(/\W+/g, "");
     })
-    console.log('Done');
+    console.log(`${jobs[0].source} done`);
     done(err, jobs);
   }
 }
