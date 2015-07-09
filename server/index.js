@@ -1,57 +1,32 @@
 'use strict';
 
-//Helpers
-var _ = require('lodash'),
-    cors = require('cors');
-
 //Config
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
 
-//Adaptors
-var adaptors = _.transform({'gunio':null, 'remoteok':null}, function(m,v,k){
-  m[k] = new (require(`./adaptors/${k}`))();
-})
-
-//Firebase
-var Firebase = require("firebase");
-var ref = new Firebase("https://lefnire-test.firebaseIO.com/jobs");
-
 //Express
-var express = require('express');
-var app = express();
+var express = require('express'),
+  passport = require('passport'),
+  User = require('./models/user'),
+  app = express();
+
 app
-.use(cors())
+//.use(favicon(__dirname + '/public/favicon.ico'));
+.use(require('morgan')('dev'))
+.use(require('cors')())
+.use(require('body-parser').json())
+//.use(require('connect-multiparty')())
+//.use(require('method-override')())
+.use(require('cookie-parser')())
+.use(require('cookie-session')({ keys: ['secretkey1', 'secretkey2', '...']}));
 
-.get('/', function(req, res) {
-  res.send('System go.');
-})
+// passport-local-sequelize
+app.use(passport.initialize())
+.use(passport.session());
 
-.post('/jobs', function(req, res, next){
-  _.each(adaptors, function(adaptor){
-    adaptor.list(function(err, jobs){
-      if (err) return next(err);
-      _.each(jobs, function(job){
-        let c = ref.child(job.key);
-        c.once('value', function(snap){
-          let v = snap.val();
-          if (!(v && v.status)) job.status='inbox';
-          c.update(job);
-        })
-      })
-    })
-  })
-  res.sendStatus(200);
-})
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-.get('/jobs/:key', function(req, res, next){
-  ref.child(req.params.key).once('value', function(snap){
-    let job = snap.val();
-    adaptors[job.source].expand(job, function(err, deets){
-      if (err) return next(err);
-      res.send(deets);
-    })
-  })
-})
-
+app.use('/', require('./routes'))
 .listen(3001);
