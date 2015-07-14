@@ -1,11 +1,16 @@
 // Require all the stuff
 var Sequelize = require('sequelize'),
-  db = require('./db'),
-  passportLocalSequelize = require('passport-local-sequelize');
+  db = require('./db');
 
-var User = passportLocalSequelize.defineUser(db, {
-  favoriteColor: Sequelize.STRING
+//var passportLocalSequelize = require('passport-local-sequelize');
+//var User = passportLocalSequelize.defineUser(db, {
+//  favoriteColor: Sequelize.STRING
+//});
+
+var User = db.define('User', {
+  linkedin: Sequelize.STRING
 });
+
 
 db.sync();// fixme?
 

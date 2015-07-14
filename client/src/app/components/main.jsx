@@ -82,10 +82,15 @@ let Main = React.createClass({
     this.setState({focus:0, filter:'prospects'});
   },
   action_refresh(){
-    request.post('http://localhost:3001/jobs').end(()=>{});
+    request.post('/jobs').end(()=>{});
   },
 
   render() {
+    if (!window.user) {
+      return (<mui.RaisedButton label="Login" linkButton={true} href='/auth/linkedin' />);
+    }
+
+
     const handlers = _.transform(keyMap, (m,v,k)=> m[k] = this['action_'+k]);
     let f = this.state.filter;
     let title = _.capitalize(this.state.filter);
@@ -111,11 +116,14 @@ let Main = React.createClass({
 
     return (
       <HotKeys handlers={handlers} ref='hotkeys'>
-        <mui.AppBar title={title} iconClassNameRight="muidocs-icon-navigation-expand-more" style={style} />
+        <mui.AppBar title={title} style={style} iconElementRight={
+          <mui.FlatButton label="Logout" linkButton={true} href='/logout' />
+        } />
         {jobs}
       </HotKeys>
     );
-  }
+  },
+
 });
 
 module.exports = Main;

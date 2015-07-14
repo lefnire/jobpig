@@ -6,27 +6,26 @@ nconf.argv().env().file({ file: 'config.json' });
 
 //Express
 var express = require('express'),
-  passport = require('passport'),
-  User = require('./models/user'),
-  app = express();
+  app = express(),
+  path = require('path');
 
 app
 //.use(favicon(__dirname + '/public/favicon.ico'));
+.set('views', __dirname + '/views')
+.set('view engine', 'jade')
 .use(require('morgan')('dev'))
-.use(require('cors')())
-.use(require('body-parser').json())
-//.use(require('connect-multiparty')())
-//.use(require('method-override')())
+//.use(require('cors')())
 .use(require('cookie-parser')())
-.use(require('cookie-session')({ keys: ['secretkey1', 'secretkey2', '...']}));
+.use(require('body-parser').json())
+.use(require('method-override')())
+//.use(require('connect-multiparty')())
+//.use(require('cookie-session')({ keys: ['secretkey1', 'secretkey2', '...']}));
+.use(require('express-session')({ secret: 'keyboard cat' }));
 
-// passport-local-sequelize
-app.use(passport.initialize())
-.use(passport.session());
+require('./passport').setup(app);
 
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+app.use(express.static(path.join(__dirname, '..', 'client/build')));
 
 app.use('/', require('./routes'))
-.listen(3001);
+
+.listen(3000);

@@ -11,7 +11,8 @@ module.exports = {
     },
     files: [
       dest + '/**'
-    ]
+    ],
+    port:3001
   },
   markup: {
     src: src + "/www/**",

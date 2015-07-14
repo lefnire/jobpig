@@ -46,7 +46,7 @@ module.exports = React.createClass({
     if (this.state.expanded)
       return this.setState({expanded:undefined});
     //job.expanding = true;
-    request.get(`http://localhost:3001/jobs/${this.state.job.key}`).end((err, res) => {
+    request.get(`/jobs/${this.state.job.key}`).end((err, res) => {
       //job.expanding = false;
       this.setState({expanded: res.text});
     });
