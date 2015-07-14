@@ -6,8 +6,6 @@ let mui = require('material-ui');
 //let {AppBar, List, ListItem, Card, CardHeader, CardText, CardTitle, CardActions, FloatingActionButton} = mui;
 let {Colors} = mui.Styles;
 let ThemeManager = new mui.Styles.ThemeManager();
-var ReactFireMixin = require('reactfire');
-var Firebase = require('reactfire/node_modules/firebase');
 var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
 var _ = require('lodash');
 var Job = require('./job.jsx');
@@ -27,7 +25,7 @@ const keyMap = {
 };
 
 let Main = React.createClass({
-  mixins: [ReactFireMixin, HotKeyMapMixin(keyMap)],
+  mixins: [HotKeyMapMixin(keyMap)],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object
@@ -43,11 +41,16 @@ let Main = React.createClass({
     ThemeManager.setPalette({
       accent1Color: Colors.deepOrange500
     });
-    var firebaseRef = new Firebase("https://lefnire-test.firebaseio.com/jobs/");
-    this.bindAsArray(firebaseRef, "jobs");
+  },
+
+  _getJobs(){
+    request.get('/jobs').end((err,res)=>{
+      this.setState({jobs:res.body});
+    })
   },
 
   getInitialState: function() {
+    this._getJobs();
     return {
       jobs: [],
       filter:'inbox',
@@ -82,14 +85,13 @@ let Main = React.createClass({
     this.setState({focus:0, filter:'prospects'});
   },
   action_refresh(){
-    request.post('/jobs').end(()=>{});
+    request.post('/refresh').end(()=>this._getJobs());
   },
 
   render() {
     if (!window.user) {
       return (<mui.RaisedButton label="Login" linkButton={true} href='/auth/linkedin' />);
     }
-
 
     const handlers = _.transform(keyMap, (m,v,k)=> m[k] = this['action_'+k]);
     let f = this.state.filter;
@@ -104,7 +106,7 @@ let Main = React.createClass({
 
     let jobs = _(this.state.jobs)
       .filter({status:this.state.filter})
-      .map((job,i)=> <Job job={job} key={job.key} focus={i==this.state.focus} i={i} /> )
+      .map((job,i)=> <Job job={job} key={job.key} focus={i==this.state.focus} i={i} onAction={this._getJobs} /> )
       .value();
     this.jobsLen = jobs.length;
 

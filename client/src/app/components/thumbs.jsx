@@ -27,7 +27,7 @@ module.exports = React.createClass({
         <mui.Checkbox name="company" value="company" label="Nonprofit" defaultChecked={true}/>
 
         <h3>Skills</h3>
-        {this.props.job.tags.map((tag,i)=> <mui.Checkbox name={i} value={i} label={tag} defaultChecked={true}/> )}
+        { this.props.job.Tags.map((tag,i)=> <mui.Checkbox name={tag.key} value={tag.key} label={tag.text} defaultChecked={true}/>) }
 
       </mui.Dialog>
     )

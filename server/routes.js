@@ -5,33 +5,53 @@ var _ = require('lodash'),
     m[k] = new (require(`./adaptors/${k}`))();
   }),
   router = require('express').Router(),
-  ensureAuth = require('./passport').ensureAuth;
+  ensureAuth = require('./passport').ensureAuth,
+  Job = require('./db').Job,
+  Tag = require('./db').Tag;
 
 router.get('/', function(req, res, next){
-  console.log({user:req.user});
   res.render('index', {user: req.user});
 })
 
-router.post('/jobs', ensureAuth, function (req, res, next) {
+router.post('/refresh', ensureAuth, function (req, res, next) {
   _.each(adaptors, function (adaptor) {
     adaptor.list(function (err, jobs) {
       if (err) return next(err);
       _.each(jobs, function (job) {
-        let c = ref.child(job.key);
-        c.once('value', function (snap) {
-          let v = snap.val();
-          if (!(v && v.status)) job.status = 'inbox';
-          c.update(job);
+        //FIXME find-or-create, update existing attrs
+        Job.create(job).then(function(_job){
+          //if (!(v && v.status)) job.status = 'inbox';
+          job.tags.forEach(function(tag){
+            Tag.create({key:tag,text:tag}).then(function(_tag){
+              _job.addTag(_tag);
+            })
+          })
+          res.sendStatus(200);
         })
       })
     })
   })
-  res.sendStatus(200);
 });
 
+router.get('/jobs', ensureAuth, function(req, res, next){
+  Job.findAll({
+    include: [{
+      model: Tag,
+      //where: { state: Sequelize.col('project.state') }
+    }]
+  }).then(function(jobs){
+    res.send(jobs);
+  })
+});
+
+router.post('/jobs/:key/:status', ensureAuth, function(req, res, next){
+  Job.update({status:req.params.status}, {where:{key:req.params.key}}).then(function(){
+    res.send(200);
+  });
+})
+
 router.get('/jobs/:key', ensureAuth, function (req, res, next) {
-  ref.child(req.params.key).once('value', function (snap) {
-    let job = snap.val();
+  Job.find({key:req.params.key}).then(function(job){
     adaptors[job.source].expand(job, function (err, deets) {
       if (err) return next(err);
       res.send(deets);

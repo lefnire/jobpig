@@ -1,7 +1,5 @@
 let React = require('react');
 let mui = require('material-ui');
-var ReactFireMixin = require('reactfire');
-var Firebase = require('reactfire/node_modules/firebase');
 var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
 var _ = require('lodash');
 var request = require('superagent');
@@ -19,7 +17,7 @@ const keyMap = {
 }
 
 module.exports = React.createClass({
-  mixins: [ReactFireMixin, HotKeyMapMixin(keyMap)],
+  mixins: [HotKeyMapMixin(keyMap)],
 
   _subtitle(job){
     return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
@@ -28,14 +26,15 @@ module.exports = React.createClass({
     this.props.focus && c.getDOMNode().focus();
   },
 
-  componentWillMount() {
-    var ref = new Firebase(`https://lefnire-test.firebaseio.com/jobs/${this.props.job.key}`);
-    this.bindAsObject(ref, "job");
+  getInitialState(){
+    return {expanded:undefined}
   },
 
   // Actions
   _setStatus(status){
-    this.firebaseRefs.job.child('status').set(status);
+    request.post(`/jobs/${this.props.job.key}/${status}`).end((err,res)=>{
+      this.props.onAction(); //fixme this is dumb, use flux?
+    })
   },
   action_inbox(){this._setStatus('inbox')},
   action_save(){this._setStatus('saved')},
@@ -46,7 +45,7 @@ module.exports = React.createClass({
     if (this.state.expanded)
       return this.setState({expanded:undefined});
     //job.expanding = true;
-    request.get(`/jobs/${this.state.job.key}`).end((err, res) => {
+    request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
       //job.expanding = false;
       this.setState({expanded: res.text});
     });
@@ -64,7 +63,7 @@ module.exports = React.createClass({
       <mui.Card>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
-          <b>{job.tags.join(', ')}</b>
+          <b>{_.pluck(job.Tags, 'text').join(', ')}</b>
           <p>{job.description}</p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
         </mui.CardText>
@@ -76,7 +75,7 @@ module.exports = React.createClass({
     window.setTimeout(()=> this.refs.jobref.getDOMNode().focus()); // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
     return (
       <HotKeys tabIndex="0" handlers={handlers} ref={/*this._setFocus*/"jobref"}>
-        <Thumb ref='thumb' job={this.state.job} />
+        <Thumb ref='thumb' job={this.props.job} />
         {mainSection}
       </HotKeys>
     )
