@@ -2,11 +2,11 @@
 
 var Sequelize = require('sequelize');
 var nconf = require('nconf');
-var async = require('async');
 
 var sequelize = new Sequelize(nconf.get('db:database'), nconf.get('db:username'), nconf.get('db:password'), {
   host: 'localhost', dialect: 'postgres'
 });
+global.sequelize = sequelize;
 
 var User = sequelize.define('User', {
   linkedin: Sequelize.STRING
@@ -20,7 +20,6 @@ var Job = sequelize.define('Job', {
   key: Sequelize.STRING,
   location: Sequelize.STRING,
   source: Sequelize.STRING,
-  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox'},
   title: Sequelize.STRING,
   url: Sequelize.STRING
 });
@@ -30,9 +29,24 @@ var Tag = sequelize.define('Tag', {
   text: Sequelize.STRING
 });
 
+var UserJob = sequelize.define('UserJob', {
+  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox'}
+});
+
+var UserTag = sequelize.define('UserTag', {
+  score: Sequelize.INTEGER
+});
+
 Tag.belongsToMany(Job, {through: 'JobTag'});
 Job.belongsToMany(Tag, {through: 'JobTag'});
 
+User.belongsToMany(Job, {through: UserJob});
+Job.belongsToMany(User, {through: UserJob});
+
+User.belongsToMany(Tag, {through: UserTag});
+Tag.belongsToMany(User, {through: UserTag});
+
+//sequelize.sync({force:true});
 sequelize.sync();
 
-module.exports = {User,Job,Tag};
+module.exports = {User,Job,Tag,UserJob,UserTag};

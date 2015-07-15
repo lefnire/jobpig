@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "node server/index.js",
+    "server": "nodemon --harmony_arrow_functions --watch server server/index.js",
     "client": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -47,6 +47,7 @@
     "gulp": "^3.8.10",
     "gulp-notify": "^2.1.0",
     "gulp-util": "^3.0.1",
+    "nodejs-express-mongoose-demo": "git+https://github.com/madhums/node-express-mongoose-demo.git",
     "pretty-hrtime": "^0.2.2",
     "require-dir": "^0.1.0",
     "underscore": "^1.7.0",

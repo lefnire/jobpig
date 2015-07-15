@@ -32,7 +32,7 @@ module.exports = React.createClass({
 
   // Actions
   _setStatus(status){
-    request.post(`/jobs/${this.props.job.key}/${status}`).end((err,res)=>{
+    request.post(`/jobs/${this.props.job.id}/${status}`).end((err,res)=>{
       this.props.onAction(); //fixme this is dumb, use flux?
     })
   },

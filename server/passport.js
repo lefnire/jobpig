@@ -2,7 +2,8 @@
 
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy,
   passport = require('passport'),
-  nconf = require('nconf');
+  nconf = require('nconf'),
+  User = require('./db').User;
 
 exports.setup = function(app){
 
@@ -11,18 +12,14 @@ exports.setup = function(app){
     .use(passport.session());
 
   // Passport session setup.
-  //   To support persistent login sessions, Passport needs to be able to
-  //   serialize users into and deserialize users out of the session.  Typically,
-  //   this will be as simple as storing the user ID when serializing, and finding
-  //   the user by ID when deserializing.  However, since this example does not
-  //   have a database of user records, the complete Linkedin profile is
-  //   serialized and deserialized.
   passport.serializeUser(function(user, done) {
-    done(null, user);
+    done(null, user.id);
   });
 
-  passport.deserializeUser(function(obj, done) {
-    done(null, obj);
+  passport.deserializeUser(function(id, done) {
+    User.findById(id).then(function (user) {
+      done(null, user)
+    })
   });
 
   passport.use(new LinkedInStrategy({
@@ -34,11 +31,13 @@ exports.setup = function(app){
   }, function(accessToken, refreshToken, profile, done) {
     //req.session.accessToken = accessToken;
 
-    // To keep the example simple, the user's LinkedIn profile is returned to
-    // represent the logged-in user. In a typical application, you would want
-    // to associate the LinkedIn account with a user record in your database,
-    // and return that user instead.
-    return done(null, profile);
+    User.findOrCreate({
+      where: {linkedin: profile.id},
+      defaults: {linkedin: profile.id}
+    }).spread(function(user, created) {
+      done(null, user);
+      //user.get({plain: true}))
+    })
   }));
 
   app.get('/auth/linkedin',

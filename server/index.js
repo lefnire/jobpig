@@ -20,8 +20,8 @@ app
 .use(require('body-parser').json())
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-//.use(require('cookie-session')({ keys: ['secretkey1', 'secretkey2', '...']}));
-.use(require('express-session')({ secret: 'keyboard cat' }));
+.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
+//.use(require('express-session')({ secret: 'keyboard cat' }));
 
 require('./passport').setup(app);
 
