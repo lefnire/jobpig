@@ -6,7 +6,7 @@ var cheerio = require("cheerio");
 var Adaptor = require('./adaptor');
 class RemoteOK extends Adaptor {
   list(done) {
-    request('https://remoteok.io/remote-reactjs-jobs', function(err, response, html){
+    request('https://remoteok.io', function(err, response, html){
       var $ = cheerio.load(html);
       var jobs = $('tr.job').map(function(){
         var el = $(this);
