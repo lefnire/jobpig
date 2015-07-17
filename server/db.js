@@ -34,17 +34,42 @@ var Job = sequelize.define('jobs', {
   classMethods: {
     filterByUser(user_id) {
       return sequelize.query(`
-SELECT jobs.*,
-COALESCE((SELECT user_jobs.status FROM user_jobs WHERE user_jobs.job_id=jobs.id AND user_jobs.user_id=:user_id),'inbox') "status",
-to_json(array_agg(tags)) tags
-FROM jobs
-LEFT JOIN (job_tags INNER JOIN tags ON tags.id=job_tags.tag_id) ON jobs.id=job_tags.job_id
-WHERE NOT EXISTS (
-  SELECT user_tags.score FROM user_tags WHERE user_tags.tag_id=job_tags.tag_id AND user_tags.user_id=:user_id AND user_tags.score<0
-) OR EXISTS (
-  SELECT user_tags.score FROM user_tags WHERE user_tags.tag_id=job_tags.tag_id AND user_tags.user_id=:user_id AND user_tags.score>0
-)
-GROUP BY jobs.id
+SELECT j.*,
+  COALESCE(uj.status,'inbox') status,
+  uj.note,
+--  jt.t AS tags
+  to_json(array_agg(tags)) as tags
+
+FROM (
+  -- SELECT jobs.* FROM jobs LEFT JOIN job_tags ON jobs.id=job_tags.job_id
+  SELECT jobs.* FROM jobs
+
+  EXCEPT ( -- exclude bad jobs
+    SELECT jobs.* FROM jobs
+    INNER JOIN job_tags ON job_tags.job_id=jobs.id
+    INNER JOIN user_tags ON user_tags.tag_id=job_tags.tag_id AND user_tags.user_id=:user_id AND user_tags.score<0
+  )
+) j
+
+LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+/*LEFT JOIN (
+    SELECT job_id, tag_id, to_json(array_agg(tags)) t
+    FROM job_tags
+    INNER JOIN tags ON tags.id=job_tags.tag_id
+    GROUP BY job_id,tag_id
+) jt ON j.id=jt.job_id*/
+
+LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+/*LEFT JOIN (
+  SELECT job_id, status
+  FROM user_jobs
+  WHERE user_id=:user_id
+  GROUP BY job_id,user_id,status
+) uj ON uj.job_id=j.id*/
+
+GROUP BY j.id, j.budget, company, description, j.key, location, source, title, url, j.created_at, j.updated_at, uj.note, status
+HAVING uj.status <> 'hidden' OR uj.status IS NULL
+ORDER BY j.id
 LIMIT 50
       `, { replacements: {user_id}, type: sequelize.QueryTypes.SELECT });
       //return this.findAll({ //sequelize.connectionManager.lib.Query
@@ -85,7 +110,8 @@ var Tag = sequelize.define('tags', {
 });
 
 var UserJob = sequelize.define('user_jobs', {
-  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox'}
+  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox'},
+  note: Sequelize.TEXT
 });
 
 var UserTag = sequelize.define('user_tags', {
@@ -94,7 +120,7 @@ var UserTag = sequelize.define('user_tags', {
   classMethods: {
     score(user_id, dir, attrs){
       _.each(attrs, (v,k)=>{
-        if (!~k.indexOf('Tag')) return; // handle company, industry, etc later
+        if (!~k.indexOf('tag')) return; // handle company, industry, etc later
         UserTag.upsert({user_id, tag_id:k.split('.')[1], score:dir} ) //fixme $inc score, not set
       });
       //fixme return promise
@@ -111,7 +137,7 @@ Job.belongsToMany(User, {through: UserJob});
 User.belongsToMany(Tag, {through: UserTag});
 Tag.belongsToMany(User, {through: UserTag});
 
-sequelize.sync({force:true});
-//sequelize.sync();
+//sequelize.sync({force:true});
+sequelize.sync();
 
 module.exports = {User,Job,Tag,UserJob,UserTag};
