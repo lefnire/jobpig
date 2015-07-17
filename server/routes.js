@@ -34,7 +34,7 @@ router.post('/jobs/:id/:status', ensureAuth, function(req, res, next){
     db.UserTag.score(req.user.id, status, req.body); // .then(res.send)
     return res.sendStatus(200);
   }
-  db.UserJob.upsert({JobId:req.params.id, UserId:req.user.id, status:req.params.status}).then(()=>res.sendStatus(200));
+  db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, status:req.params.status}).then(()=>res.sendStatus(200));
 })
 
 router.get('/jobs/:key', ensureAuth, function (req, res, next) {

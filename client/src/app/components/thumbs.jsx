@@ -22,13 +22,13 @@ module.exports = React.createClass({
       <mui.Dialog title={this.state.action+':'} actions={standardActions} ref="dialog">
 
         <h3>Company</h3>
-        <mui.Checkbox name="company" value="company" label={this.props.job.company} defaultChecked={true} ref='Company.[company.id]' />
+        <mui.Checkbox name="company" value="company" label={this.props.job.company} disabled={true} ref='Company.[company.id]' />
 
         <h3>Industry</h3>
-        <mui.Checkbox name="company" value="company" label="Nonprofit" defaultChecked={true} ref='Industry.[industry.id]' />
+        <mui.Checkbox name="company" value="company" label="Nonprofit" disabled={true} ref='Industry.[industry.id]' />
 
         <h3>Skills</h3>
-        {this.props.job.Tags.map((tag,i)=>
+        {this.props.job.tags.map((tag,i)=>
           <mui.Checkbox name={tag.id} value={tag.id} label={tag.text} defaultChecked={true} ref={'Tag.'+tag.id} />
         )}
 

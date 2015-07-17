@@ -63,7 +63,7 @@ module.exports = React.createClass({
       <mui.Card>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
-          <b>{_.pluck(job.Tags, 'text').join(', ')}</b>
+          <b>{_.pluck(job.tags, 'text').join(', ')}</b>
           <p>{job.description}</p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
         </mui.CardText>
@@ -75,7 +75,7 @@ module.exports = React.createClass({
     window.setTimeout(()=> this.refs.jobref.getDOMNode().focus()); // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
     return (
       <HotKeys tabIndex="0" handlers={handlers} ref={/*this._setFocus*/"jobref"}>
-        <Thumb ref='thumb' job={this.props.job} />
+        <Thumb ref='thumb' job={this.props.job} onAction={this.props.onAction} />
         {mainSection}
       </HotKeys>
     )
