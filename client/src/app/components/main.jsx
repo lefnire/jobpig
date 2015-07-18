@@ -11,6 +11,7 @@ var _ = require('lodash');
 var Job = require('./job.jsx');
 var request = require('superagent');
 var Prospects = require('./prospects.jsx');
+var AddJob = require('./addJob.jsx');
 
 // Simple "name:key sequence/s" to create a hotkey map
 const keyMap = {
@@ -21,6 +22,7 @@ const keyMap = {
   showHidden: 'ctrl+h',
   showApplied: 'ctrl+a',
   showPropsects: 'ctrl+p',
+  addJob: 'shift+a',
   refresh: 'ctrl+r'
 };
 
@@ -87,6 +89,9 @@ let Main = React.createClass({
   action_refresh(){
     request.post('/refresh').end(()=>this._getJobs());
   },
+  action_addJob(){
+    this.refs.addJob.show();
+  },
 
   render() {
     if (!window.user) {
@@ -122,6 +127,7 @@ let Main = React.createClass({
           <mui.FlatButton label="Logout" linkButton={true} href='/logout' />
         } />
         {jobs}
+        <AddJob onAction={this._getJobs} ref='addJob' />
       </HotKeys>
     );
   },

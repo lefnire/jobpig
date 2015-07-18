@@ -81,11 +81,11 @@ module.exports = React.createClass({
       <mui.Card>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
-          <b>{_.pluck(job.tags, 'text').join(', ')}</b>
+          <b>{job.tags[0] && _.pluck(job.tags, 'text').join(', ')}</b>
           <p>{job.description}</p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
           {this.state.addingNote ?
-            <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} autofocus={true} /> :
+            <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
             this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
           }
         </mui.CardText>

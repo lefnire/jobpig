@@ -18,6 +18,7 @@ module.exports = React.createClass({
       { text: 'Cancel' },
       { text: 'Submit', onTouchTap: this._sendThumb, ref: 'submit' }
     ];
+    var tags = this.props.job.tags;
     return (
       <mui.Dialog title={this.state.action+':'} actions={standardActions} ref="dialog">
 
@@ -28,7 +29,7 @@ module.exports = React.createClass({
         <mui.Checkbox name="company" value="company" label="Nonprofit" disabled={true} ref='industry.[industry.id]' />
 
         <h3>Skills</h3>
-        {this.props.job.tags.map((tag,i)=>
+        {tags[0] && tags.map((tag,i)=>
           <mui.Checkbox name={tag.id} value={tag.id} label={tag.text} defaultChecked={true} ref={'tag.'+tag.id} />
         )}
 

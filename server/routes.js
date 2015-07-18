@@ -28,6 +28,11 @@ router.get('/jobs', ensureAuth, function(req, res, next){
   db.Job.filterByUser(req.user.id).then((jobs)=>res.send(jobs));
 });
 
+router.post('/jobs', ensureAuth, function(req, res, next){
+  db.Job.addCustom(req.user.id, req.body);
+  res.sendStatus(200);
+})
+
 //before :status, cascades
 router.post('/jobs/:id/add-note', ensureAuth, function(req, res, next){
   db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, note:req.body.note});

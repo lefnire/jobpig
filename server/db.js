@@ -67,17 +67,12 @@ LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
   GROUP BY job_id,user_id,status
 ) uj ON uj.job_id=j.id*/
 
+-- really necessary to group by all fields? getting error otherwise
 GROUP BY j.id, j.budget, company, description, j.key, location, source, title, url, j.created_at, j.updated_at, uj.note, status
 HAVING uj.status <> 'hidden' OR uj.status IS NULL
 ORDER BY j.id
 LIMIT 50
       `, { replacements: {user_id}, type: sequelize.QueryTypes.SELECT });
-      //return this.findAll({ //sequelize.connectionManager.lib.Query
-      //  attributes: _.keys(this.attributes).concat([
-      //    [sequelize.literal(`COALESCE("Users.UserJob"."status",'inbox')`), 'status']
-      //  ]),
-      //  include: [Tag, User]
-      //})
     },
     bulkCreateWithTags(jobs){
       //FIXME upsert
@@ -92,6 +87,12 @@ LIMIT 50
             })
           })
         })
+      })
+    },
+    addCustom(user_id, job){
+      this.create(job).then((_job)=>{
+        UserJob.create({user_id,job_id:_job.id,note:job.note,status:'applied'});
+        //TODO add tags
       })
     }
   },
