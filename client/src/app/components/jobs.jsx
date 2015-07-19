@@ -8,8 +8,11 @@ import Job from './job.jsx';
 import request from 'superagent';
 import Prospects from './prospects.jsx';
 import AddJob from './addJob.jsx';
+
+//Alt
 import alt from '../alt/alt';
 import JobStore from '../alt/JobStore';
+import JobActions from '../alt/JobActions';
 import connectToStores from 'alt/utils/connectToStores';
 
 let {Colors} = mui.Styles;
@@ -32,12 +35,11 @@ class Jobs extends React.Component {
 
   constructor(){
     super();
-    this._getJobs();
     this.state = {
-      jobs: [],
       filter: 'inbox',
       focus: 0
     };
+    JobActions.list();
   }
 
   static getStores() {
@@ -60,13 +62,13 @@ class Jobs extends React.Component {
     let style = {
       backgroundColor: f == 'saved' ? Colors.green700 :
         f == 'hidden' ? Colors.yellow700 :
-          f == 'applied' ? Colors.blue700 :
-            Colors.grey700
+        f == 'applied' ? Colors.blue700 :
+        Colors.grey700
     }
 
-    let jobs = _(this.state.jobs)
+    let jobs = _(this.props.jobs)
       .filter({status: this.state.filter})
-      .map((job, i)=> <Job job={job} key={job.id} focus={i==this.state.focus} i={i} onAction={this._getJobs.bind(this)}/>)
+      .map((job, i)=> <Job job={job} key={job.id} focus={i==this.state.focus} i={i} onAction={JobActions.list}/>)
       .value();
     this.jobsLen = jobs.length;
 
@@ -82,15 +84,9 @@ class Jobs extends React.Component {
           <mui.FlatButton label="Logout" linkButton={true} href='/logout' />
         }/>
         {jobs}
-        <AddJob onAction={this._getJobs.bind(this)} ref='addJob'/>
+        <AddJob onAction={JobActions.list} ref='addJob'/>
       </HotKeys>
     );
-  }
-
-  _getJobs() {
-    request.get('/jobs').end((err, res)=> {
-      this.setState({jobs: res.body});
-    })
   }
 
   // Actions
@@ -127,7 +123,7 @@ class Jobs extends React.Component {
   }
 
   _action_refresh() {
-    request.post('/refresh').end(()=>this._getJobs());
+    request.post('/refresh').end(JobActions.list);
   }
 
   _action_addJob() {

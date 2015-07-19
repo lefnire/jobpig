@@ -5,38 +5,64 @@ import _ from 'lodash';
 import request from 'superagent';
 import Thumb from './thumbs.jsx';
 
-const keyMap = {
-  save: 's',
-  apply: 'a',
-  expand: 'e',
-  open: 'enter',
-  hide: 'h',
-  inbox: 'i',
+//Alt
+import alt from '../alt/alt';
+import JobStore from '../alt/JobStore';
+import JobActions from '../alt/JobActions';
+import connectToStores from 'alt/utils/connectToStores';
 
-  addNote: 'n',
-  cancelNote: 'esc',
-  saveNote: 'ctrl+enter',
-
-  thumbsUp: 'shift+s',
-  thumbsDown: 'shift+h'
-}
-
-export default class Job extends React.Component {
+@connectToStores
+class Job extends React.Component {
   constructor(){
     super();
     this.state = {expanded:undefined};
+
+    // Setup keyboard shortcuts. Most defer to JobActions, so I inline them here. More complex bits defined below
+    _.each({
+      shortcuts:{
+        save: ['s', ()=>JobActions.setStatus({id:this.props.job.id,status:'saved'})],
+        apply: ['a', ()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})],
+        hide: ['h', ()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})],
+        inbox: ['i', ()=>JobActions.setStatus({id:this.props.job.id,status:'inbox'})],
+        expand: ['e', this._expand.bind(this)],
+        addNote: ['n', ()=>JobActions.setEditing(this.props.job.id)],
+        open: ['enter', ()=>window.open(this.props.job.url,'_blank')],
+        thumbsUp: ['shift+s', ()=>this.refs.thumb.show('Like')],
+        thumbsDown: ['shift+h', ()=>this.refs.thumb.show('Dislike')]
+      },
+      editing_shortcuts:{
+        cancelNote: ['esc', ()=>JobActions.setEditing(0)],
+        saveNote: ['ctrl+enter',()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})],
+      }
+    }, (obj,k)=>{
+      this[k] = _.reduce(obj, (m,v,k)=>{
+        m.keys[k] = v[0];
+        m.handlers[k] = v[1];
+        return m;
+      }, {keys:{},handlers:{}});
+    })
+  }
+
+  static getStores() {
+    return [JobStore];
+  }
+
+  static getPropsFromStores() {
+    return JobStore.getState();
   }
 
   render() {
-    let job = this.props.job;
+    let job = this.props.job,
+      editing = this.props.editing == this.props.job.id;
+
     let mainSection = (
       <mui.Card>
-        <mui.CardTitle title={job.title} subtitle={()=>this._subtitle(job)} />
+        <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
           <b>{job.tags[0] && _.pluck(job.tags, 'text').join(', ')}</b>
           <p>{job.description}</p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
-          {this.state.addingNote ?
+          {editing ?
             <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
             this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
           }
@@ -45,18 +71,15 @@ export default class Job extends React.Component {
     );
     if (!this.props.focus) return mainSection;
 
-    const handlers = _.transform(keyMap, (m,v,k)=> {
-      // disable non-note shortcuts when working with notes FIXME j & k from parent
-      if (this.state.addingNote && !_.includes(['addNote', 'cancelNote', 'saveNote'], k)) return;
-      m[k] = this['_action_' + k].bind(this);
-    });
     window.setTimeout(()=> { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
-      if (this.state.addingNote)
-        return this.refs.noteRef.focus();
+      if (editing) return this.refs.noteRef.focus();
       this.refs.jobref.getDOMNode().focus();
     });
     return (
-      <HotKeys tabIndex="0" keyMap={keyMap} handlers={handlers} ref={/*this._setFocus*/"jobref"}>
+      <HotKeys tabIndex="0"
+           keyMap={editing ? this.editing_shortcuts.keys : this.shortcuts.keys}
+           handlers={editing ? this.editing_shortcuts.handlers : this.shortcuts.handlers}
+           ref={/*this._setFocus*/"jobref"}>
         <Thumb ref='thumb' job={this.props.job} onAction={this.props.onAction} />
         {mainSection}
       </HotKeys>
@@ -66,22 +89,8 @@ export default class Job extends React.Component {
   _subtitle(job){
     return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
   }
-  _setFocus(c){
-    this.props.focus && c.getDOMNode().focus();
-  }
 
-  // Actions
-  _setStatus(status){
-    request.post(`/jobs/${this.props.job.id}/${status}`).end((err,res)=>{
-      this.props.onAction(); //fixme this is dumb, use flux?
-    })
-  }
-  _action_inbox(){this._setStatus('inbox')}
-  _action_save(){this._setStatus('saved')}
-  _action_apply(){this._setStatus('applied')}
-  _action_hide(){this._setStatus('hidden')}
-  _action_open(){window.open(this.props.job.url,'_blank')}
-  _action_expand(){
+  _expand(){
     if (this.state.expanded)
       return this.setState({expanded:undefined});
     //job.expanding = true;
@@ -90,23 +99,6 @@ export default class Job extends React.Component {
       this.setState({expanded: res.text});
     });
   }
-  _action_thumbsUp(){
-    this.refs.thumb.show('Like');
-  }
-  _action_thumbsDown(){
-    this.refs.thumb.show('Dislike');
-  }
-
-  _action_cancelNote(){
-    this.setState({addingNote:false});
-  }
-  _action_addNote(){
-    this.setState({addingNote:true});
-  }
-  _action_saveNote(){
-    let note = this.refs.noteRef.getValue();
-    request.post(`/jobs/${this.props.job.id}/add-note`, {note}).end(()=>{});
-    this.props.job.note = note; //fixme with flux
-    this.setState({addingNote:false});
-  }
 }
+
+export default Job

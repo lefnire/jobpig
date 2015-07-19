@@ -1,8 +1,13 @@
 import alt from './alt';
 
 class JobActions {
-  updateJob(id, text) {
-    return { id, text }
+  constructor() {
+    this.generateActions(
+      'list',
+      'setEditing',
+      'saveNote',
+      'setStatus'
+    )
   }
 }
 
