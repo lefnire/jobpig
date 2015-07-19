@@ -1,22 +1,22 @@
-var React = require('react'),
-  mui = require('material-ui'),
-  _ = require('lodash'),
-  request = require('superagent');
+import React from 'react';
+import mui from 'material-ui';
+import _ from 'lodash';
+import request from 'superagent';
 
-module.exports = React.createClass({
-  show: function(action){
-    this.setState({action});
-    this.refs.dialog.show();
-  },
-  getInitialState(){
-    return {
+export default class Thumb extends React.Component {
+
+  constructor(){
+    super();
+    this.show = this.show.bind(this);
+    this.state = {
       action:'Like'
-    }
-  },
+    };
+  }
+
   render() {
     let standardActions = [
       { text: 'Cancel' },
-      { text: 'Submit', onTouchTap: this._sendThumb, ref: 'submit' }
+      { text: 'Submit', onTouchTap: this._sendThumb.bind(this), ref: 'submit' }
     ];
     var tags = this.props.job.tags;
     return (
@@ -35,7 +35,7 @@ module.exports = React.createClass({
 
       </mui.Dialog>
     )
-  },
+  }
   _sendThumb(){
     var dir = {Like:1, Dislike:-1}[this.state.action];
     var body = _.reduce(this.refs,function(m,v,k){
@@ -46,5 +46,10 @@ module.exports = React.createClass({
       this.props.onAction();
     })
   }
-});
+
+  show(action){
+    this.setState({action});
+    this.refs.dialog.show();
+  }
+}
 

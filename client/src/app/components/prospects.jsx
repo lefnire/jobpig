@@ -1,34 +1,31 @@
-let React = require('react');
-let mui = require('material-ui');
-var _ = require('lodash');
+import React from 'react';
+import mui from 'material-ui';
+import _ from 'lodash';
 
-module.exports = React.createClass({
-  prospects: [
-    {
-      name:'Jon Doe',
-      title:'Professional LAMP dev',
-      img: "http://lorempixel.com/100/100/abstract",
-      industries: ['Nonprofit', 'Technology'],
-      skills:['php','javascript','mysql']
-    },
-    {
-      name:'Mary Jane',
-      title: 'CMS expert',
-      industries: ['Nonprofit', 'Technology'],
-      img: "http://lorempixel.com/100/100/people",
-      skills:['drupal','wordpress']
-    },
-    {
-      name:'Frank Francis',
-      title: 'Hipster new-tech',
-      industries: ['Nonprofit', 'Technology'],
-      img: "http://lorempixel.com/100/100/animals",
-      skills:['go','artificial intelligence', 'closure']
-    },
-  ],
-  _handleTouchTap() {
-    this.refs.contact.show();
+let prospects = [
+  {
+    name:'Jon Doe',
+    title:'Professional LAMP dev',
+    img: "http://lorempixel.com/100/100/abstract",
+    industries: ['Nonprofit', 'Technology'],
+    skills:['php','javascript','mysql']
   },
+  {
+    name:'Mary Jane',
+    title: 'CMS expert',
+    industries: ['Nonprofit', 'Technology'],
+    img: "http://lorempixel.com/100/100/people",
+    skills:['drupal','wordpress']
+  },
+  {
+    name:'Frank Francis',
+    title: 'Hipster new-tech',
+    industries: ['Nonprofit', 'Technology'],
+    img: "http://lorempixel.com/100/100/animals",
+    skills:['go','artificial intelligence', 'closure']
+  }
+];
+export default class Prospects extends React.Component {
   render() {
     let standardActions = [
       { text: 'Cancel' },
@@ -38,17 +35,17 @@ module.exports = React.createClass({
       <div>
 
         <mui.Dialog title="Contact" actions={this.standardActions} ref="contact">
-          <mui.TextField hintText="Subject" />
-          <br/>
-          <mui.TextField hintText="Message" multiLine={true} />
-
+          <mui.ClearFix>
+            <mui.TextField hintText="Subject" /><br/>
+            <mui.TextField hintText="Message" multiLine={true} />
+          </mui.ClearFix>
         </mui.Dialog>
 
-        {this.prospects.map((p)=> {
+        {prospects.map((p)=> {
           return <mui.Card>
             <mui.CardHeader title={p.name} subtitle={p.title} avatar={p.img} />
             <mui.CardActions>
-              <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap} />
+              <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap.bind(this)} />
               <mui.RaisedButton label="Hide"/>
             </mui.CardActions>
             <mui.CardText>
@@ -63,4 +60,7 @@ module.exports = React.createClass({
       </div>
     )
   }
-});
+  _handleTouchTap() {
+    this.refs.contact.show();
+  }
+}

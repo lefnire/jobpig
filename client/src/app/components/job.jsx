@@ -1,9 +1,9 @@
-let React = require('react');
-let mui = require('material-ui');
-var {HotKeys, HotKeyMapMixin} = require('react-hotkeys');
-var _ = require('lodash');
-var request = require('superagent');
-var Thumb = require('./thumbs.jsx');
+import React from 'react';
+import mui from 'material-ui';
+import {HotKeys, HotKeyMapMixin} from 'react-hotkeys';
+import _ from 'lodash';
+import request from 'superagent';
+import Thumb from './thumbs.jsx';
 
 const keyMap = {
   save: 's',
@@ -21,65 +21,17 @@ const keyMap = {
   thumbsDown: 'shift+h'
 }
 
-module.exports = React.createClass({
-  mixins: [HotKeyMapMixin(keyMap)],
-
-  _subtitle(job){
-    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
-  },
-  _setFocus: function(c){
-    this.props.focus && c.getDOMNode().focus();
-  },
-
-  getInitialState(){
-    return {expanded:undefined}
-  },
-
-  // Actions
-  _setStatus(status){
-    request.post(`/jobs/${this.props.job.id}/${status}`).end((err,res)=>{
-      this.props.onAction(); //fixme this is dumb, use flux?
-    })
-  },
-  action_inbox(){this._setStatus('inbox')},
-  action_save(){this._setStatus('saved')},
-  action_apply(){this._setStatus('applied')},
-  action_hide(){this._setStatus('hidden')},
-  action_open(){window.open(this.props.job.url,'_blank')},
-  action_expand(){
-    if (this.state.expanded)
-      return this.setState({expanded:undefined});
-    //job.expanding = true;
-    request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
-      //job.expanding = false;
-      this.setState({expanded: res.text});
-    });
-  },
-  action_thumbsUp(){
-    this.refs.thumb.show('Like');
-  },
-  action_thumbsDown(){
-    this.refs.thumb.show('Dislike');
-  },
-
-  action_cancelNote(){
-    this.setState({addingNote:false});
-  },
-  action_addNote(){
-    this.setState({addingNote:true});
-  },
-  action_saveNote(){
-    let note = this.refs.noteRef.getValue();
-    request.post(`/jobs/${this.props.job.id}/add-note`, {note}).end(()=>{});
-    this.props.job.note = note; //fixme with flux
-    this.setState({addingNote:false});
-  },
+export default class Job extends React.Component {
+  constructor(){
+    super();
+    this.state = {expanded:undefined};
+  }
 
   render() {
     let job = this.props.job;
     let mainSection = (
       <mui.Card>
-        <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
+        <mui.CardTitle title={job.title} subtitle={()=>this._subtitle(job)} />
         <mui.CardText>
           <b>{job.tags[0] && _.pluck(job.tags, 'text').join(', ')}</b>
           <p>{job.description}</p>
@@ -96,7 +48,7 @@ module.exports = React.createClass({
     const handlers = _.transform(keyMap, (m,v,k)=> {
       // disable non-note shortcuts when working with notes FIXME j & k from parent
       if (this.state.addingNote && !_.includes(['addNote', 'cancelNote', 'saveNote'], k)) return;
-      m[k] = this['action_' + k];
+      m[k] = this['_action_' + k].bind(this);
     });
     window.setTimeout(()=> { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (this.state.addingNote)
@@ -104,10 +56,57 @@ module.exports = React.createClass({
       this.refs.jobref.getDOMNode().focus();
     });
     return (
-      <HotKeys tabIndex="0" handlers={handlers} ref={/*this._setFocus*/"jobref"}>
+      <HotKeys tabIndex="0" keyMap={keyMap} handlers={handlers} ref={/*this._setFocus*/"jobref"}>
         <Thumb ref='thumb' job={this.props.job} onAction={this.props.onAction} />
         {mainSection}
       </HotKeys>
     )
   }
-});
+
+  _subtitle(job){
+    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
+  }
+  _setFocus(c){
+    this.props.focus && c.getDOMNode().focus();
+  }
+
+  // Actions
+  _setStatus(status){
+    request.post(`/jobs/${this.props.job.id}/${status}`).end((err,res)=>{
+      this.props.onAction(); //fixme this is dumb, use flux?
+    })
+  }
+  _action_inbox(){this._setStatus('inbox')}
+  _action_save(){this._setStatus('saved')}
+  _action_apply(){this._setStatus('applied')}
+  _action_hide(){this._setStatus('hidden')}
+  _action_open(){window.open(this.props.job.url,'_blank')}
+  _action_expand(){
+    if (this.state.expanded)
+      return this.setState({expanded:undefined});
+    //job.expanding = true;
+    request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
+      //job.expanding = false;
+      this.setState({expanded: res.text});
+    });
+  }
+  _action_thumbsUp(){
+    this.refs.thumb.show('Like');
+  }
+  _action_thumbsDown(){
+    this.refs.thumb.show('Dislike');
+  }
+
+  _action_cancelNote(){
+    this.setState({addingNote:false});
+  }
+  _action_addNote(){
+    this.setState({addingNote:true});
+  }
+  _action_saveNote(){
+    let note = this.refs.noteRef.getValue();
+    request.post(`/jobs/${this.props.job.id}/add-note`, {note}).end(()=>{});
+    this.props.job.note = note; //fixme with flux
+    this.setState({addingNote:false});
+  }
+}
