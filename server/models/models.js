@@ -1,5 +1,7 @@
 'use strict';
 
+//FIXME separate to multiple files
+
 var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),

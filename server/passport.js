@@ -3,7 +3,7 @@
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy,
   passport = require('passport'),
   nconf = require('nconf'),
-  User = require('./db').User;
+  User = require('./models/models').User;
 
 exports.setup = function(app){
 

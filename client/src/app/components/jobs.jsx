@@ -123,7 +123,7 @@ class Jobs extends React.Component {
   }
 
   _action_refresh() {
-    request.post('/refresh').end(JobActions.list);
+    request.post('/jobs/refresh').end(JobActions.list);
   }
 
   _action_addJob() {

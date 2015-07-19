@@ -3,7 +3,7 @@
 //Config
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
-require('./db');
+require('./models/models');
 
 //Express
 var express = require('express'),

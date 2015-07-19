@@ -1,60 +1,20 @@
 'use strict';
 
 var _ = require('lodash'),
-  adaptors = _.transform({'gunio': null, 'remoteok': null}, function (m, v, k) {
-    m[k] = new (require(`./adaptors/${k}`))();
-  }),
   router = require('express').Router(),
-  ensureAuth = require('./passport').ensureAuth;
-
-//var {Job,Tag,UserJob,UserTag} = require('./db'); //fixme why not working?
-var db = require('./db');
+  ensureAuth = require('./passport').ensureAuth,
+  jobs = require('./controllers/jobs');
 
 router.get('/', function(req, res, next){
   res.render('index', {user: req.user});
 })
 
-router.post('/refresh', ensureAuth, function (req, res, next) {
-  _.each(adaptors, function (adaptor) {
-    adaptor.list(function (err, jobs) {
-      if (err) return next(err);
-      db.Job.bulkCreateWithTags(jobs);
-      res.sendStatus(200);
-    })
-  })
-});
-
-router.get('/jobs', ensureAuth, function(req, res, next){
-  db.Job.filterByUser(req.user.id).then((jobs)=>res.send(jobs));
-});
-
-router.post('/jobs', ensureAuth, function(req, res, next){
-  db.Job.addCustom(req.user.id, req.body);
-  res.sendStatus(200);
-})
-
-//before :status, cascades
-router.post('/jobs/:id/add-note', ensureAuth, function(req, res, next){
-  db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, note:req.body.note});
-})
-
-router.post('/jobs/:id/:status', ensureAuth, function(req, res, next){
-  var status = req.params.status;
-  if (status=='1' || status=='-1') {
-    db.UserTag.score(req.user.id, status, req.body); // .then(res.send)
-    return res.sendStatus(200);
-  }
-  db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, status:req.params.status}).then(()=>res.sendStatus(200));
-})
-
-router.get('/jobs/:key', ensureAuth, function (req, res, next) {
-  db.Job.find({key:req.params.key}).then(function(job){
-    adaptors[job.source].expand(job, function (err, deets) {
-      if (err) return next(err);
-      res.send(deets);
-    })
-  })
-});
+router.get('/jobs', ensureAuth, jobs.list);
+router.post('/jobs', ensureAuth, jobs.create);
+router.post('/jobs/refresh', ensureAuth, jobs.refresh);
+router.get('/jobs/:key', ensureAuth, jobs.expand);
+router.post('/jobs/:id/add-note', ensureAuth, jobs.addNote); //before :status, cascades
+router.post('/jobs/:id/:status', ensureAuth, jobs.setStatus);
 
 module.exports = router;
 
