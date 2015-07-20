@@ -34,5 +34,7 @@ export default alt.createStore(class JobStore {
     this.setState({editing:0});
   }
 
-
+  refresh(){
+    request.post('/jobs/refresh').end(this.list);
+  }
 })

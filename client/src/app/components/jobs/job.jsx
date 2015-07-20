@@ -3,12 +3,13 @@ import mui from 'material-ui';
 import {HotKeys, HotKeyMapMixin} from 'react-hotkeys';
 import _ from 'lodash';
 import request from 'superagent';
-import Thumb from './thumbs.jsx';
+import Thumb from './thumb.jsx';
+import utils from '../../lib/utils';
 
 //Alt
-import alt from '../alt/alt';
-import JobStore from '../alt/JobStore';
-import JobActions from '../alt/JobActions';
+import alt from '../../lib/alt';
+import JobStore from '../../lib/JobStore';
+import JobActions from '../../lib/JobActions';
 import connectToStores from 'alt/utils/connectToStores';
 
 @connectToStores
@@ -18,29 +19,20 @@ class Job extends React.Component {
     this.state = {expanded:undefined};
 
     // Setup keyboard shortcuts. Most defer to JobActions, so I inline them here. More complex bits defined below
-    _.each({
-      shortcuts:{
-        save: ['s', ()=>JobActions.setStatus({id:this.props.job.id,status:'saved'})],
-        apply: ['a', ()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})],
-        hide: ['h', ()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})],
-        inbox: ['i', ()=>JobActions.setStatus({id:this.props.job.id,status:'inbox'})],
-        expand: ['e', this._expand.bind(this)],
-        addNote: ['n', ()=>JobActions.setEditing(this.props.job.id)],
-        open: ['enter', ()=>window.open(this.props.job.url,'_blank')],
-        thumbsUp: ['shift+s', ()=>this.refs.thumb.show('Like')],
-        thumbsDown: ['shift+h', ()=>this.refs.thumb.show('Dislike')]
-      },
-      editing_shortcuts:{
-        cancelNote: ['esc', ()=>JobActions.setEditing(0)],
-        saveNote: ['ctrl+enter',()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})],
-      }
-    }, (obj,k)=>{
-      this[k] = _.reduce(obj, (m,v,k)=>{
-        m.keys[k] = v[0];
-        m.handlers[k] = v[1];
-        return m;
-      }, {keys:{},handlers:{}});
-    })
+    this.shortcuts = utils.setupHotkeys({
+      save: {k:'s', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'saved'})},
+      apply: {k:'a', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})},
+      hide: {k:'h', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})},
+      inbox: {k:'i', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'inbox'})},
+      expand: {k:'e', fn:this._expand.bind(this)},
+      addNote: {k:'n', fn:()=>JobActions.setEditing(this.props.job.id)},
+      open: {k:'enter', fn:()=>window.open(this.props.job.url,'_blank')},
+      thumbsUp: {k:'shift+s', fn:()=>this.refs.thumb.show('Like')},
+      thumbsDown: {k:'shift+h', fn:()=>this.refs.thumb.show('Dislike')},
+
+      cancelNote: {k:'esc', enabledWhenEditing:true, fn:()=>JobActions.setEditing(0)},
+      saveNote: {k:'ctrl+enter', enabledWhenEditing:true, fn:()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})}
+    });
   }
 
   static getStores() {
@@ -75,10 +67,11 @@ class Job extends React.Component {
       if (editing) return this.refs.noteRef.focus();
       this.refs.jobref.getDOMNode().focus();
     });
+    let mode = editing ? 'editing' : 'default';
     return (
       <HotKeys tabIndex="0"
-           keyMap={editing ? this.editing_shortcuts.keys : this.shortcuts.keys}
-           handlers={editing ? this.editing_shortcuts.handlers : this.shortcuts.handlers}
+           keyMap={this.shortcuts[mode].keys}
+           handlers={this.shortcuts[mode].handlers}
            ref={/*this._setFocus*/"jobref"}>
         <Thumb ref='thumb' job={this.props.job} onAction={this.props.onAction} />
         {mainSection}

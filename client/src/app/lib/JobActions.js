@@ -6,7 +6,8 @@ class JobActions {
       'list',
       'setEditing',
       'saveNote',
-      'setStatus'
+      'setStatus',
+      'refresh'
     )
   }
 }

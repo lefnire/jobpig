@@ -3,7 +3,7 @@ import mui from 'material-ui';
 import _ from 'lodash';
 import request from 'superagent';
 
-export default class AddJob extends React.Component {
+export default class CreateJob extends React.Component {
   constructor(){
     super();
     this.show = this.show.bind(this);
@@ -11,7 +11,7 @@ export default class AddJob extends React.Component {
   render() {
     let standardActions = [
       {text: 'Cancel'},
-      {text: 'Submit', onTouchTap: this._addJob.bind(this), ref: 'submit'}
+      {text: 'Submit', onTouchTap: this._createJob.bind(this), ref: 'submit'}
     ];
     return (
       <mui.Dialog title="Add Job" actions={standardActions} ref="dialog">
@@ -30,7 +30,7 @@ export default class AddJob extends React.Component {
     this.refs.dialog.show();
   }
 
-  _addJob() {
+  _createJob() {
     var body = _.transform({company: 1, industry: 1, skills: 1, note: 1}, (m, v, k)=> m[k] = this.refs[k].getValue());
     request.post('/jobs', body).end(()=>this.props.onAction());
   }
