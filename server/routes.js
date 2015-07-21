@@ -3,12 +3,14 @@
 var _ = require('lodash'),
   router = require('express').Router(),
   ensureAuth = require('./passport').ensureAuth,
-  jobs = require('./controllers/jobs');
+  jobs = require('./controllers/jobs'),
+  user = require('./controllers/user');
 
 router.get('/', function(req, res, next){
   res.render('index', {user: req.user});
 })
 
+router.get('/user', ensureAuth, user.get);
 router.get('/jobs', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
 router.post('/jobs/refresh', ensureAuth, jobs.refresh);
