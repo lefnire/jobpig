@@ -33,7 +33,7 @@ export default React.createClass({
       showSaved: {k:'ctrl+s', fn:()=>this._goto('jobs/saved')},
       showHidden: {k:'ctrl+h', fn:()=>this._goto('jobs/hidden')},
       showApplied: {k:'ctrl+a', fn:()=>this._goto('jobs/applied')},
-      showPropsects: {k:'ctrl+p', fn:()=>this._goto('prospects')},
+      showProfile: {k:'ctrl+p', fn:()=>this._goto('profile')},
 
       // These would be better inside jobs.jsx, but for empty lists the keys aren't registered
       refresh: {k:'ctrl+r', fn:JobActions.refresh},

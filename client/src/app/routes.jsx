@@ -14,8 +14,5 @@ export default window.user ? (
     <DefaultRoute handler={Jobs}/>
   </Route>
 ) : (
-  <Route path="/" handler={App} >
-    <Route path="front" name='front' handler={Front} />
-    <DefaultRoute handler={Front}/>
-  </Route>
+  <Route path="/" handler={Front} />
 );

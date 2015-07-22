@@ -27,8 +27,9 @@ class Job extends React.Component {
       expand: {k:'e', fn:this._expand.bind(this)},
       addNote: {k:'n', fn:()=>JobActions.setEditing(this.props.job.id)},
       open: {k:'enter', fn:()=>window.open(this.props.job.url,'_blank')},
-      thumbsUp: {k:'shift+s', fn:()=>this.refs.thumb.show('Like')},
-      thumbsDown: {k:'shift+h', fn:()=>this.refs.thumb.show('Dislike')},
+      //thumbsUp: {k:'shift+s', fn:()=>this.refs.thumb.show('Like')},
+      //thumbsDown: {k:'shift+h', fn:()=>this.refs.thumb.show('Dislike')},
+      forceHide: {k:'shift+h', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden',force:true})},
 
       cancelNote: {k:'esc', enabledWhenEditing:true, fn:()=>JobActions.setEditing(0)},
       saveNote: {k:'ctrl+enter', enabledWhenEditing:true, fn:()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})}

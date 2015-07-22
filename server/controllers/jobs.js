@@ -28,12 +28,8 @@ exports.addNote = function(req, res, next){
 }
 
 exports.setStatus = function(req, res, next){
-  var status = req.params.status;
-  if (status=='1' || status=='-1') {
-    db.UserTag.score(req.user.id, status, req.body); // .then(res.send)
-    return res.sendStatus(200);
-  }
-  db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, status:req.params.status}).then(()=>res.sendStatus(200));
+  db.Job.score(req.user.id, req.params.id, req.params.status, req.query.force);
+  res.sendStatus(200);
 }
 
 exports.expand = function (req, res, next) {

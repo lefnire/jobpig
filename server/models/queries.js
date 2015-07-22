@@ -14,11 +14,11 @@ LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
 
 GROUP BY j.id, j.budget, company, description, j.key, location, source, title, url, j.created_at, j.updated_at, uj.note, uj.status
 
-HAVING COALESCE(uj.status,'inbox') <> 'hidden' AND COALESCE(SUM(ut.score),0)>-15
+HAVING COALESCE(uj.status,'inbox') <> 'hidden' AND COALESCE(SUM(ut.score),0)>-20
 
 ORDER BY COALESCE(SUM(ut.score),0) DESC
 
-LIMIT 100;
+LIMIT 50;
 `;
 
 exports.filterProspects = ``; //TODO reverse query of above, for clients to find candidates

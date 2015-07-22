@@ -31,7 +31,7 @@ export default class CreateJob extends React.Component {
   }
 
   _createJob() {
-    var body = _.transform({company: 1, industry: 1, skills: 1, note: 1}, (m, v, k)=> m[k] = this.refs[k].getValue());
+    var body = _.transform({title:1, company:1, industry:1, skills:1, note:1}, (m, v, k)=> m[k] = this.refs[k].getValue());
     request.post('/jobs', body).end(()=>this.props.onAction());
   }
 }

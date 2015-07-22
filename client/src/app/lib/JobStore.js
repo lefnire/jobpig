@@ -20,8 +20,8 @@ export default alt.createStore(class JobStore {
     })
   }
 
-  setStatus({id,status}){
-    request.post(`/jobs/${id}/${status}`).end((err,res)=>this.list());
+  setStatus({id,status,force}){
+    request.post(`/jobs/${id}/${status}?force=${force}`).end((err,res)=>this.list());
   }
 
   setEditing(id){

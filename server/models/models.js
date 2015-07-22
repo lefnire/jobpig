@@ -58,6 +58,51 @@ var Job = sequelize.define('jobs', {
         UserJob.create({user_id,job_id:_job.id,note:job.note,status:'applied'});
         //TODO add tags
       })
+    },
+    score(user_id, job_id, status, force){
+      //TODO this can likely be cleaned up into a few efficient raw queries
+      this.findOne({
+        where:{id:job_id},
+        include:[
+          {model:Tag, include:[User]},
+          User
+        ]
+      }).then(job=>{
+
+        // First set its status
+        var uj = job.users[0];
+        if (uj) {
+          uj.user_jobs.status= status;
+          uj.user_jobs.save();
+        } else {
+          UserJob.create({user_id,job_id,status});
+        }
+
+        // then score attributes, unless setting to 'inbox' or req.params.force
+        // force means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
+        var dir = (status=='inbox' || force==true) ? 0 : status=='hidden' ? -1 : +1;
+        if (!dir) return;
+
+        UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
+          sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id`,
+            { replacements: {user_id, title:job.company, score:dir}, type: sequelize.QueryTypes.UPDATE });
+          //fixme: `_userCompany.save is not a function` wtf??
+          //_userCompany.score += dir;
+          //_userCompany.save();
+        })
+
+        _.each(job.tags, tag=>{
+          var user_tag = tag.users[0] && tag.users[0].user_tags;
+          if (user_tag) {
+            user_tag.score += dir;
+            user_tag.save();
+          }
+          else {
+            UserTag.create({user_id, tag_id:tag.id, score:dir});
+          }
+        })
+      })
+      //fixme return promise
     }
   },
   indexes: [
@@ -79,19 +124,16 @@ var UserJob = sequelize.define('user_jobs', {
   note: Sequelize.TEXT
 });
 
-var UserTag = sequelize.define('user_tags', {
-  score: Sequelize.INTEGER
-}, {
-  classMethods: {
-    score(user_id, dir, attrs){
-      _.each(attrs, (v,k)=>{
-        if (!~k.indexOf('tag')) return; // handle company, industry, etc later
-        UserTag.upsert({user_id, tag_id:k.split('.')[1], score:dir} ) //fixme $inc score, not set
-      });
-      //fixme return promise
-    }
-  }
+var UserCompany = sequelize.define('user_companies', {
+  title: Sequelize.TEXT,
+  score: {type:Sequelize.INTEGER, defaultValue:0}
 });
+
+var UserTag = sequelize.define('user_tags', {
+  score: {type:Sequelize.INTEGER, defaultValue:0}
+});
+
+
 
 Tag.belongsToMany(Job, {through: 'job_tags'});
 Job.belongsToMany(Tag, {through: 'job_tags'});
@@ -101,6 +143,8 @@ Job.belongsToMany(User, {through: UserJob});
 
 User.belongsToMany(Tag, {through: UserTag});
 Tag.belongsToMany(User, {through: UserTag});
+
+User.hasMany(UserCompany);
 
 //sequelize.sync({force:true});
 sequelize.sync();
