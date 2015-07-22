@@ -80,7 +80,8 @@ class Job extends React.Component {
   }
 
   _subtitle(job){
-    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'}`;
+    let score = job.score<0 ? job.score : `+${job.score}`;
+    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'} | ${score}`;
   }
 
   _expand(){
