@@ -44,10 +44,15 @@ var Job = sequelize.define('jobs', {
       //FIXME look into bulk-create (can do with associations?)
       //FIXME return promise (see require("bluebird"))
       //var tags = _(_.pluck(jobs, 'tags')).flatten().unique().value();
+
       jobs.forEach((job)=> {
         Job.findOrCreate({where:{key:job.key}, defaults:job}).spread((_job) => {
           job.tags.forEach((tag)=> {
-            Tag.findOrCreate({where:{key:tag}, defaults:{key: tag, text: tag}}).spread((_tag)=>{
+
+            var key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
+            if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
+
+            Tag.findOrCreate({where:{key}, defaults:{key, text:tag}}).spread((_tag)=>{
               _job.addTag(_tag);
             })
           })
