@@ -11,6 +11,8 @@ router.get('/', function(req, res, next){
 })
 
 router.get('/user', ensureAuth, user.get);
+router.post('/user/tags/lock/:tag_id', ensureAuth, user.lock);
+
 router.get('/jobs', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
 router.post('/jobs/refresh', ensureAuth, jobs.refresh);

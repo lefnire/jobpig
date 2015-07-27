@@ -4,3 +4,8 @@ config.json
 client/build
 *.sql
 tmp
+
+# remove these when ready to add migrations to the mi
+/migrations
+/models
+/config

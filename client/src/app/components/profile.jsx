@@ -12,16 +12,23 @@ export default class Profile extends React.Component{
   }
   render(){
     if (!this.state.profile) return null;
-    console.dir(this.state.profile);
     return (
       <mui.ClearFix>
         <h1>LinkedIn ID: {this.state.profile.linkedin}</h1>
-        <mui.List>
+        <mui.List subheader="Scores (check to lock a tag, meaning it won't be considered)">
           {this.state.profile.tags.map((t)=> {
-            return <mui.ListItem primaryText={t.text+' ['+t.user_tags.score+']'}/>
+            return <mui.ListItem
+              primaryText={t.text+' ['+t.user_tags.score+']'}
+              leftCheckbox={
+                <mui.Checkbox onCheck={this._lock.bind(this, t)} defaultChecked={t.user_tags.locked} />
+              }
+              />
           })}
         </mui.List>
       </mui.ClearFix>
     )
+  }
+  _lock(tag, e, checked){
+    request.post(`/user/tags/lock/${tag.id}`).end(()=>{});
   }
 }

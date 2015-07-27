@@ -6,11 +6,12 @@ var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
   Promise = require('sequelize/node_modules/bluebird'),
-  queries = require('./queries');
+  queries = require('./queries'),
+  db = nconf.get('development');
 
-var sequelize = new Sequelize(nconf.get('db:database'), nconf.get('db:username'), nconf.get('db:password'), {
-  host: 'localhost',
-  dialect: 'postgres',
+var sequelize = new Sequelize(db.database, db.username, db.development, {
+  host: db.host,
+  dialect: db.dialect,
   define:{
     underscored: true,
     freezeTableName:true
@@ -130,9 +131,17 @@ var UserCompany = sequelize.define('user_companies', {
 });
 
 var UserTag = sequelize.define('user_tags', {
-  score: {type:Sequelize.INTEGER, defaultValue:0}
+  score: {type:Sequelize.INTEGER, defaultValue:0},
+  locked: {type:Sequelize.BOOLEAN, defaultValue:false},
+},
+{
+  classMethods: {
+    lock(user_id, tag_id){
+      return sequelize.query(`UPDATE user_tags SET locked = NOT locked WHERE user_id=:user_id AND tag_id=:tag_id`,
+        { replacements: {user_id, tag_id:+tag_id}, type: sequelize.QueryTypes.UPDATE });
+    }
+  }
 });
-
 
 
 Tag.belongsToMany(Job, {through: 'job_tags'});
