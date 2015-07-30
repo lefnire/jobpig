@@ -40,22 +40,46 @@ var Job = sequelize.define('jobs', {
       return sequelize.query(queries.filterJobs, { replacements: {user_id}, type: sequelize.QueryTypes.SELECT });
     },
     bulkCreateWithTags(jobs){
-      //FIXME upsert
-      //FIXME look into bulk-create (can do with associations?)
-      //FIXME return promise (see require("bluebird"))
-      //var tags = _(_.pluck(jobs, 'tags')).flatten().unique().value();
 
-      jobs.forEach((job)=> {
-        Job.findOrCreate({where:{key:job.key}, defaults:job}).spread((_job) => {
-          job.tags.forEach((tag)=> {
+      // clean up job tags
+      _.each(jobs, job=>{
+        job.tags = _.map(job.tags, tag=>{
+          var key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
+          if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
+          return key;
+        })
+      })
 
-            var key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
-            if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
+      // full list of (unique) tags
+      var tags = _(_.pluck(jobs,'tags')).flatten().unique().value();
 
-            Tag.findOrCreate({where:{key}, defaults:{key, text:tag}}).spread((_tag)=>{
-              _job.addTag(_tag);
+      // Create jobs (ignore duplicates, unhandled exceptions)
+      var _jobs;
+
+      // Ok, here we begin some bad magic. Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate
+      // while ignoring constraint errors (duplicates) for Postgres. So here I'm running bulkCreate, followed by finally() in
+      // case of dupes (which we ignore). I'm lucky that bulkCreate doesn't return anything, since finally() is argument-less.
+      // This bad magic is luck, so find a better way!
+      return Job.bulkCreate(jobs).finally(()=> { // will error on dupes
+        return Job.findAll({where: {key: {$in: _.pluck(jobs, 'key')}}, attributes: ['id', 'key']}).then(__jobs=> {
+          _jobs = __jobs;
+          return Tag.bulkCreate(_.map(tags, function (t) {return {key: t}}));
+        }).finally(()=> {
+          return Tag.findAll({where: {key: {$in: tags}}, attributes: ['id', 'key']}).then(_tags=> {
+            var joins = [];
+            _.each(jobs, j=> {
+              _.each(j.tags, t=> {
+                try {
+                  let join = {
+                    job_id: _.find(_jobs, {key: j.key}).id,
+                    tag_id: _.find(_tags, {key: t}).id //fixme,  Cannot read property 'id' of undefined
+                  }
+                  joins.push(join);
+                }catch(e){}
+              })
             })
-          })
+            return sequelize.model('job_tags').bulkCreate(joins);
+          });
         })
       })
     },
