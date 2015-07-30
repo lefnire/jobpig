@@ -1,17 +1,24 @@
 var db = require('../models/models');
 var _ = require('lodash');
-var adaptors = _.transform({'gunio':1, 'remoteok':1}, function (m, v, k) {
-  m[k] = new (require(`../lib/adaptors/${k}`))();
-});
+var adaptors = _.reduce([
+  //'gunio',
+  //'remoteok',
+  //'stackoverflow',
+  //'github',
+  'authenticjobs'
+], function (m, v, k) {
+  m[v] = new (require(`../lib/adaptors/${v}`))();
+  return m;
+}, {});
 
 exports.refresh = function (req, res, next) {
   _.each(adaptors, function (adaptor) {
     adaptor.list(function (err, jobs) {
       if (err) return next(err);
       db.Job.bulkCreateWithTags(jobs);
-      res.sendStatus(200);
     })
   })
+  res.sendStatus(200);
 };
 
 exports.list = function(req, res, next){

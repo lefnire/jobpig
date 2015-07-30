@@ -12,7 +12,7 @@ LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
 LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.locked IS NOT TRUE
 LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
 
-GROUP BY j.id, j.budget, j.company, j.description, j.key, j.location, j.source, j.title, j.url, j.created_at, j.updated_at, uj.note, uj.status
+GROUP BY j.id, j.money, j.company, j.description, j.key, j.location, j.source, j.title, j.url, j.created_at, j.updated_at, uj.note, uj.status
 
 HAVING COALESCE(uj.status,'inbox') <> 'hidden' AND COALESCE(SUM(ut.score),0)>-75
 

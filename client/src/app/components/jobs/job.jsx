@@ -53,7 +53,7 @@ class Job extends React.Component {
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
           <b>{job.tags[0] && _.pluck(job.tags, 'text').join(', ')}</b>
-          <p>{job.description}</p>
+          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
           {editing ?
             <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :

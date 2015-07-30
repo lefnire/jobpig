@@ -19,7 +19,8 @@ class RemoteOK extends Adaptor {
           follow: '', // figure out how to get the link's redirect, use that for id
           description: '',
           location: '',
-          budget: '',
+          money: '',
+          remote: true,
           tags: el.find('.tags').find('h3').map(function() {
             return $(this).text();
           }).toArray()

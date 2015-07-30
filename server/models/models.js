@@ -24,7 +24,7 @@ var User = sequelize.define('users', {
 });
 
 var Job = sequelize.define('jobs', {
-  budget: Sequelize.STRING,
+  money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
   company: Sequelize.STRING,
   description: Sequelize.TEXT,
   //id: Sequelize.STRING,
@@ -32,7 +32,8 @@ var Job = sequelize.define('jobs', {
   location: Sequelize.STRING,
   source: Sequelize.STRING,
   title: Sequelize.STRING,
-  url: Sequelize.STRING
+  url: Sequelize.STRING,
+  remote: Sequelize.BOOLEAN
 },
 {
   classMethods: {

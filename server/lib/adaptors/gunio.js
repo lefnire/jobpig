@@ -29,7 +29,8 @@ class GunIO extends Adaptor {
             url: 'https://gun.io/dash3/gig/' + id,
             description: t(el, 'blurb'),
             location: t(el, 'city') + ',' + t(el, 'state'),
-            budget: el.querySelector('h2.variable span').innerText,
+            money: el.querySelector('h2.variable span').innerText,
+            remote: true,
             tags: Array.prototype.slice
               .call(el.querySelector('[data-bind="html: tagify(tags)"]').querySelectorAll('a'))
               .map(function (tag) {
