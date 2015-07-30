@@ -20,7 +20,7 @@ var sequelize = new Sequelize(db.database, db.username, db.development, {
 global.sequelize = sequelize;
 
 var User = sequelize.define('users', {
-  linkedin: Sequelize.STRING
+  linkedin: {type:Sequelize.STRING, unique:true},
 });
 
 var Job = sequelize.define('jobs', {
@@ -28,11 +28,11 @@ var Job = sequelize.define('jobs', {
   company: Sequelize.STRING,
   description: Sequelize.TEXT,
   //id: Sequelize.STRING,
-  key: Sequelize.STRING,
+  key: {type:Sequelize.STRING, allowNull:false, unique:true},
   location: Sequelize.STRING,
-  source: Sequelize.STRING,
-  title: Sequelize.STRING,
-  url: Sequelize.STRING,
+  source: {type:Sequelize.STRING, allowNull:false},
+  title: {type:Sequelize.STRING, allowNull:false},
+  url: {type:Sequelize.STRING, allowNull:false, unique:true},
   remote: Sequelize.BOOLEAN
 },
 {
@@ -118,7 +118,7 @@ var Job = sequelize.define('jobs', {
 });
 
 var Tag = sequelize.define('tags', {
-  key: Sequelize.STRING,
+  key: {type:Sequelize.STRING, allowNull:false, unique:true},
   text: Sequelize.STRING
 }, {
   indexes: [
@@ -127,17 +127,17 @@ var Tag = sequelize.define('tags', {
 });
 
 var UserJob = sequelize.define('user_jobs', {
-  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox'},
+  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox', allowNull:false},
   note: Sequelize.TEXT
 });
 
 var UserCompany = sequelize.define('user_companies', {
   title: Sequelize.TEXT,
-  score: {type:Sequelize.INTEGER, defaultValue:0}
+  score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false}
 });
 
 var UserTag = sequelize.define('user_tags', {
-  score: {type:Sequelize.INTEGER, defaultValue:0},
+  score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false},
 },
 {
