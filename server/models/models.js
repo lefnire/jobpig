@@ -27,7 +27,6 @@ var Job = sequelize.define('jobs', {
   money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
   company: Sequelize.STRING,
   description: Sequelize.TEXT,
-  //id: Sequelize.STRING,
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   location: Sequelize.STRING,
   source: {type:Sequelize.STRING, allowNull:false},
@@ -119,7 +118,7 @@ var Job = sequelize.define('jobs', {
 
 var Tag = sequelize.define('tags', {
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
-  text: Sequelize.STRING
+  //text: Sequelize.STRING
 }, {
   indexes: [
     {unique:true, fields:['key']}

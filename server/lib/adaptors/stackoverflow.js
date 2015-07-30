@@ -1,6 +1,6 @@
 'use strict';
 
-var Adaptor = require('./adaptor');
+var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class StackOverflow extends Adaptor {

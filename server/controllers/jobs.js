@@ -1,23 +1,9 @@
 var db = require('../models/models');
 var _ = require('lodash');
-var adaptors = _.reduce([
-  //'gunio',
-  //'remoteok',
-  //'stackoverflow',
-  //'github',
-  'authenticjobs'
-], function (m, v, k) {
-  m[v] = new (require(`../lib/adaptors/${v}`))();
-  return m;
-}, {});
+var adaptors = require('../lib/adaptors');
 
 exports.refresh = function (req, res, next) {
-  _.each(adaptors, function (adaptor) {
-    adaptor.list(function (err, jobs) {
-      if (err) return next(err);
-      db.Job.bulkCreateWithTags(jobs);
-    })
-  })
+  adaptors.refresh();
   res.sendStatus(200);
 };
 

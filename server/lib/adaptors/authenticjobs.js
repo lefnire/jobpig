@@ -1,20 +1,21 @@
 'use strict';
 
-var Adaptor = require('./adaptor');
+var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class AuthenticJobs extends Adaptor {
   list(done) {
     this.fetchFeed('https://authenticjobs.com/rss/custom.php', (err, results)=>{
-      var jobs = _.map(results.rss.channel["0"].item, function(item){
+      var jobs = _.map(results.rss.channel["0"].item, (item)=>{
+        var title = item.title[0], description = item.description[0];
         return {
           key: item.guid[0],
           source: 'authenticjobs',
-          title: item.title[0],
-          company: /^(.*)\:/.exec(item.title[0])[1],
+          title,
+          company: /^(.*)\:/.exec(title)[1],
           url: item.link[0],
-          description: item.description[0],
-          location: /<strong>\((.*)\)<\/strong>/gi.exec(item.description[0])[1],
+          description,
+          location: /<strong>\((.*)\)<\/strong>/gi.exec(description)[1],
           money: null,
           remote: false,
           tags: []

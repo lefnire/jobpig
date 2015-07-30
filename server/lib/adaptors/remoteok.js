@@ -3,7 +3,7 @@
 var request = require("request");
 var cheerio = require("cheerio");
 
-var Adaptor = require('./adaptor');
+var Adaptor = require('./index').Adaptor;
 class RemoteOK extends Adaptor {
   list(done) {
     request('https://remoteok.io', function(err, response, html){

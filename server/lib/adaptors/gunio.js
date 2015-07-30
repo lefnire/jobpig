@@ -1,6 +1,6 @@
 'use strict';
 
-var Adaptor = require('./adaptor');
+var Adaptor = require('./index').Adaptor;
 var nconf = require('nconf');
 var request = require('request');
 
