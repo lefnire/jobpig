@@ -52,7 +52,7 @@ class Job extends React.Component {
       <mui.Card>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
-          <b>{job.tags[0] && _.pluck(job.tags, 'text').join(', ')}</b>
+          <b>{job.tags[0] && _.pluck(job.tags, 'key').join(', ')}</b>
           <p dangerouslySetInnerHTML={{__html:job.description}}></p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
           {editing ?

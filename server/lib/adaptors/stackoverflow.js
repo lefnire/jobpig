@@ -4,6 +4,10 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class StackOverflow extends Adaptor {
+  constructor(){
+    super();
+    this.seedsTags = true;
+  }
   refresh() {
     return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=>{
       var jobs = _.map(results.rss.channel["0"].item, function(item){

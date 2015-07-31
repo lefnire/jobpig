@@ -6,7 +6,7 @@ var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
   queries = require('./queries'),
-  db = nconf.get(nconf.get("NODE_ENV"));
+  db = nconf.get('development');
 
 var sequelize = new Sequelize(db.database, db.username, db.development, {
   host: db.host,
@@ -174,6 +174,28 @@ var UserTag = sequelize.define('user_tags', {
   }
 });
 
+var Cron = sequelize.define('cron', {
+  last_run: {type:Sequelize.DATE, defaultValue:Sequelize.NOW}
+}, {
+  classMethods:{
+    isOutdated(){
+      return sequelize.query(`SELECT EXTRACT(DOY FROM cron.last_run)!=EXTRACT(DOY FROM CURRENT_TIMESTAMP) FROM cron`,
+        {type:sequelize.QueryTypes.SELECT}).then( res=> {
+          return Promise.resolve((res[0]['?column?']));
+        } );
+    },
+    refreshIfOutdated(){
+      this.isOutdated().then(val=>{
+        if (!val) return Promise.resolve();
+        console.log('Refreshing jobs....');
+        //FIXME require here, circular reference models.js/adaptors.js
+        return sequelize.query(`UPDATE cron SET last_run=CURRENT_TIMESTAMP`)
+          .then(()=>require('../lib/adaptors').refresh())
+      });
+    }
+  }
+})
+
 
 Tag.belongsToMany(Job, {through: 'job_tags'});
 Job.belongsToMany(Tag, {through: 'job_tags'});
@@ -189,4 +211,4 @@ User.hasMany(UserCompany);
 //sequelize.sync({force:true});
 //sequelize.sync();
 
-module.exports = {User,Job,Tag,UserJob,UserTag};
+module.exports = {User,Job,Tag,UserJob,UserTag,Cron};

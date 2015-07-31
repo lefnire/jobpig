@@ -2,12 +2,9 @@ var db = require('../models/models');
 var _ = require('lodash');
 var adaptors = require('../lib/adaptors');
 
-exports.refresh = function (req, res, next) {
-  adaptors.refresh();
-  res.sendStatus(200);
-};
-
 exports.list = function(req, res, next){
+  // FIXME: Where to put this?
+  db.Cron.refreshIfOutdated();
   db.Job.filterByUser(req.user.id).then((jobs)=>res.send(jobs));
 };
 

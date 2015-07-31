@@ -50,7 +50,7 @@ exports.Adaptor = class Adaptor {
   }
 }
 
-exports.adaptors = _.reduce([
+var adaptors = _.reduce([
   //'gunio',
   //'remoteok',
   'stackoverflow',
@@ -61,6 +61,17 @@ exports.adaptors = _.reduce([
   return m;
 }, {});
 
+exports.adaptors = adaptors;
+
 exports.refresh = function () {
-  return Promise.all( _.map(exports.adaptors, a=>a.refresh() ));
+  //return Promise.all( _.map(exports.adaptors, a=>a.refresh() ));
+
+  // seed tags
+  var promises = _.reduce(adaptors, (m,v,k)=>{
+    m[v.seedsTags ? 'seedsTags' : 'needsTags'].push(v);
+    return m;
+  }, {seedsTags:[], needsTags:[]});
+  return Promise.all(promises.seedsTags.map(a=>a.refresh())).then(()=>{
+    return Promise.all(promises.needsTags.map(a=>a.refresh()));
+  })
 }
