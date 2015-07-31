@@ -26,7 +26,9 @@ app
 require('./passport').setup(app);
 
 app.use(express.static(path.join(__dirname, '..', 'client/build')));
+app.use('/', require('./routes'));
 
-app.use('/', require('./routes'))
+module.exports = app;
 
-.listen(3000);
+if (process.env.NODE_ENV!=='test')
+  app.listen(3000);

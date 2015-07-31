@@ -4,8 +4,8 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class Github extends Adaptor {
-  list(done) {
-    this.fetchFeed('https://jobs.github.com/positions.atom', (err, results) =>{
+  refresh() {
+    return this.fetchFeed('https://jobs.github.com/positions.atom').then(results=>{
       var jobs = _.map(results.feed.entry, function(item){
         return {
           key: item.id[0],
@@ -20,8 +20,8 @@ module.exports = class Github extends Adaptor {
           tags: [] // parsed below
         }
       })
-      Adaptor.prototype.addTagsFromContent(jobs, (err,jobs)=>{
-        Adaptor.prototype.list(done, err, jobs);
+      return Adaptor.prototype.addTagsFromContent(jobs).then(jobs=>{
+        return Adaptor.prototype.refresh(jobs);
       });
     })
   }

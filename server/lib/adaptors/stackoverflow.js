@@ -4,8 +4,8 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class StackOverflow extends Adaptor {
-  list(done) {
-    this.fetchFeed('http://careers.stackoverflow.com/jobs/feed', (err, results)=>{
+  refresh() {
+    return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=>{
       var jobs = _.map(results.rss.channel["0"].item, function(item){
         return {
           key: item.guid[0]._,
@@ -20,7 +20,7 @@ module.exports = class StackOverflow extends Adaptor {
           tags: item.category
         }
       })
-      Adaptor.prototype.list(done, err, jobs);
+      return Adaptor.prototype.refresh(jobs);
     })
   }
   expand(job, done){

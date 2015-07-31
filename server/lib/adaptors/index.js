@@ -12,32 +12,34 @@ exports.Adaptor = class Adaptor {
     this.nightmare = nightmare;
   }
 
-  fetchFeed(url, cb) {
-    request(url, (err, response, body)=> {
-      if (err) return cb(err);
-      parser.parseString(body, cb);
-    });
+  fetchFeed(url) {
+    return new Promise((resolve,reject)=>{
+      request(url, (err, response, body)=> {
+        if (err) return reject(err);
+        parser.parseString(body, (err, results)=>resolve(results));
+      });
+    })
   }
 
-  list(done, err, jobs) {
-    _.each(jobs, function (job) {
+  refresh(jobs) {
+    _.each(jobs, job=>{
       // job ids in database are alphanumeric URLs (in case of repeats from other websites)
       job.key = job.key || job.url.replace(/\W+/g, "");
     })
-    done(err, jobs);
+    return db.Job.bulkCreateWithTags(jobs);
   }
 
-  addTagsFromContent(jobs, cb) {
-    db.Tag.findAll({fields: ['key']}).then(tags=> {
+  addTagsFromContent(jobs) {
+    return db.Tag.findAll({attributes: ['key']}).then(tags=> {
       _.each(jobs, job=> {
         job.tags = _.reduce(tags, (m, v)=> {
           // check whole word, but allow for punctuation
-          if (RegExp(`[!a-zA-Z]${_.escapeRegExp(v.key)}[!a-zA-Z]`, 'gi').test(job.description))
+          if (RegExp(`[^a-zA-Z\d]${_.escapeRegExp(v.key)}[^a-zA-Z\d]`, 'gi').test(job.description))
             m.push(v.key);
           return m;
         }, []);
       })
-      cb(null, jobs);
+      return new Promise((resolve)=>resolve(jobs));
     })
   }
 
@@ -48,22 +50,17 @@ exports.Adaptor = class Adaptor {
   }
 }
 
-var adaptors = _.reduce([
-  'gunio',
-  'remoteok',
+exports.adaptors = _.reduce([
+  //'gunio',
+  //'remoteok',
   'stackoverflow',
   'github',
-  //'authenticjobs'
+  'authenticjobs'
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;
 }, {});
 
 exports.refresh = function () {
-  _.each(adaptors, function (adaptor) {
-    adaptor.list(function (err, jobs) {
-      if (err) return next(err);
-      db.Job.bulkCreateWithTags(jobs);
-    })
-  })
+  return Promise.all( _.map(exports.adaptors, a=>a.refresh() ));
 }

@@ -5,28 +5,30 @@ var cheerio = require("cheerio");
 
 var Adaptor = require('./index').Adaptor;
 class RemoteOK extends Adaptor {
-  list(done) {
-    request('https://remoteok.io', function(err, response, html){
-      var $ = cheerio.load(html);
-      var jobs = $('tr.job').map(function(){
-        var el = $(this);
-        return {
-          source: 'remoteok',
-          title: el.find('.company_and_position h2').text(),
-          company: el.find('.company_and_position.company h3').text(),
-          //url: 'https://remoteok.io' + el.find('.company a').attr('href'),
-          url: 'https://remoteok.io' + el.find('td.source a').attr('href'),
-          follow: '', // figure out how to get the link's redirect, use that for id
-          description: '',
-          location: '',
-          money: '',
-          remote: true,
-          tags: el.find('.tags').find('h3').map(function() {
-            return $(this).text();
-          }).toArray()
-        }
-      }).toArray();
-      Adaptor.prototype.list(done, err, jobs);
+  refresh() {
+    return new Promise(resolve=>{
+      request('https://remoteok.io', function(err, response, html){
+        var $ = cheerio.load(html);
+        var jobs = $('tr.job').map(function(){
+          var el = $(this);
+          return {
+            source: 'remoteok',
+            title: el.find('.company_and_position h2').text(),
+            company: el.find('.company_and_position.company h3').text(),
+            //url: 'https://remoteok.io' + el.find('.company a').attr('href'),
+            url: 'https://remoteok.io' + el.find('td.source a').attr('href'),
+            follow: '', // figure out how to get the link's redirect, use that for id
+            description: '',
+            location: '',
+            money: '',
+            remote: true,
+            tags: el.find('.tags').find('h3').map(function() {
+              return $(this).text();
+            }).toArray()
+          }
+        }).toArray();
+        Adaptor.prototype.refresh(jobs).then(resolve);
+      })
     })
   }
   expand(job, done){

@@ -4,6 +4,7 @@ config.json
 client/build
 *.sql
 tmp
+/fixtures
 
 # remove these when ready to add migrations to the mi
 /migrations

@@ -4,26 +4,27 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class AuthenticJobs extends Adaptor {
-  list(done) {
-    this.fetchFeed('https://authenticjobs.com/rss/custom.php', (err, results)=>{
-      var jobs = _.map(results.rss.channel["0"].item, (item)=>{
-        var title = item.title[0], description = item.description[0];
+  refresh() {
+    return this.fetchFeed('https://authenticjobs.com/rss/custom.php').then(results=>{
+      var jobs = _.map(results.rss.channel["0"].item, item=>{
+        var company = /^(.*?)\:/.exec(item.title[0]),
+          location = /<strong>\((.*?)\)<\/strong>/i.exec(item.description[0]);
         return {
           key: item.guid[0],
           source: 'authenticjobs',
-          title,
-          company: /^(.*)\:/.exec(title)[1],
+          title: item.title[0],
+          company: company && company[1],
           url: item.link[0],
-          description,
-          location: /<strong>\((.*)\)<\/strong>/gi.exec(description)[1],
+          description: item.description[0],
+          location: location && location[1],
           money: null,
           remote: false,
           tags: []
         }
       })
-      Adaptor.addRemoteFromContent(jobs);
-      Adaptor.addTagsFromContent(jobs, ()=>{
-        Adaptor.prototype.list(done, err, jobs);
+      Adaptor.prototype.addRemoteFromContent(jobs);
+      return Adaptor.prototype.addTagsFromContent(jobs).then(jobs=>{
+        return Adaptor.prototype.refresh(jobs);
       })
     })
   }
