@@ -20,16 +20,16 @@ class Job extends React.Component {
 
     // Setup keyboard shortcuts. Most defer to JobActions, so I inline them here. More complex bits defined below
     this.shortcuts = utils.setupHotkeys({
-      save: {k:'s', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'saved'})},
+      like: {k:'+', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'liked'})},
+      dislike: {k:'-', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'disliked'})},
+      hide: {k:'#', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})},
       apply: {k:'a', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})},
-      hide: {k:'h', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})},
       inbox: {k:'i', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'inbox'})},
       expand: {k:'e', fn:this._expand.bind(this)},
       addNote: {k:'n', fn:()=>JobActions.setEditing(this.props.job.id)},
       open: {k:'enter', fn:()=>window.open(this.props.job.url,'_blank')},
       //thumbsUp: {k:'shift+s', fn:()=>this.refs.thumb.show('Like')},
       //thumbsDown: {k:'shift+h', fn:()=>this.refs.thumb.show('Dislike')},
-      forceHide: {k:'shift+h', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden',force:true})},
 
       cancelNote: {k:'esc', enabledWhenEditing:true, fn:()=>JobActions.setEditing(0)},
       saveNote: {k:'ctrl+enter', enabledWhenEditing:true, fn:()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})}

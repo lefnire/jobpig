@@ -11,17 +11,17 @@ export default alt.createStore(class JobStore {
       jobs:[],
       editing:0 // 0 when off, job.id when editing something
     };
-    this.list();
   }
 
-  list(){
-    request.get('/jobs').end((err,res)=> {
+  fetch(){
+    var filter = /\/jobs\/(.*)/.exec(window.location.hash)[1]; //fixme handle this in app.jsx through react-router
+    request.get(`/jobs/${filter}`).end((err,res)=> {
       this.setState({jobs: res.body})
     })
   }
 
-  setStatus({id,status,force}){
-    request.post(`/jobs/${id}/${status}?force=${force}`).end((err,res)=>this.list());
+  setStatus({id,status}){
+    request.post(`/jobs/${id}/${status}`).end((err,res)=>this.fetch());
   }
 
   setEditing(id){
@@ -32,9 +32,5 @@ export default alt.createStore(class JobStore {
     request.post(`/jobs/${id}/add-note`, {note}).end(()=>{});
     _.merge(_.find(this.state.jobs,{id}), {note}); //fixme
     this.setState({editing:0});
-  }
-
-  refresh(){
-    request.post('/jobs/refresh').end(this.list);
   }
 })

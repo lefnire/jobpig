@@ -5,13 +5,12 @@
 var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
-  queries = require('./queries'),
   db = nconf.get('development');
 
 var sequelize = new Sequelize(db.database, db.username, db.development, {
   host: db.host,
   dialect: db.dialect,
-  logging: false,
+  //logging: false,
   define:{
     underscored: true,
     freezeTableName:true
@@ -36,8 +35,30 @@ var Job = sequelize.define('jobs', {
 },
 {
   classMethods: {
-    filterByUser(user_id) {
-      return sequelize.query(queries.filterJobs, { replacements: {user_id}, type: sequelize.QueryTypes.SELECT });
+    filterJobs(user_id, status) {
+      status = status || 'inbox';
+      return sequelize.query(`
+SELECT
+j.*
+,COALESCE(uj.status,'inbox') status
+,uj.note
+,to_json(array_agg(tags)) tags
+,COALESCE(SUM(ut.score),0) score
+
+FROM jobs j
+
+LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.locked IS NOT TRUE
+LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+
+GROUP BY j.id, uj.note, uj.status
+
+HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
+
+ORDER BY score DESC, j.id
+
+LIMIT :limit;
+`, { replacements: {user_id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
     },
     bulkCreateWithTags(jobs){
       return new Promise(resolve=>{
@@ -91,7 +112,7 @@ var Job = sequelize.define('jobs', {
         //TODO add tags
       })
     },
-    score(user_id, job_id, status, force){
+    score(user_id, job_id, status){
       //TODO this can likely be cleaned up into a few efficient raw queries
       this.findOne({
         where:{id:job_id},
@@ -110,9 +131,9 @@ var Job = sequelize.define('jobs', {
           UserJob.create({user_id,job_id,status});
         }
 
-        // then score attributes, unless setting to 'inbox' or req.params.force
-        // force means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
-        var dir = (status=='inbox' || force==true) ? 0 : status=='hidden' ? -1 : +1;
+        // then score attributes, unless setting to 'inbox' or 'hidden'
+        // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
+        var dir = (_.includes(['inbox','hidden'], status)) ? 0 : status=='disliked' ? -1 : +1;
         if (!dir) return;
 
         UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
@@ -152,7 +173,7 @@ var Tag = sequelize.define('tags', {
 });
 
 var UserJob = sequelize.define('user_jobs', {
-  status: {type:Sequelize.ENUM('inbox','hidden','saved','applied'), defaultValue:'inbox', allowNull:false},
+  status: {type:Sequelize.ENUM('inbox','disliked','liked','applied','hidden'), defaultValue:'inbox', allowNull:false},
   note: Sequelize.TEXT
 });
 

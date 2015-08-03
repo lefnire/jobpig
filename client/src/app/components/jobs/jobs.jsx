@@ -28,7 +28,7 @@ class Jobs extends React.Component {
     this.state = {
       focus: 0
     };
-    JobActions.list();
+    JobActions.fetch();
   }
 
   static getStores() {
@@ -40,23 +40,25 @@ class Jobs extends React.Component {
   }
 
   render() {
-    let f = this.props.params.filter;
-    let mode = this.props.editing ? 'editing' : 'default';
-    let jobs = _(this.props.jobs)
-      .filter({status: f})
-      .map((job, i)=> <Job job={job} key={job.id} focus={i==this.state.focus} i={i} onAction={JobActions.list}/>)
-      .value();
-    this.jobsLen = jobs.length;
+    var mode = this.props.editing ? 'editing' : 'default';
 
     // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
-    window.setTimeout(()=> this.jobsLen < 1 && this.refs.hotkeys.getDOMNode().focus());
+    window.setTimeout(()=> this.props.jobs.length < 1 && this.refs.hotkeys.getDOMNode().focus());
 
     return (
       <HotKeys tabIndex="0"
          keyMap={this.shortcuts[mode].keys}
          handlers={this.shortcuts[mode].handlers}
         ref='hotkeys' >
-        {jobs}
+        {this.props.jobs.map((job, i)=> {
+          return <Job
+            job={job}
+            key={job.id}
+            focus={i==this.state.focus}
+            i={i}
+            onAction={JobActions.fetch}
+            />
+        })}
       </HotKeys>
     );
   }

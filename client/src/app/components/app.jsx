@@ -14,9 +14,9 @@ let {Colors} = mui.Styles;
 
 let menuItems = [
   { route: 'jobs/inbox', text: 'Inbox' },
-  { route: 'jobs/saved', text: 'Saved' },
   { route: 'jobs/applied', text: 'Applied' },
-  { route: 'jobs/hidden', text: 'Hidden' },
+  { route: 'jobs/liked', text: 'Liked' },
+  { route: 'jobs/disliked', text: 'Disliked' },
   { type: mui.MenuItem.Types.SUBHEADER },
   { route: 'prospects', text: 'Prospects' },
   { route: 'profile', text: 'Profile' },
@@ -30,13 +30,12 @@ export default React.createClass({
 
     this.shortcuts = utils.setupHotkeys({
       showInbox: {k:'ctrl+i', fn:()=>this._goto('jobs/inbox')},
-      showSaved: {k:'ctrl+s', fn:()=>this._goto('jobs/saved')},
-      showHidden: {k:'ctrl+h', fn:()=>this._goto('jobs/hidden')},
+      showLiked: {k:'ctrl+s', fn:()=>this._goto('jobs/liked')},
+      showDisliked: {k:'ctrl+h', fn:()=>this._goto('jobs/disliked')},
       showApplied: {k:'ctrl+a', fn:()=>this._goto('jobs/applied')},
       showProfile: {k:'ctrl+p', fn:()=>this._goto('profile')},
 
       // These would be better inside jobs.jsx, but for empty lists the keys aren't registered
-      refresh: {k:'ctrl+r', fn:JobActions.refresh},
       createJob: {k:'shift+a', fn:()=>this.refs.createJob.show()}
     });
   },
@@ -56,22 +55,13 @@ export default React.createClass({
     var title;
     try {
       title = _.find(menuItems, {route:window.location.hash.replace(/#\//g, '')}).text;
-    } catch (e) {window.location = '/#/jobs/inbox'}
+    } catch (e) {this._goto('jobs/inbox')}
 
-    //let f = this.props.params.filter;
-    //let style = {
-    //  backgroundColor: f == 'saved' ? Colors.green700 :
-    //  f == 'hidden' ? Colors.yellow700 :
-    //  f == 'applied' ? Colors.blue700 :
-    //  Colors.grey700
-    //}
-    let style = {};
     return (
       <mui.AppCanvas>
         <HotKeys keyMap={this.shortcuts.default.keys} handlers={this.shortcuts.default.handlers} >
           <mui.AppBar
             title={title}
-            style={style}
             onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()}
             iconElementRight={
               <mui.FlatButton label="Logout" linkButton={true} href='/logout' />
@@ -85,7 +75,7 @@ export default React.createClass({
             onChange={this._goto}
             />
           <RouteHandler />
-          <CreateJob onAction={JobActions.list} ref='createJob'/>
+          <CreateJob onAction={JobActions.fetch} ref='createJob'/>
         </HotKeys>
       </mui.AppCanvas>
     )
@@ -93,8 +83,8 @@ export default React.createClass({
 
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
-    //this.context.router.transitionTo(payload.route, {params:payload.params});
-    window.location = '/#/'+payload.route;
+    this.context.router.transitionTo('/'+payload.route/*, {params:payload.params}*/);
+    if (/\/jobs\/.+/.test(window.location.hash)) JobActions.fetch();
   }
 
 });

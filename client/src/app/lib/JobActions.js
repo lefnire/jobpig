@@ -3,11 +3,10 @@ import alt from './alt';
 class JobActions {
   constructor() {
     this.generateActions(
-      'list',
+      'fetch',
       'setEditing',
       'saveNote',
-      'setStatus',
-      'refresh'
+      'setStatus'
     )
   }
 }

@@ -13,7 +13,7 @@ router.get('/', function(req, res, next){
 router.get('/user', ensureAuth, user.get);
 router.post('/user/tags/lock/:tag_id', ensureAuth, user.lock);
 
-router.get('/jobs', ensureAuth, jobs.list);
+router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
 router.get('/jobs/:key', ensureAuth, jobs.expand);
 router.post('/jobs/:id/add-note', ensureAuth, jobs.addNote); //before :status, cascades
