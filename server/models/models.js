@@ -174,23 +174,24 @@ var UserTag = sequelize.define('user_tags', {
   }
 });
 
-var Cron = sequelize.define('cron', {
-  last_run: {type:Sequelize.DATE, defaultValue:Sequelize.NOW}
+var Meta = sequelize.define('meta', {
+  key: {type:Sequelize.STRING, primaryKey:true},
+  val: Sequelize.STRING
 }, {
   classMethods:{
-    isOutdated(){
-      return sequelize.query(`SELECT EXTRACT(DOY FROM cron.last_run)!=EXTRACT(DOY FROM CURRENT_TIMESTAMP) FROM cron`,
+    needsCron(){
+      return sequelize.query(`SELECT EXTRACT(DOY FROM meta.val::TIMESTAMP WITH TIME ZONE)!=EXTRACT(DOY FROM CURRENT_TIMESTAMP) val FROM meta WHERE key='cron'`,
         {type:sequelize.QueryTypes.SELECT}).then( res=> {
-          return Promise.resolve((res[0]['?column?']));
+          return Promise.resolve((res[0].val));
         } );
     },
-    refreshIfOutdated(){
-      this.isOutdated().then(val=>{
+    runCronIfNecessary(){
+      return this.needsCron().then(val=>{
         if (!val) return Promise.resolve();
         console.log('Refreshing jobs....');
-        //FIXME require here, circular reference models.js/adaptors.js
-        return sequelize.query(`UPDATE cron SET last_run=CURRENT_TIMESTAMP`)
-          .then(()=>require('../lib/adaptors').refresh())
+        // Update cron, delete stale jobs
+        return sequelize.query(`UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron'; DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '1 month';`)
+          .then(()=>require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
       });
     }
   }
@@ -211,4 +212,4 @@ User.hasMany(UserCompany);
 //sequelize.sync({force:true});
 //sequelize.sync();
 
-module.exports = {User,Job,Tag,UserJob,UserTag,Cron};
+module.exports = {User,Job,Tag,UserJob,UserTag,Meta};

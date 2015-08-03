@@ -4,7 +4,7 @@ var adaptors = require('../lib/adaptors');
 
 exports.list = function(req, res, next){
   // FIXME: Where to put this?
-  db.Cron.refreshIfOutdated();
+  db.Meta.runCronIfNecessary();
   db.Job.filterByUser(req.user.id).then((jobs)=>res.send(jobs));
 };
 
