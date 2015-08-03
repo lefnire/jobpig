@@ -5,7 +5,7 @@ var adaptors = require('../lib/adaptors');
 exports.list = function(req, res, next){
   // FIXME: Where to put this?
   db.Meta.runCronIfNecessary();
-  db.Job.filterJobs(req.user.id, req.params.filter).then((jobs)=>res.send(jobs));
+  db.Job.filterJobs(req.user, req.params.filter).then((jobs)=>res.send(jobs));
 };
 
 exports.create = function(req, res, next){

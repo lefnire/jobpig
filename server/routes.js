@@ -12,6 +12,7 @@ router.get('/', function(req, res, next){
 
 router.get('/user', ensureAuth, user.get);
 router.post('/user/tags/lock/:tag_id', ensureAuth, user.lock);
+router.put('/user/preferences', ensureAuth, user.setPref);
 
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);

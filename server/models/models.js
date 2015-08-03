@@ -20,6 +20,7 @@ global.sequelize = sequelize;
 
 var User = sequelize.define('users', {
   linkedin: {type:Sequelize.STRING, unique:true},
+  remote_only: {type:Sequelize.BOOLEAN, defaultValue:false}
 });
 
 var Job = sequelize.define('jobs', {
@@ -35,7 +36,7 @@ var Job = sequelize.define('jobs', {
 },
 {
   classMethods: {
-    filterJobs(user_id, status) {
+    filterJobs(user, status) {
       status = status || 'inbox';
       return sequelize.query(`
 SELECT
@@ -50,6 +51,7 @@ FROM jobs j
 LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
 LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.locked IS NOT TRUE
 LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+${user.remote_only ? "WHERE j.remote=true" : ""}
 
 GROUP BY j.id, uj.note, uj.status
 
@@ -58,7 +60,7 @@ HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
 ORDER BY score DESC, j.id
 
 LIMIT :limit;
-`, { replacements: {user_id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
+`, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
     },
     bulkCreateWithTags(jobs){
       return new Promise(resolve=>{

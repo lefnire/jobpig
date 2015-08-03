@@ -15,6 +15,16 @@ export default class Profile extends React.Component{
     return (
       <mui.ClearFix>
         <h1>LinkedIn ID: {this.state.profile.linkedin}</h1>
+
+        <mui.List subheader="Search Preferences">
+          <mui.ListItem
+            primaryText="Remote Only"
+            leftCheckbox={
+              <mui.Checkbox onCheck={this._setPref.bind(this, 'remote_only')} defaultChecked={this.state.profile.remote_only} />
+            }
+          />
+        </mui.List>
+
         <mui.List subheader="Scores (check to lock a tag, meaning it won't be considered)">
           {this.state.profile.tags.map((t)=> {
             return <mui.ListItem
@@ -30,5 +40,8 @@ export default class Profile extends React.Component{
   }
   _lock(tag, e, checked){
     request.post(`/user/tags/lock/${tag.id}`).end(()=>{});
+  }
+  _setPref(pref, e, checked){
+    request.put(`/user/preferences`, {[pref]:checked}).end(()=>{});
   }
 }

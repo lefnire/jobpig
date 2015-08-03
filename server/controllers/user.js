@@ -14,3 +14,8 @@ exports.get = function(req, res, next){
 exports.lock = function(req, res, next) {
   db.UserTag.lock(req.user.id, req.params.tag_id);
 }
+
+exports.setPref = function(req, res, next) {
+  console.log(req.body);
+  db.User.update(req.body, {where:{id:req.user.id}}).then(()=>res.sendStatus(200));
+}
