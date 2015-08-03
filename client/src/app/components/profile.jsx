@@ -18,7 +18,7 @@ export default class Profile extends React.Component{
         <mui.List subheader="Scores (check to lock a tag, meaning it won't be considered)">
           {this.state.profile.tags.map((t)=> {
             return <mui.ListItem
-              primaryText={t.text+' ['+t.user_tags.score+']'}
+              primaryText={t.key+' ['+t.user_tags.score+']'}
               leftCheckbox={
                 <mui.Checkbox onCheck={this._lock.bind(this, t)} defaultChecked={t.user_tags.locked} />
               }

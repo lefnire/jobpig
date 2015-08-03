@@ -52,13 +52,26 @@ class Job extends React.Component {
       <mui.Card>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
-          <b>{job.tags[0] && _.pluck(job.tags, 'key').join(', ')}</b>
-          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
+          Tags:&nbsp;
+          <span style={{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}}>
+            {_.pluck(job.tags, 'key').join(', ')}
+          </span>
+
+          {job.status == 'inbox' ?
+            (<mui.CardActions>
+              <mui.RaisedButton label="Like" onTouchTap={this.shortcuts.default.handlers.like}/>
+              <mui.RaisedButton label="Dislike" onTouchTap={this.shortcuts.default.handlers.dislike}/>
+            </mui.CardActions> ) : false
+          }
+
           {editing ?
             <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
             this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
           }
+          <hr/>
+
+          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
+          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
         </mui.CardText>
       </mui.Card>
     );
@@ -81,8 +94,11 @@ class Job extends React.Component {
   }
 
   _subtitle(job){
-    let score = job.score<0 ? job.score : `+${job.score}`;
-    return `${job.source} | ${job.company || '-'} | ${job.location || '-'} | $${job.budget || '-'} | ${score}`;
+    let score = job.score>0 ? `+${job.score}` : job.score<0 ? job.score : false;
+    return _.reduce({Source:job.source, Company:job.company, Location:job.location, Budget:job.budget, Score:score}, (m,v,k)=>{
+      if (v) m.push(`${k}: ${v}`);
+      return m;
+    }, []).join('; ');
   }
 
   _expand(){
