@@ -25,7 +25,7 @@ var User = sequelize.define('users', {
 
 var Job = sequelize.define('jobs', {
   money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
-  company: Sequelize.STRING,
+  company: {type:Sequelize.STRING, unique:true},
   description: Sequelize.TEXT,
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   location: Sequelize.STRING,
@@ -44,19 +44,20 @@ j.*
 ,COALESCE(uj.status,'inbox') status
 ,uj.note
 ,to_json(array_agg(tags)) tags
-,COALESCE(SUM(ut.score),0) score
+,COALESCE(SUM(ut.score),0)+COALESCE(uc.score,0) score
 
 FROM jobs j
 
 LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
 LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id AND (ut.locked IS NOT TRUE OR ut.score>0)
 LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+LEFT JOIN user_companies uc ON uc.user_id=:user_id AND uc.title=j.company AND (uc.locked<>true AND uc.score>0)
 
 ${user.remote_only ? "WHERE j.remote=true" : ""}
 
-GROUP BY j.id, uj.note, uj.status
+GROUP BY j.id, uj.note, uj.status, uc.score
 
-HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
+HAVING COALESCE(uj.status,'inbox')=:status AND COALESCE(SUM(ut.score),0)+COALESCE(uc.score,0)>-75
 
 ORDER BY score DESC, j.id
 
@@ -182,7 +183,8 @@ var UserJob = sequelize.define('user_jobs', {
 
 var UserCompany = sequelize.define('user_companies', {
   title: Sequelize.TEXT,
-  score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false}
+  score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
+  locked: {type:Sequelize.BOOLEAN, defaultValue:false}
 });
 
 var UserTag = sequelize.define('user_tags', {
@@ -236,4 +238,4 @@ User.hasMany(UserCompany);
 //sequelize.sync({force:true});
 //sequelize.sync();
 
-module.exports = {User,Job,Tag,UserJob,UserTag,Meta};
+module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta};
