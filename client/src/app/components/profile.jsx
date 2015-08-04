@@ -25,7 +25,7 @@ export default class Profile extends React.Component{
           />
         </mui.List>
 
-        <mui.List subheader="Scores (check to lock a tag, meaning it won't be considered)">
+        <mui.List subheader="Scores (check to lock a tag, meaning it won't be counted against in scoring)">
           {this.state.profile.tags.map((t)=> {
             return <mui.ListItem
               primaryText={t.key+' ['+t.user_tags.score+']'}

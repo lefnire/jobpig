@@ -49,8 +49,9 @@ j.*
 FROM jobs j
 
 LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
-LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.locked IS NOT TRUE
+LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id AND (ut.locked IS NOT TRUE OR ut.score>0)
 LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+
 ${user.remote_only ? "WHERE j.remote=true" : ""}
 
 GROUP BY j.id, uj.note, uj.status

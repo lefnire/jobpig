@@ -26,7 +26,7 @@
     "jquery": "^2.1.4",
     "jsdom": "^5.5.0",
     "lodash": "^3.10.0",
-    "material-ui": ">=0.8",
+    "material-ui": ">=0.10.2",
     "method-override": "^2.3.3",
     "morgan": "^1.6.1",
     "nconf": "^0.7.1",

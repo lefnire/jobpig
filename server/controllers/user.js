@@ -5,7 +5,7 @@ exports.get = function(req, res, next){
   db.User.findOne({
     where:{id:req.user.id},
     include:[db.Tag],
-    order:[[sequelize.col('tags.user_tags.score'), 'DESC']]
+    order:[[sequelize.col('tags.key'), 'ASC']]
   }).then(function(user){
     res.send(user);
   })
