@@ -6,8 +6,7 @@
   "scripts": {
     "server": "nodemon --harmony_arrow_functions --watch server server/index.js",
     "test": "VCR_MODE=cache NODE_ENV=test mocha -t 0 --harmony_arrow_functions server/test/adaptors.mocha.js",
-    "client": "gulp",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "client": "gulp"
   },
   "author": "",
   "license": "AGPL",
@@ -31,6 +30,7 @@
     "morgan": "^1.6.1",
     "nconf": "^0.7.1",
     "nightmare": "^1.8.2",
+    "node-uuid": "^1.4.3",
     "passport": "^0.2.2",
     "passport-linkedin-oauth2": "^1.2.1",
     "pg": "^4.4.0",

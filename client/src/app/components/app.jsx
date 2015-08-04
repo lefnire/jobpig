@@ -5,7 +5,6 @@ import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
 import utils from '../lib/utils';
 
-import CreateJob from './jobs/create.jsx';
 import JobActions from '../lib/JobActions.js';
 
 let {RouteHandler} = Router;
@@ -18,8 +17,9 @@ let menuItems = [
   { route: 'jobs/liked', text: 'Liked' },
   { route: 'jobs/disliked', text: 'Disliked' },
   { type: mui.MenuItem.Types.SUBHEADER },
-  { route: 'prospects', text: 'Prospects' },
+  { route: 'my-posts', text: 'My Posts' },
   { route: 'profile', text: 'Profile' },
+  { type:mui.MenuItem.Types.LINK, text:"Logout", payload:'/logout' }
 ];
 
 export default React.createClass({
@@ -34,9 +34,6 @@ export default React.createClass({
       showDisliked: {k:'ctrl+h', fn:()=>this._goto('jobs/disliked')},
       showApplied: {k:'ctrl+a', fn:()=>this._goto('jobs/applied')},
       showProfile: {k:'ctrl+p', fn:()=>this._goto('profile')},
-
-      // These would be better inside jobs.jsx, but for empty lists the keys aren't registered
-      createJob: {k:'shift+a', fn:()=>this.refs.createJob.show()}
     });
   },
   getChildContext() {
@@ -64,7 +61,7 @@ export default React.createClass({
             title={title}
             onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()}
             iconElementRight={
-              <mui.FlatButton label="Logout" linkButton={true} href='/logout' />
+              false
             }
             />
 
@@ -75,7 +72,6 @@ export default React.createClass({
             onChange={this._goto}
             />
           <RouteHandler />
-          <CreateJob onAction={JobActions.fetch} ref='createJob'/>
         </HotKeys>
       </mui.AppCanvas>
     )

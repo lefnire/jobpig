@@ -4,7 +4,6 @@ import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
 import Job from './job.jsx';
 import request from 'superagent';
-import Prospects from '../prospects.jsx';
 import utils from '../../lib/utils';
 
 //Alt

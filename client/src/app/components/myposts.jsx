@@ -1,6 +1,9 @@
 import React from 'react';
 import mui from 'material-ui';
+import CreateJob from './jobs/create.jsx';
+import Job from './jobs/job.jsx';
 import _ from 'lodash';
+import request from 'superagent';
 
 let prospects = [
   {
@@ -25,7 +28,14 @@ let prospects = [
     skills:['go','artificial intelligence', 'closure']
   }
 ];
-export default class Prospects extends React.Component {
+export default class MyPosts extends React.Component {
+  constructor(){
+    super();
+    this.state = {jobs:[]};
+    request.get('/jobs/mine').end((err,res)=>{
+      this.setState({jobs: res.body});
+    })
+  }
   render() {
     let standardActions = [
       { text: 'Cancel' },
@@ -33,6 +43,19 @@ export default class Prospects extends React.Component {
     ];
     return (
       <div>
+        <CreateJob ref='createJob'/>
+
+        <mui.FloatingActionButton style={{position:'fixed',bottom:10,right:10}} onTouchTap={()=>this.refs.createJob.show()}>
+          <mui.FontIcon className="material-icons">add</mui.FontIcon>
+        </mui.FloatingActionButton>
+
+        {this.state.jobs.map((job, i)=> {
+          return <Job
+            job={job}
+            key={job.id}
+            i={i}
+            />
+        })}
 
         <mui.Dialog title="Contact" actions={this.standardActions} ref="contact">
           <mui.ClearFix>
@@ -41,7 +64,7 @@ export default class Prospects extends React.Component {
           </mui.ClearFix>
         </mui.Dialog>
 
-        {prospects.map((p)=> {
+        {false && prospects.map((p)=> {
           return <mui.Card>
             <mui.CardHeader title={p.name} subtitle={p.title} avatar={p.img} />
             <mui.CardActions>

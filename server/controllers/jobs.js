@@ -2,6 +2,11 @@ var db = require('../models/models');
 var _ = require('lodash');
 var adaptors = require('../lib/adaptors');
 
+exports.mine = function(req, res, next){
+  db.Job.findMine(req.user)
+    .then(jobs=>res.json(jobs));
+}
+
 exports.list = function(req, res, next){
   // FIXME: Where to put this?
   db.Meta.runCronIfNecessary();
@@ -9,8 +14,7 @@ exports.list = function(req, res, next){
 };
 
 exports.create = function(req, res, next){
-  db.Job.addCustom(req.user.id, req.body);
-  res.sendStatus(200);
+  db.Job.addCustom(req.user, req.body).then(()=>res.sendStatus(200));
 }
 
 exports.addNote = function(req, res, next){

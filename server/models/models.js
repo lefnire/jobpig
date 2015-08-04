@@ -5,12 +5,13 @@
 var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
-  db = nconf.get('development');
+  db = nconf.get('development'),
+  uuid = require('node-uuid');
 
 var sequelize = new Sequelize(db.database, db.username, db.development, {
   host: db.host,
   dialect: db.dialect,
-  //logging: false,
+  logging: false,
   define:{
     underscored: true,
     freezeTableName:true
@@ -25,7 +26,7 @@ var User = sequelize.define('users', {
 
 var Job = sequelize.define('jobs', {
   money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
-  company: {type:Sequelize.STRING, unique:true},
+  company: Sequelize.STRING,
   description: Sequelize.TEXT,
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   location: Sequelize.STRING,
@@ -63,6 +64,9 @@ ORDER BY score DESC, j.id
 
 LIMIT :limit;
 `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
+    },
+    findMine(user){
+      return this.findAll({where:{user_id:user.id}, include:[Tag]});
     },
     bulkCreateWithTags(jobs){
       return new Promise(resolve=>{
@@ -110,11 +114,15 @@ LIMIT :limit;
       })
 
     },
-    addCustom(user_id, job){
-      this.create(job).then((_job)=>{
-        UserJob.create({user_id,job_id:_job.id,note:job.note,status:'applied'});
-        //TODO add tags
-      })
+    addCustom(user, job){
+      _.defaults(job, {
+        key: job.url || uuid.v4(), // todo do we really need job.key for anything?
+        source: 'jobseed',
+        url: 'http://127.0.0.1:3000',
+        user_id: user.id
+      });
+      job.tags = job.tags.split(',').map(t=>t.trim());
+      return this.bulkCreateWithTags([job]);
     },
     score(user_id, job_id, status){
       //TODO this can likely be cleaned up into a few efficient raw queries
@@ -182,7 +190,7 @@ var UserJob = sequelize.define('user_jobs', {
 });
 
 var UserCompany = sequelize.define('user_companies', {
-  title: Sequelize.TEXT,
+  title: {type:Sequelize.TEXT, unique:true},
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false}
 });
@@ -234,6 +242,10 @@ User.belongsToMany(Tag, {through: UserTag});
 Tag.belongsToMany(User, {through: UserTag});
 
 User.hasMany(UserCompany);
+
+// For employers creating jobs
+User.hasMany(Job);
+Job.belongsTo(User)
 
 //sequelize.sync({force:true});
 //sequelize.sync();
