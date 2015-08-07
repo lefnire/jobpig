@@ -8,8 +8,6 @@ import utils from '../lib/utils';
 import JobActions from '../lib/JobActions.js';
 
 let {RouteHandler} = Router;
-let ThemeManager = new mui.Styles.ThemeManager();
-let {Colors} = mui.Styles;
 
 let menuItems = [
   { route: 'jobs/inbox', text: 'Inbox' },
@@ -24,10 +22,6 @@ let menuItems = [
 
 export default React.createClass({
   componentWillMount() {
-    ThemeManager.setPalette({
-      accent1Color: Colors.deepOrange500
-    });
-
     this.shortcuts = utils.setupHotkeys({
       showInbox: {k:'ctrl+i', fn:()=>this._goto('jobs/inbox')},
       showLiked: {k:'ctrl+s', fn:()=>this._goto('jobs/liked')},
@@ -36,16 +30,8 @@ export default React.createClass({
       showProfile: {k:'ctrl+p', fn:()=>this._goto('profile')},
     });
   },
-  getChildContext() {
-    return {
-      muiTheme: ThemeManager.getCurrentTheme()
-    };
-  },
   contextTypes: {
     router: React.PropTypes.func.isRequired
-  },
-  childContextTypes: {
-    muiTheme: React.PropTypes.object
   },
   render(){
     //fixme: can use react-router to get this easier?

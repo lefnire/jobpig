@@ -2,8 +2,13 @@ import React from 'react/addons';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import routes from './routes.jsx';
 import Router from 'react-router';
+var {Route} = Router;
 
-let {Route} = Router;
+import mui from 'material-ui';
+var {RouteHandler} = Router;
+var ThemeManager = new mui.Styles.ThemeManager();
+var {Colors} = mui.Styles;
+
 
 //Needed for React Developer Tools
 window.React = React;
@@ -12,5 +17,23 @@ window.React = React;
 injectTapEventPlugin();
 
 Router.run(routes, Router.HashLocation, (Root) => {
-  React.render(<Root/>, document.body);
+  var Main = React.createClass({
+    componentWillMount() {
+      ThemeManager.setPalette({
+        accent1Color: Colors.deepOrange500
+      });
+    },
+    getChildContext() {
+      return {
+        muiTheme: ThemeManager.getCurrentTheme()
+      };
+    },
+    childContextTypes: {
+      muiTheme: React.PropTypes.object
+    },
+    render(){
+      return <Root/>;
+    }
+  })
+  React.render(<Main/>, document.body);
 });
