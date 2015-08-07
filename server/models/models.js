@@ -6,9 +6,10 @@ var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
   db = nconf.get('development'),
-  uuid = require('node-uuid');
+  uuid = require('node-uuid'),
+  passportLocalSequelize = require('passport-local-sequelize');
 
-var sequelize = new Sequelize(db.database, db.username, db.development, {
+global.sequelize = new Sequelize(db.database, db.username, db.development, {
   host: db.host,
   dialect: db.dialect,
   logging: false,
@@ -17,11 +18,18 @@ var sequelize = new Sequelize(db.database, db.username, db.development, {
     freezeTableName:true
   }
 });
-global.sequelize = sequelize;
 
-var User = sequelize.define('users', {
+var defaultUserSchema = passportLocalSequelize.defaultUserSchema;
+delete defaultUserSchema.username;
+var User = sequelize.define('users', _.defaults({
+  email: {type:Sequelize.STRING, validate:{ isEmail:true }, unique:true, allowNull:false},
   linkedin: {type:Sequelize.STRING, unique:true},
-  remote_only: {type:Sequelize.BOOLEAN, defaultValue:false}
+  remote_only: {type:Sequelize.BOOLEAN, defaultValue:false},
+  hash: {type: Sequelize.TEXT, allowNull: false}, //FIXME overriding passportLocalSequelize because hash=STRING (aka varchar 255) but the generated hash is huge
+}, defaultUserSchema));
+passportLocalSequelize.attachToUser(User, {
+  usernameField: 'email',
+  usernameLowerCase: true,
 });
 
 var Job = sequelize.define('jobs', {
@@ -34,8 +42,7 @@ var Job = sequelize.define('jobs', {
   title: {type:Sequelize.STRING, allowNull:false},
   url: {type:Sequelize.STRING, allowNull:false, unique:true},
   remote: Sequelize.BOOLEAN
-},
-{
+}, {
   classMethods: {
     filterJobs(user, status) {
       status = status || 'inbox';

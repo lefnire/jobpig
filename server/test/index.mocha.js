@@ -4,10 +4,10 @@ require('sepia'); // mocked http requests (testing)
 var request = require('supertest-as-promised');
 var db;
 var Sequelize = require('sequelize');
-var host = 'http://localhost:3000';
 var app = require('../index');
 
 describe('JobSeed', function() {
+  this.timeout(0);
   before(function(done){
     db = require('../models/models');
     sequelize.sync({force:true}).then(()=>{
@@ -26,16 +26,19 @@ describe('JobSeed', function() {
     .then(val=>{
       expect(val).to.be(true);
       return db.Meta.runCronIfNecessary();
-    }).then(()=>{
-      return db.Job.count();
-    }).then(ct=>{
+    }).then(()=>db.Job.count())
+    .then(ct=>{
       expect(ct).to.be.greaterThan(0);
       done();
     })
   })
 
-  it('finds matches for my job post', function(done){
-    request(app).get('/jobs').then(res=>{
+  it.skip('can register', function(done){
+    var agent = request(app);
+    agent.post('/register').send({email:'x@y.com',password:'password'}).expect(302)
+    .then(res=>agent.post('/login').send({email: 'x@y.com', password: 'password'}).expect(302))
+    .then(res=>agent.get('/jobs').expect(200))
+    .then(res=>{
       expect(_.size(res.body)).to.be.greaterThan(0);
       done();
     }).catch(done);

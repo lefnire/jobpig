@@ -20,13 +20,23 @@ app
 .use(require('body-parser').json())
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
-//.use(require('express-session')({ secret: 'keyboard cat' }));
+//.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
+.use(require('express-session')({secret: 'passport-sequelize-sample', resave:false, saveUninitialized:false}));
 
 require('./passport').setup(app);
 
 app.use(express.static(path.join(__dirname, '..', 'client/build')));
 app.use('/', require('./routes'));
+
+// error handler
+app.use(function(err, req, res, next) {
+  console.log(err);
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: err
+  });
+});
 
 module.exports = app;
 
