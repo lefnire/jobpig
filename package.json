@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon --harmony_arrow_functions --watch server server/index.js",
-    "test": "VCR_MODE=cache NODE_ENV=test mocha -t 0 --harmony_arrow_functions server/test/index.mocha.js",
+    "test": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
     "client": "gulp"
   },
   "author": "",

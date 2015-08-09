@@ -4,6 +4,7 @@ import {HotKeys, HotKeyMapMixin} from 'react-hotkeys';
 import _ from 'lodash';
 import request from 'superagent';
 import Thumb from './thumb.jsx';
+import Prospect from './prospect.jsx';
 import utils from '../../lib/utils';
 
 //Alt
@@ -72,6 +73,9 @@ class Job extends React.Component {
 
           <p dangerouslySetInnerHTML={{__html:job.description}}></p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
+
+          {job.users && job.users.map((u)=><Prospect prospect={u} />)}
+
         </mui.CardText>
       </mui.Card>
     );

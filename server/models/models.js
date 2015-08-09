@@ -73,7 +73,36 @@ LIMIT :limit;
 `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
     },
     findMine(user){
-      return this.findAll({where:{user_id:user.id}, include:[Tag]});
+      return sequelize.query(`
+-- @see http://stackoverflow.com/a/27626358/362790
+SELECT u.users, jt.tags, jobs.*
+FROM jobs
+
+LEFT JOIN (
+    SELECT job_id, to_json(array_agg(tags)) tags
+    FROM job_tags
+    INNER JOIN tags ON tags.id=job_tags.tag_id
+    GROUP BY 1
+) jt ON jobs.id=jt.job_id
+
+-- users whos sum > 0
+LEFT JOIN LATERAL (
+  SELECT to_json(array_agg(_)) users FROM (
+    SELECT COALESCE(SUM(user_tags.score),0) score, users.id, users.email, users.linkedin, tags
+    FROM users
+    INNER JOIN user_tags ON user_tags.user_id=users.id
+    INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
+    INNER JOIN tags ON user_tags.tag_id=tags.id
+    GROUP BY users.id
+    HAVING COALESCE(SUM(user_tags.score),0)>0
+    ORDER BY score DESC
+    -- TODO calculate other attributes
+  ) _
+) u ON TRUE
+
+WHERE jobs.user_id=:user_id
+ORDER BY jobs.id
+`, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
     },
     bulkCreateWithTags(jobs){
       return new Promise(resolve=>{
