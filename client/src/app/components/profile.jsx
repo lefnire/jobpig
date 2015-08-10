@@ -13,10 +13,22 @@ export default class Profile extends React.Component{
   render(){
     if (!this.state.profile) return null;
     var lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
+    var p = this.state.profile;
     return (
       <mui.ClearFix>
 
-        <h1>LinkedIn ID: {this.state.profile.linkedin}</h1>
+        {p.linkedin_id ?
+          <mui.Card>
+            <mui.CardHeader title={p.fullname} avatar={p.pic} />
+            <mui.CardText>
+              <a href={p.linkedin_url}>LinkedIn Profile</a>
+              <div>{p.bio}</div>
+            </mui.CardText>
+          </mui.Card>
+
+          : <h1><a href='/auth/linkedin' className='zocial linkedin'>Connect LinkedIn</a></h1>
+        }
+
         <mui.List subheader="Search Preferences">
           <mui.ListItem
             primaryText="Remote Only"

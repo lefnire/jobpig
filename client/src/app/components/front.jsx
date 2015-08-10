@@ -82,9 +82,6 @@ export default React.createClass({
 
   _authSections() {
     return <div style={{paddingLeft:50, paddingRight:50}}>
-      {/*<h1>
-       <a href='/auth/linkedin' className='zocial linkedin'>Login or Register</a>
-       </h1>*/}
       <mui.Card style={{margin:50}}>
         <mui.CardTitle title="Login" />
         <mui.CardText>

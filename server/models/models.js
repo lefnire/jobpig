@@ -23,9 +23,13 @@ var defaultUserSchema = passportLocalSequelize.defaultUserSchema;
 delete defaultUserSchema.username;
 var User = sequelize.define('users', _.defaults({
   email: {type:Sequelize.STRING, validate:{ isEmail:true }, unique:true, allowNull:false},
-  linkedin: {type:Sequelize.STRING, unique:true},
-  remote_only: {type:Sequelize.BOOLEAN, defaultValue:false},
   hash: {type: Sequelize.TEXT, allowNull: false}, //FIXME overriding passportLocalSequelize because hash=STRING (aka varchar 255) but the generated hash is huge
+  remote_only: {type:Sequelize.BOOLEAN, defaultValue:false},
+  linkedin_id: {type:Sequelize.STRING, unique:true},
+  linkedin_url: {type:Sequelize.STRING, validate:{isUrl:true}},
+  fullname: Sequelize.STRING,
+  pic: {type:Sequelize.STRING, validate:{isUrl:true}},
+  bio: Sequelize.TEXT,
 }, defaultUserSchema));
 passportLocalSequelize.attachToUser(User, {
   usernameField: 'email',
@@ -88,7 +92,7 @@ LEFT JOIN (
 -- users whos sum > 0
 LEFT JOIN LATERAL (
   SELECT to_json(array_agg(_)) users FROM (
-    SELECT COALESCE(SUM(user_tags.score),0) score, users.id, users.email, users.linkedin, tags
+    SELECT COALESCE(SUM(user_tags.score),0) score, users.*, tags
     FROM users
     INNER JOIN user_tags ON user_tags.user_id=users.id
     INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id

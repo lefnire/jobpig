@@ -13,20 +13,16 @@ export default class Prospect extends React.Component {
     return <div>
       <mui.Card initiallyExpanded={true}>
         <mui.CardHeader
-          title={'User-'+p.id}
+          title={p.fullname}
           subtitle={'Score: '+p.score+', Tags: '+_.pluck(p.tags,'key').join(', ')}
-          avatar='http://lorempixel.com/100/100/people'
-          showExpandableButton={true}>
-        </mui.CardHeader>
+          avatar={p.pic}
+          showExpandableButton={true} />
         <mui.CardText expandable={true}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-          Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-          Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+          <a href={p.linkedin_url}>LinkedIn</a>
+          <div>{p.bio}</div>
         </mui.CardText>
         <mui.CardActions expandable={true}>
           <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap.bind(this)} />
-          {/*<mui.RaisedButton label="Hide"/>*/}
         </mui.CardActions>
       </mui.Card>
 
