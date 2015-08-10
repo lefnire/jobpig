@@ -55,6 +55,8 @@ exports.setup = function (app) {
   */
 
   app.post('/register', function (req, res, next) {
+    if (req.body.password != req.body.confirmPassword)
+      return next({status:403, message:'Password does not match Confirm Password'});
     User.register(User.build({email: req.body.email}), req.body.password, function (err, _user) {
       if (err) return next(err);
       //return res.sendStatus(200);

@@ -8,7 +8,8 @@ require('./models/models');
 //Express
 var express = require('express'),
   app = express(),
-  path = require('path');
+  path = require('path'),
+  bodyParser = require('body-parser');
 
 app
 //.use(favicon(__dirname + '/public/favicon.ico'));
@@ -17,11 +18,12 @@ app
 .use(require('morgan')('dev'))
 //.use(require('cors')())
 .use(require('cookie-parser')())
-.use(require('body-parser').json())
+.use(bodyParser.json())
+.use(bodyParser.urlencoded({ extended: false }))
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-//.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
-.use(require('express-session')({secret: 'passport-sequelize-sample', resave:false, saveUninitialized:false}));
+.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
+//.use(require('express-session')({secret: 'passport-sequelize-sample', resave:false, saveUninitialized:false}));
 
 require('./passport').setup(app);
 
