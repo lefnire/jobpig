@@ -69,7 +69,6 @@ class Job extends React.Component {
             <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
             this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
           }
-          <hr/>
 
           <p dangerouslySetInnerHTML={{__html:job.description}}></p>
           <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>

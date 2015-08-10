@@ -34,11 +34,9 @@ export default React.createClass({
     router: React.PropTypes.func.isRequired
   },
   render(){
-    //fixme: can use react-router to get this easier?
-    var title;
-    try {
-      title = _.find(menuItems, {route:window.location.hash.replace(/#\//g, '')}).text;
-    } catch (e) {this._goto('jobs/inbox')}
+    var title = _.find(menuItems, {
+      route:this.context.router.getCurrentPath().replace(/^\//,'')
+    }).text;
 
     return (
       <mui.AppCanvas>
@@ -46,9 +44,6 @@ export default React.createClass({
           <mui.AppBar
             title={title}
             onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()}
-            iconElementRight={
-              false
-            }
             />
 
           <mui.LeftNav
@@ -65,8 +60,13 @@ export default React.createClass({
 
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
-    this.context.router.transitionTo('/'+payload.route/*, {params:payload.params}*/);
-    if (/\/jobs\/.+/.test(window.location.hash)) JobActions.fetch();
+    this.context.router.replaceWith('/'+payload.route);
+    if (this.context.router.isActive('jobs')) JobActions.fetch();
+
+    //FIXME: router.transitionTo is only working the first click, any time after doesn't change routes???
+    window.setTimeout(()=>{
+      if (this.context.router.getCurrentPath() != '/'+payload.route) return window.location.reload();
+    })
   }
 
 });
