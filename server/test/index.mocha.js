@@ -48,7 +48,7 @@ describe('JobSeed', function() {
     }).catch(done);
   })
 
-  it.only('lists my job postings', function(done){
+  it.skip('lists my job postings', function(done){
     var users, jobPost;
 
     // register 2 users, 1 employer

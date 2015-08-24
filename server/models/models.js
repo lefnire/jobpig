@@ -9,7 +9,7 @@ var Sequelize = require('sequelize'),
   uuid = require('node-uuid'),
   passportLocalSequelize = require('passport-local-sequelize');
 
-global.sequelize = new Sequelize(db.database, db.username, db.development, {
+global.sequelize = new Sequelize(db.database, db.username, db.password, {
   host: db.host,
   dialect: db.dialect,
   logging: false,
@@ -83,13 +83,13 @@ SELECT u.users, jt.tags, jobs.*
 FROM jobs
 
 LEFT JOIN (
-    SELECT job_id, to_json(array_agg(tags)) tags
-    FROM job_tags
-    INNER JOIN tags ON tags.id=job_tags.tag_id
-    GROUP BY 1
+  SELECT job_id, to_json(array_agg(tags)) tags
+  FROM job_tags
+  INNER JOIN tags ON tags.id=job_tags.tag_id
+  GROUP BY 1
 ) jt ON jobs.id=jt.job_id
 
--- users whos sum > 0
+-- users whos sum > 10
 LEFT JOIN LATERAL (
   SELECT to_json(array_agg(_)) users FROM (
     SELECT COALESCE(SUM(user_tags.score),0) score, users.*, tags
@@ -98,7 +98,7 @@ LEFT JOIN LATERAL (
     INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
     INNER JOIN tags ON user_tags.tag_id=tags.id
     GROUP BY users.id
-    HAVING COALESCE(SUM(user_tags.score),0)>0
+    HAVING COALESCE(SUM(user_tags.score),0)>10
     ORDER BY score DESC
     -- TODO calculate other attributes
   ) _
@@ -287,7 +287,10 @@ User.hasMany(UserCompany);
 User.hasMany(Job);
 Job.belongsTo(User)
 
-//sequelize.sync({force:true});
+sequelize.sync({force:true}).then(()=>{
+  return sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',now()-interval '1 day', now(), now())`,
+    {type:sequelize.QueryTypes.UPDATE})
+})
 //sequelize.sync();
 
 module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta};

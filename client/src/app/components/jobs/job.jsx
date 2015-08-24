@@ -50,7 +50,7 @@ class Job extends React.Component {
       editing = this.props.editing == this.props.job.id;
 
     let mainSection = (
-      <mui.Card>
+      <mui.Card className='padded'>
         <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
         <mui.CardText>
           Tags:&nbsp;

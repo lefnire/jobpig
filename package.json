@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon --harmony_arrow_functions --watch server server/index.js",
+    "start": "node --harmony_arrow_functions server/index.js",
     "test": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
     "client": "gulp"
   },
@@ -21,6 +22,7 @@
     "css-social-buttons": "samcollins/css-social-buttons",
     "express": "^4.13.0",
     "express-session": "^1.11.3",
+    "gulp": "^3.9.0",
     "jade": "^1.11.0",
     "jquery": "^2.1.4",
     "jsdom": "^5.5.0",
@@ -43,7 +45,8 @@
     "request": "^2.58.0",
     "sequelize": "^3.3.2",
     "serve-favicon": "^2.3.0",
-    "superagent": "^1.2.0"
+    "superagent": "^1.2.0",
+    "xml2js": "^0.4.10"
   },
   "devDependencies": {
     "babelify": "^6.1.2",
@@ -61,5 +64,8 @@
     "underscore": "^1.7.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
+  },
+  "engines": {
+    "iojs": "2.3.4"
   }
 }

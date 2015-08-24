@@ -38,38 +38,48 @@ export default class Profile extends React.Component{
             />
         </mui.List>
 
-        <h2>Scores</h2>
-        <mui.Tabs>
-          <mui.Tab label="Tags" >
-            <mui.List subheader={lockText}>
-              {this.state.profile.tags.map((t)=> {
-                return <mui.ListItem
-                  primaryText={t.key+' ['+t.user_tags.score+']'}
-                  leftCheckbox={
-                    <mui.Checkbox onCheck={this._lock.bind(this, 'user_tags', t)} defaultChecked={t.user_tags.locked} />
-                  }
-                  />
-              })}
-            </mui.List>
-          </mui.Tab>
+        <mui.Card>
+          <mui.CardTitle title='Scores' subtitle={lockText}/>
+          <mui.CardText>
+            <mui.Tabs>
+              <mui.Tab label="Tags" >
+                <mui.List>
+                  {this.state.profile.tags.map((t)=> {
+                    return <mui.ListItem
+                      primaryText={this._getScore(t.key, t.user_tags.score)}
+                      leftCheckbox={
+                        <mui.Checkbox onCheck={this._lock.bind(this, 'user_tags', t)} defaultChecked={t.user_tags.locked} />
+                      }
+                      />
+                  })}
+                </mui.List>
+              </mui.Tab>
 
-          <mui.Tab label="Companies" >
-            <mui.List subheader={lockText}>
-              {this.state.profile.user_companies.map((c)=> {
-                return <mui.ListItem
-                  primaryText={c.title+' ['+c.score+']'}
-                  leftCheckbox={
-                    <mui.Checkbox onCheck={this._lock.bind(this, 'user_companies', c)} defaultChecked={c.locked} />
-                  }
-                  />
-              })}
-              </mui.List>
-          </mui.Tab>
-        </mui.Tabs>
+              <mui.Tab label="Companies" >
+                <mui.List>
+                  {this.state.profile.user_companies.map((c)=> {
+                    return <mui.ListItem
+                      primaryText={this._getScore(c.title, c.score)}
+                      leftCheckbox={
+                        <mui.Checkbox onCheck={this._lock.bind(this, 'user_companies', c)} defaultChecked={c.locked} />
+                      }
+                      />
+                  })}
+                  </mui.List>
+              </mui.Tab>
+            </mui.Tabs>
+          </mui.CardText>
+        </mui.Card>
 
       </mui.ClearFix>
     )
   }
+  _getScore(key, score){
+    return <div>
+      <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>{score>0 ? '+' : ''}{score}</span> {key}
+    </div>;
+  }
+
   _lock(table, obj, e, checked){
     request.post(`/user/lock/${table}/${obj.id}`).end(()=>{});
   }
