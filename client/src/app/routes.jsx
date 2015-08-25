@@ -11,8 +11,11 @@ export default window.user ? (
     <Route path="jobs/:filter" name='jobs' handler={Jobs} />
     <Route path="my-posts" name='my-posts' handler={MyPosts} />
     <Route path="profile" name='profile' handler={Profile} />
-    <Redirect from="/" to="jobs" params={{filter: 'inbox'}} />
+    <Redirect to="jobs" params={{filter: 'inbox'}} />
   </Route>
 ) : (
-  <Route path='/' name='root' handler={Front} />
+  <Route>
+    <Route path='/' name='root' handler={Front} />
+    <Redirect to="/" />
+  </Route>
 );

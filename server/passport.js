@@ -63,7 +63,7 @@ exports.setup = function (app) {
     passport.authenticate('linkedin'));
 
   app.get('/auth/linkedin/callback',
-    passport.authenticate('linkedin', {failureRedirect: '/login'}), (req, res, next)=>res.redirect('/'));
+    passport.authenticate('linkedin', {failureRedirect: '/#/profile'}), (req, res, next)=>res.redirect('/#/profile'));
 
   app.post('/register', function (req, res, next) {
     if (req.body.password != req.body.confirmPassword)

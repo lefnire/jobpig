@@ -56,7 +56,6 @@
     "gulp": "^3.8.10",
     "gulp-notify": "^2.1.0",
     "gulp-util": "^3.0.1",
-    "nodejs-express-mongoose-demo": "git+https://github.com/madhums/node-express-mongoose-demo.git",
     "pretty-hrtime": "^0.2.2",
     "require-dir": "^0.1.0",
     "sepia": "^2.0.1",
