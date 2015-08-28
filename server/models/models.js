@@ -287,10 +287,13 @@ User.hasMany(UserCompany);
 User.hasMany(Job);
 Job.belongsTo(User)
 
-sequelize.sync({force:true}).then(()=>{
-  return sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',now()-interval '1 day', now(), now())`,
-    {type:sequelize.QueryTypes.UPDATE})
-})
-//sequelize.sync();
+// If new setup, init db.
+sequelize.sync(nconf.get('wipe') ? {force:true} : null)
+  .then(()=> Meta.count({$where:{key:'cron'}}))
+  .then(ct=>{
+    return (ct) ? Promise.resolve() :
+    sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',now()-interval '1 day', now(), now())`,
+      {type:sequelize.QueryTypes.UPDATE})
+  })
 
 module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta};

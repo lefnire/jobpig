@@ -16,6 +16,9 @@ export default alt.createStore(class JobStore {
   fetch(){
     var filter = /jobs\/(.*)/.exec(window.location.hash)[1]; //fixme handle this in app.jsx through react-router
     request.get(`/jobs/${filter}`).end((err,res)=> {
+      if (_.isEmpty(res.body)) { // poll for new jobs (the server is crunching)
+        window.setTimeout(()=>this.fetch(), 1000);
+      }
       this.setState({jobs: res.body})
     })
   }

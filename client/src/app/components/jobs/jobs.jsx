@@ -44,22 +44,23 @@ class Jobs extends React.Component {
     // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
     window.setTimeout(()=> this.props.jobs.length < 1 && this.refs.hotkeys.getDOMNode().focus());
 
-    return (
-      <HotKeys tabIndex="0"
-         keyMap={this.shortcuts[mode].keys}
-         handlers={this.shortcuts[mode].handlers}
-        ref='hotkeys' >
-        {this.props.jobs.map((job, i)=> {
-          return <Job
-            job={job}
-            key={job.id}
-            focus={i==this.state.focus}
-            i={i}
-            onAction={JobActions.fetch}
-            />
-        })}
-      </HotKeys>
-    );
+    if (!this.props.jobs[0])
+      return <mui.CircularProgress mode="indeterminate" size={1.5} />;
+
+    return <HotKeys tabIndex="0"
+       keyMap={this.shortcuts[mode].keys}
+       handlers={this.shortcuts[mode].handlers}
+       ref='hotkeys' >
+      {this.props.jobs.map((job, i)=> {
+        return <Job
+          job={job}
+          key={job.id}
+          focus={i==this.state.focus}
+          i={i}
+          onAction={JobActions.fetch}
+          />
+      })}
+    </HotKeys>
   }
 
   // Actions
