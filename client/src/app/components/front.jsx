@@ -18,7 +18,7 @@ export default React.createClass({
   _getHomePageHero() {
     let styles = {
       root: {
-        backgroundImage: "url(http://in1.ccio.co/es/Ee/0G/15058979973496977RPJh1tr2c.jpg)",
+        background: Colors.cyan500,
         overflow: 'hidden'
       },
       tagline: {
@@ -68,41 +68,48 @@ export default React.createClass({
     }
 
     return (
-      <FullWidthSection style={styles.root}>
-        <div style={styles.tagline}>
-          <h1 style={styles.h1}>JobSeed</h1>
-          <h2 style={styles.h2}>
-            Pandora-like job board, find jobs tailored to you
-          </h2>
-        </div>
-        {this._authSections()}
-      </FullWidthSection>
-    );
-  },
+      <div>
+        <mui.Dialog
+          actions={[{text:'Close'}]}
+          actionFocus="submit"
+          ref="dialog" >
+          <mui.Tabs>
+            <mui.Tab label="Login" >
+              <form action='/login' method='POST'>
+                <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
+                <mui.TextField required={true} name='password' type='password' hintText='Password' fullWidth={true} />
+                <mui.RaisedButton primary={true} label='Submit' type='submit'/>
+              </form>
+            </mui.Tab>
+            <mui.Tab label="Register" >
+              <form action='/register' method='POST'>
+                <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
+                <mui.TextField required={true}name='password' type='password' hintText='Password' fullWidth={true} />
+                <mui.TextField required={true} name='confirmPassword' type='password' hintText='Confirm Password' fullWidth={true} />
+                <mui.RaisedButton primary={true} label='Submit' type='submit'/>
+              </form>
+            </mui.Tab>
+          </mui.Tabs>
+        </mui.Dialog>
 
-  _authSections() {
-    return <div style={{paddingLeft:50, paddingRight:50}}>
-      <mui.Card style={{margin:50}}>
-        <mui.CardTitle title="Login" />
-        <mui.CardText>
-          <form action='/login' method='POST'>
-            <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
-            <mui.TextField required={true} name='password' type='password' hintText='Password' fullWidth={true} />
-            <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-          </form>
-        </mui.CardText>
-      </mui.Card>
-      <mui.Card style={{margin:50}}>
-        <mui.CardTitle title="Register" />
-        <mui.CardText>
-          <form action='/register' method='POST'>
-            <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
-            <mui.TextField required={true} name='password' type='password' hintText='Password' fullWidth={true} />
-            <mui.TextField required={true} name='confirmPassword' type='password' hintText='Confirm Password' fullWidth={true} />
-            <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-          </form>
-        </mui.CardText>
-      </mui.Card>
-    </div>
+        <mui.AppBar
+          iconElementRight={
+            <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.dialog.show()} />
+          }
+          iconElementLeft={false}
+          />
+        <FullWidthSection style={styles.root}>
+          <div style={styles.tagline}>
+            <h1 style={styles.h1}>JobSeed</h1>
+            <h2 style={styles.h2}>
+              Pandora-like job board, find jobs tailored to you
+            </h2>
+          </div>
+          <div style={{paddingLeft:50, paddingRight:50}}>
+            {/*Content*/}
+          </div>
+        </FullWidthSection>
+      </div>
+    );
   },
 })
