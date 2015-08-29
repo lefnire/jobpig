@@ -18,7 +18,7 @@ export default React.createClass({
   _getHomePageHero() {
     let styles = {
       root: {
-        backgroundColor: Colors.cyan500,
+        backgroundImage: "url(http://in1.ccio.co/es/Ee/0G/15058979973496977RPJh1tr2c.jpg)",
         overflow: 'hidden'
       },
       tagline: {
