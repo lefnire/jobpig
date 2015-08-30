@@ -3,7 +3,8 @@ import mui from 'material-ui';
 import request from 'superagent';
 
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-import FullWidthSection from './material-ui-docs/full-width-section.jsx';
+import Auth from './auth.jsx';
+import FullWidthSection from '../material-ui-docs/full-width-section.jsx';
 let { Mixins, RaisedButton, Styles } = require('material-ui');
 let { StylePropable, StyleResizable } = Mixins;
 let { Colors, Spacing, Typography } = Styles;
@@ -12,12 +13,8 @@ let ThemeManager = new Styles.ThemeManager().getCurrentTheme();
 export default React.createClass({
   mixins: [StylePropable, StyleResizable],
 
-  render(){
-    return this._getHomePageHero()
-  },
-
-  _getHomePageHero() {
-    let styles = {
+  _getStyles(){
+    var styles = {
       root: {
         background: Colors.cyan500,
         overflow: 'hidden'
@@ -72,7 +69,11 @@ export default React.createClass({
       styles.h2 = this.mergeStyles(styles.h2, styles.h2WhenLarge);
     }
 
+    return styles;
+  },
 
+  render(){
+    var styles = this._getStyles();
     var rightIconMenu = (
       <mui.IconMenu iconButtonElement={<mui.IconButton><MoreVertIcon /></mui.IconButton>}>
         <mui.MenuItem>Apply</mui.MenuItem>
@@ -83,29 +84,11 @@ export default React.createClass({
 
     return (
       <div>
-        <mui.Dialog ref="dialog" >
-          <mui.Tabs>
-            <mui.Tab label="Login" >
-              <form action='/login' method='POST'>
-                <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
-                <mui.TextField required={true} name='password' type='password' hintText='Password' fullWidth={true} />
-                <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-              </form>
-            </mui.Tab>
-            <mui.Tab label="Register" >
-              <form action='/register' method='POST'>
-                <mui.TextField required={true} name='email' type='email' hintText='Email Address' fullWidth={true} />
-                <mui.TextField required={true}name='password' type='password' hintText='Password' fullWidth={true} />
-                <mui.TextField required={true} name='confirmPassword' type='password' hintText='Confirm Password' fullWidth={true} />
-                <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-              </form>
-            </mui.Tab>
-          </mui.Tabs>
-        </mui.Dialog>
+        <Auth ref='auth' />
 
         <mui.AppBar
           iconElementRight={
-            <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.dialog.show()} />
+            <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
           }
           iconElementLeft={<span />}
           />

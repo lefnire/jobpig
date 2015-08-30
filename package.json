@@ -46,6 +46,7 @@
     "sequelize": "^3.3.2",
     "serve-favicon": "^2.3.0",
     "superagent": "^1.2.0",
+    "validator": "^4.0.5",
     "xml2js": "^0.4.10"
   },
   "devDependencies": {
