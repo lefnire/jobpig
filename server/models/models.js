@@ -288,7 +288,7 @@ User.hasMany(Job);
 Job.belongsTo(User)
 
 // If new setup, init db.
-sequelize.sync(nconf.get('wipe') ? {force:true} : null)
+var syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)
   .then(()=> Meta.count({$where:{key:'cron'}}))
   .then(ct=>{
     return (ct) ? Promise.resolve() :
@@ -296,4 +296,4 @@ sequelize.sync(nconf.get('wipe') ? {force:true} : null)
       {type:sequelize.QueryTypes.UPDATE})
   })
 
-module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta};
+module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta, syncPromise};

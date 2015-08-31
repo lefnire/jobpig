@@ -6,8 +6,8 @@ var _ = require('lodash'),
   jobs = require('./controllers/jobs'),
   user = require('./controllers/user');
 
-router.get('/', function(req, res, next){
-  res.render('index', {user: req.user});
+router.get('/', function(req, res){
+  res.sendStatus(200);
 })
 
 router.get('/user', ensureAuth, user.get);

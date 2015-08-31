@@ -16,14 +16,12 @@ app
 .set('views', __dirname + '/views')
 .set('view engine', 'jade')
 .use(require('morgan')('dev'))
-//.use(require('cors')())
-.use(require('cookie-parser')())
+.use(require('cors')())
 .use(bodyParser.json())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-.use(require('cookie-session')({name: 'session', keys: ['key1', 'key2']}))
-//.use(require('express-session')({secret: 'passport-sequelize-sample', resave:false, saveUninitialized:false}));
+.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false})); //fixme used only for linkedin redirect, can we remove this?
 
 require('./passport').setup(app);
 

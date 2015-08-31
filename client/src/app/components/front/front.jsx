@@ -1,6 +1,5 @@
 import React from 'react';
 import mui from 'material-ui';
-import request from 'superagent';
 
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';

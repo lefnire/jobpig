@@ -1,31 +1,30 @@
+process.env.wipe = true; // fresh db
+
 var _ = require('lodash');
 var expect = require('expect.js');
 var request = require('supertest-as-promised');
 var Sequelize = require('sequelize');
 var app = require('../index');
-var jobsController = require('../controllers/jobs');
 var nconf = require('nconf');
+var jobsController = require('../controllers/jobs');
 var sepia = require('sepia');
 var db;
+
+var acct = function(email){
+  return _.defaults({password:'x',confirmPassword:'x'},{email});
+}
 
 describe('JobSeed', function() {
   this.timeout(0);
   before(function(done){
     db = require('../models/models');
-    sequelize.sync({force:true}).then(()=>{
-      // Seed Cron
-      return sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',current_timestamp,current_timestamp,current_timestamp)`,
-        {type:sequelize.QueryTypes.UPDATE})
-    }).then(()=>done());
+    db.syncPromise.then(()=>done());
   })
+
   //after(app.close)
   it('runs cron', function(done) {
     //process.env.VRC_MODE = 'playback'; fixme not working
     db.Meta.needsCron()
-    .then(val=>{
-      expect(val).to.be(false);
-      return sequelize.query(`UPDATE meta SET val=CURRENT_TIMESTAMP - INTERVAL '1 day'`);
-    }).then(()=>db.Meta.needsCron())
     .then(val=>{
       expect(val).to.be(true);
       return db.Meta.runCronIfNecessary();
@@ -37,69 +36,67 @@ describe('JobSeed', function() {
     })
   })
 
-  it.skip('can register', function(done){
-    var agent = request(app);
-    agent.post('/register').send({email:'x@y.com',password:'password'}).expect(302)
-    .then(res=>agent.post('/login').send({email: 'x@y.com', password: 'password'}).expect(302))
-    .then(res=>agent.get('/jobs').expect(200))
+  it('can register', function(done){
+    var agent = request(app),
+      jwt;
+    agent.post('/register').send(acct('x@x.com')).expect(200)
+    .then(res=>{
+        jwt = res.body.token;
+        return agent.get('/jobs').set('x-access-token', jwt).expect(200);
+      })
     .then(res=>{
       expect(_.size(res.body)).to.be.greaterThan(0);
       done();
     }).catch(done);
   })
 
-  it.skip('lists my job postings', function(done){
-    var users, jobPost;
+  it('lists my job postings', function(done){
+    var users, jobPost, jwt;
 
     // register 2 users, 1 employer
     var agent = request(app);
-    agent.post('/register').send({email:'good@x.com', password:'x'}).expect(302)
-    .then(()=>agent.post('/register').send({email:'bad@x.com', password:'x'}).expect(302))
-    .then(()=>agent.post('/register').send({email:'employer@x.com',password:'x'}).expect(302))
+    Promise.all([
+      agent.post('/register').send(acct('good@x.com')).expect(200).then(res=>{
+        jwt = res.body.token;
+        return Promise.resolve();
+      }),
+      agent.post('/register').send(acct('bad@x.com')).expect(200),
+      agent.post('/register').send(acct('employer@y.com')).expect(200)
+    ])
     .then(()=>db.User.findAll())
-    .then((_users)=>{
+    .then(_users=>{
       //store users in closure {good:[Object], bad:[Object], employer:[Object]}
       users = _.reduce(['good','bad','employer'],(m,v,k)=>{
         m[v] = _.find(_users, {email:`${v}@x.com`});
         return m;
       },{});
 
-    // Create custom job post
-      return new Promise((resolve,reject)=>{
-        var req = {
-          user: users.employer,
-          body: {title: 'x', description: 'x', tags: 'a,b,c,d,e,f,g'}
-        };
-        var res = {sendStatus:()=>resolve()}
-        jobsController.create(req, res);
-      })
+      // Create custom job post
+      return agent.post('/jobs')
+        .set('x-access-token', jwt)
+        .send({title: 'x', description: 'x', tags: 'a,b,c,d,e,f,g'})
+        .expect(200);
     })
     .then(()=>db.Job.findOne({where:{title:'x'}, include:[db.Tag]}))
-
 
     // users upvote / downvote the posting
     .then((_job)=> {
       jobPost = _job;
       return Promise.all(
-        jobPost.tags.map( t=>users.bad.addTag(t, {score:-1}) ).concat(
-          jobPost.tags.map( t=>users.good.addTag(t, {score:+1}) )
+        jobPost.tags.map( t=>users.bad.addTag(t, {score:-10}) ).concat(
+          jobPost.tags.map( t=>users.good.addTag(t, {score:+10}) )
         )
       )
     })
 
     // Get the employer's results
-    .then(()=>{
-      return new Promise((resolve,reject)=>{
-        var req = {user:users.employer};
-        var res = {json:(jobs)=>resolve(jobs)};
-        jobsController.mine(req, res);
-      })
-    })
-    .then(jobs=>{
+    .then(()=>agent.get('/jobs/mine').set('x-access-token', jwt).expect(200))
+    .then(res=>{
+      var jobs = res.body;
       expect(jobs[0].users.length).to.be(1);
       expect(jobs[0].users[0].id).to.be(users.good.id);
-      expect(jobs[0].users[0].score).to.be(7);
+      expect(jobs[0].users[0].score).to.be(70);
       done();
-    })
+    }).catch(done);
   })
 })

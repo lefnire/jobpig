@@ -6,7 +6,7 @@ import Jobs from './components/jobs/jobs.jsx';
 import MyPosts from './components/myPosts.jsx';
 import Profile from './components/profile.jsx';
 
-export default window.user ? (
+export default window.sessionStorage.getItem('jwt') ? (
   <Route path='/' name='root' handler={App} >
     <Route path="jobs/:filter" name='jobs' handler={Jobs} />
     <Route path="my-posts" name='my-posts' handler={MyPosts} />

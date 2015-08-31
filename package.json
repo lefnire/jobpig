@@ -26,6 +26,7 @@
     "jade": "^1.11.0",
     "jquery": "^2.1.4",
     "jsdom": "^5.5.0",
+    "jsonwebtoken": "^5.0.5",
     "lodash": "^3.10.0",
     "material-ui": ">=0.10.2",
     "method-override": "^2.3.3",
@@ -46,6 +47,7 @@
     "sequelize": "^3.3.2",
     "serve-favicon": "^2.3.0",
     "superagent": "^1.2.0",
+    "superagent-defaults": "^0.1.13",
     "validator": "^4.0.5",
     "xml2js": "^0.4.10"
   },

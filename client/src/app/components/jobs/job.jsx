@@ -2,13 +2,12 @@ import React from 'react';
 import mui from 'material-ui';
 import {HotKeys, HotKeyMapMixin} from 'react-hotkeys';
 import _ from 'lodash';
-import request from 'superagent';
+import {request} from '../../lib/util';
 import Thumb from './thumb.jsx';
 import Prospect from './prospect.jsx';
-import utils from '../../lib/utils';
+import {setupHotkeys} from '../../lib/util';
 
 //Alt
-import alt from '../../lib/alt';
 import JobStore from '../../lib/JobStore';
 import JobActions from '../../lib/JobActions';
 import connectToStores from 'alt/utils/connectToStores';
@@ -20,7 +19,7 @@ class Job extends React.Component {
     this.state = {expanded:undefined};
 
     // Setup keyboard shortcuts. Most defer to JobActions, so I inline them here. More complex bits defined below
-    this.shortcuts = utils.setupHotkeys({
+    this.shortcuts = setupHotkeys({
       like: {k:'+', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'liked'})},
       dislike: {k:'-', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'disliked'})},
       hide: {k:'#', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})},
@@ -58,13 +57,6 @@ class Job extends React.Component {
             {_.pluck(job.tags, 'key').join(', ')}
           </span>
 
-          {job.status == 'inbox' ?
-            (<mui.CardActions>
-              <mui.RaisedButton label="Like" onTouchTap={this.shortcuts.default.handlers.like}/>
-              <mui.RaisedButton label="Dislike" onTouchTap={this.shortcuts.default.handlers.dislike}/>
-            </mui.CardActions> ) : false
-          }
-
           {editing ?
             <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
             this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
@@ -76,6 +68,18 @@ class Job extends React.Component {
           {job.users && job.users.map((u)=><Prospect prospect={u} />)}
 
         </mui.CardText>
+
+        {job.status == 'inbox' ?
+          <div style={{position:'fixed',bottom:10,right:10}}>
+            <mui.FloatingActionButton onTouchTap={this.shortcuts.default.handlers.like}>
+              <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
+            </mui.FloatingActionButton>
+            &nbsp;&nbsp;
+            <mui.FloatingActionButton onTouchTap={this.shortcuts.default.handlers.dislike}>
+              <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
+            </mui.FloatingActionButton>
+          </div>
+        : false}
       </mui.Card>
     );
     if (!this.props.focus) return mainSection;

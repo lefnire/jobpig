@@ -7,6 +7,6 @@
 var gulp   = require('gulp');
 var config = require('../config');
 
-gulp.task('watch', ['setWatch', /*'browserSync'*/'build'], function() {
+gulp.task('watch', ['setWatch', 'browserSync', 'build'], function() {
   gulp.watch(config.markup.src, ['markup']);
 });

@@ -3,11 +3,9 @@ import mui from 'material-ui';
 import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
 import Job from './job.jsx';
-import request from 'superagent';
-import utils from '../../lib/utils';
+import {request, setupHotkeys} from '../../lib/util';
 
 //Alt
-import alt from '../../lib/alt';
 import JobStore from '../../lib/JobStore';
 import JobActions from '../../lib/JobActions';
 import connectToStores from 'alt/utils/connectToStores';
@@ -20,7 +18,7 @@ class Jobs extends React.Component {
   constructor(){
     super();
 
-    this.shortcuts = utils.setupHotkeys({
+    this.shortcuts = setupHotkeys({
       up: {k:'k', fn:this._action_up.bind(this)},
       down: {k:'j', fn:this._action_down.bind(this)}
     });

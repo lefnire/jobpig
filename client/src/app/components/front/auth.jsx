@@ -4,17 +4,27 @@ import request from 'superagent';
 import _ from 'lodash';
 import validator from 'validator';
 
+var _login = (token) => {
+  window.sessionStorage.setItem('jwt', token);
+  window.location = '/';
+}
+
 class Login extends React.Component{
+  constructor(){
+    super();
+    this.state = {errors:{}};
+  }
+
   render(){
-    return <form action='/login' method='POST'>
+    return <form role='form' onSubmit={this._submit.bind(this)}>
     {[
       {hint:'Email Address', name:'email', type:'email'},
       {hint:'Password', name:'password', type:'password'},
     ].map(f=> <mui.TextField
       hintText={f.hint}
-      name={f.name}
       ref={f.name}
       type={f.type}
+      errorText={this.state.errors[f.name]}
       required={true}
       fullWidth={true}
       />
@@ -23,12 +33,16 @@ class Login extends React.Component{
     </form>
   }
 
-  //FIXME once we get JWT working, enable for errors instead of current redirect+error_dump
-  _login(){
-    request.post('/login')
-      .send({email:this.refs.email.getValue(), password:this.refs.email.getValue()})
-      .end(()=>{
-        console.log(arguments);
+  _submit(e){
+    e.preventDefault();
+    request.post(`${API_URL}/login`)
+      .send({
+        email: this.refs.email.getValue(),
+        password: this.refs.password.getValue()
+      })
+      .end((err,res)=>{
+        if (err) return this.setState({errors:{password:err}})
+        _login(res.body.token);
       })
   }
 }
@@ -41,14 +55,13 @@ class Register extends React.Component{
     };
   }
   render(){
-    return <form action='/register' method='POST' onSubmit={()=>this._submit()}>
+    return <form role='form' onSubmit={this._submit.bind(this)}>
       {[
         {hint:'Email Address', name:'email', type:'email'},
         {hint:'Password', name:'password', type:'password'},
         {hint:'Confirm Password', name:'confirmPassword', type:'password'}
       ].map(f=> <mui.TextField
         hintText={f.hint}
-        name={f.name}
         ref={f.name}
         type={f.type}
         errorText={this.state.errors[f.name]}
@@ -61,19 +74,31 @@ class Register extends React.Component{
     </form>
   }
 
-  _submit(){
-    this._validate();
-    return _.isEmpty(this.state.errors);
+  _submit(e){
+    e.preventDefault();
+    ['email','password','confirmPassword'].forEach(f=>this._validate(f))
+    if (!_.isEmpty(this.state.errors))
+      return false;
+    request.post(`${API_URL}/register`)
+      .send({
+        email: this.refs.email.getValue(),
+        password: this.refs.password.getValue(),
+        confirmPassword: this.refs.confirmPassword.getValue()
+      })
+      .end((err, res)=>{
+        if (err) return this.setState({errors:{confirmPassword:err}})
+        _login(res.body.token);
+      })
   }
 
   _validate(f){
     var v = this.refs[f].getValue(),
       e = {};
-    if ( (f=='email' || !f) && !validator.isEmail(v))
+    if (f=='email' && !validator.isEmail(v))
       e[f] = 'Please enter an email address';
-    if ( (f=='password' || !f) && v.length<3)
+    if (f=='password' && v.length<3)
       e[f] = 'Password must be greater than 3 characters';
-    if ( (f=='confirmPassword' || !f) && v!=this.refs.password.getValue())
+    if (f=='confirmPassword' && v!=this.refs.password.getValue())
       e[f] = "Passwords don't match";
     this.setState({errors:e});
   }

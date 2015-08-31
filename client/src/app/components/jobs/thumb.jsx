@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import request from 'superagent';
+import {request} from '../../lib/util';
 
 export default class Thumb extends React.Component {
 

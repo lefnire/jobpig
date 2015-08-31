@@ -3,7 +3,7 @@ import mui from 'material-ui';
 import Router from 'react-router';
 import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
-import utils from '../lib/utils';
+import {setupHotkeys} from '../lib/util';
 
 import JobActions from '../lib/JobActions.js';
 
@@ -17,12 +17,12 @@ let menuItems = [
   { type: mui.MenuItem.Types.SUBHEADER },
   { route: 'my-posts', text: 'My Posts' },
   { route: 'profile', text: 'Profile' },
-  { type:mui.MenuItem.Types.LINK, text:"Logout", payload:'/logout' }
+  { route: 'logout', text:"Logout"}
 ];
 
 export default React.createClass({
   componentWillMount() {
-    this.shortcuts = utils.setupHotkeys({
+    this.shortcuts = setupHotkeys({
       showInbox: {k:'ctrl+i', fn:()=>this._goto('jobs/inbox')},
       showLiked: {k:'ctrl+s', fn:()=>this._goto('jobs/liked')},
       showDisliked: {k:'ctrl+h', fn:()=>this._goto('jobs/disliked')},
@@ -60,6 +60,12 @@ export default React.createClass({
 
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
+
+    if (payload.route=='logout') {
+      window.sessionStorage.removeItem('jwt');
+      return window.location = '/';
+    }
+
     this.context.router.replaceWith('/'+payload.route);
     if (this.context.router.isActive('jobs')) JobActions.fetch();
 

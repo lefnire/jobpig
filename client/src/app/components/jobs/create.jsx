@@ -1,9 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import request from 'superagent';
-
-
+import {request} from '../../lib/util';
 
 export default class CreateJob extends React.Component {
   constructor(){
@@ -44,7 +42,7 @@ export default class CreateJob extends React.Component {
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});
-    request.post('/jobs', body).end(()=>this.props.onAction());
+    request.post('/jobs').send(body).end(()=>this.props.onAction());
   }
 }
 

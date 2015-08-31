@@ -1,4 +1,9 @@
 {
+  "secret": "secret",
+  "urls": {
+    "server": "http://localhost:3000",
+    "client": "http://localhost:3001"
+  },
   "development": {
     "username": "username",
     "password": null,

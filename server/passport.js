@@ -4,36 +4,19 @@ var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy,
   passport = require('passport'),
   nconf = require('nconf'),
   User = require('./models/models').User,
-  _ = require('lodash');
+  _ = require('lodash'),
+  jwt = require('jsonwebtoken');
 
 exports.setup = function (app) {
 
-  // Express stuff
-  app.use(passport.initialize())
-    .use(passport.session());
+  app.use(passport.initialize());
 
   passport.use(User.createStrategy());
-
-  passport.serializeUser(User.serializeUser());
-  passport.deserializeUser(User.deserializeUser());
-
-  //FIXME figure out how to make linkedin & local work together, see passport-local-sequelize#defaultUserSchema
-
-  // Passport session setup.
-  /*passport.serializeUser(function (user, done) {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(function (id, done) {
-    User.findById(id).then(function (user) {
-      done(null, user)
-    })
-  });*/
 
   passport.use(new LinkedInStrategy({
     clientID: nconf.get('linkedin:key'),
     clientSecret: nconf.get('linkedin:secret'),
-    callbackURL: "http://localhost:3000/auth/linkedin/callback",
+    callbackURL: nconf.get('urls:server')+"/auth/linkedin/callback",
     scope: ['r_emailaddress', 'r_basicprofile'],
     state: true,
     passReqToCallback: true
@@ -45,11 +28,11 @@ exports.setup = function (app) {
       pic: profile.photos[0],
       bio: profile._json.summary
     }
-    if (req.user) {
-      _.each(defaults, (v,k)=>{req.user[k]=v})
-      return req.user.save().then(()=>done());
+    if (req.session.user) {
+      return User.update(defaults, {where:{id: req.session.user.id}}).then(()=>done());
     }
 
+    return done("FIXME: Standalone Linkedin profiles aren't yet supported, currently require a local-auth account to be tied to.")
     User.findOrCreate({
       where: {linkedin_id: profile.id},
       defaults: defaults,
@@ -60,10 +43,16 @@ exports.setup = function (app) {
   }));
 
   app.get('/auth/linkedin',
+    exports.ensureAuth,
+    function(req, res, next){
+      req.session.user = req.user;
+      next();
+    },
     passport.authenticate('linkedin'));
 
+  var redirectUrl = nconf.get('urls:client') + '/#/profile';
   app.get('/auth/linkedin/callback',
-    passport.authenticate('linkedin', {failureRedirect: '/#/profile'}), (req, res, next)=>res.redirect('/#/profile'));
+    passport.authenticate('linkedin', {failureRedirect: redirectUrl}), (req, res, next)=>res.redirect(redirectUrl));
 
   app.post('/register', function (req, res, next) {
     if (req.body.password != req.body.confirmPassword)
@@ -71,20 +60,39 @@ exports.setup = function (app) {
     User.register(User.build({email: req.body.email}), req.body.password, function (err, _user) {
       if (err) return next(err);
       //return res.sendStatus(200);
-      passport.authenticate('local')(req, res, ()=>res.redirect('/'));
+      passport.authenticate('local', {session:false})(req, res, ()=>{
+        res.json({token: sign(_user)});
+      });
     });
   });
 
-  app.post('/login', passport.authenticate('local'), (req, res)=>res.redirect('/'));
-
-  app.get('/logout', function (req, res) {
-    req.logout();
-    res.redirect('/');
+  app.post('/login', passport.authenticate('local', {session:false}), function(req, res){
+    res.json({token:sign(req.user)});
   });
 
+  // FIXME add /logout to invalidate token, see https://github.com/roblevintennis/passport-api-tokens/blob/master/models/account.js
+}
+
+var sign = function(user) {
+  var u = _.pick(user, ['id','email', 'remote_only'])// TODO do we need more variation? concerned about using _.omit & accidentally including too many sensitive attrs (see passport-local-sequelize)
+  return jwt.sign(u, nconf.get('secret'), {
+    expiresInMinutes: 1440 // expires in 24 hours
+  });
 }
 
 exports.ensureAuth = function (req, res, next) {
-  if (req.isAuthenticated()) return next();
-  res.status(401).json({error: 'Not authenticated.'});
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (!token)
+    return res.status(403).send({ error: 'No token provided.'});
+  // decode token
+  jwt.verify(token, nconf.get('secret'), function(err, decoded) {
+    if (err) {
+      return res.json({ error:'Failed to authenticate token.' });
+    } else {
+      // if everything is good, save to request for use in other routes
+      req.user = decoded;
+      next();
+    }
+  });
 }

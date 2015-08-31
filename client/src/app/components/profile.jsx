@@ -1,5 +1,5 @@
 import React from 'react';
-import request from 'superagent';
+import {request} from '../lib/util';
 import mui from 'material-ui';
 
 export default class Profile extends React.Component{
@@ -14,6 +14,7 @@ export default class Profile extends React.Component{
     if (!this.state.profile) return null;
     var lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
     var p = this.state.profile;
+    var linkedinUrl = `${API_URL}/auth/linkedin?token=${window.sessionStorage.getItem("jwt")}`;
     return (
       <mui.ClearFix>
 
@@ -26,7 +27,7 @@ export default class Profile extends React.Component{
             </mui.CardText>
           </mui.Card>
 
-          : <h1><a href='/auth/linkedin' className='zocial linkedin'>Connect LinkedIn</a></h1>
+          : <h1><a href={linkedinUrl} className='zocial linkedin'>Connect LinkedIn</a></h1>
         }
 
         <mui.List subheader="Search Preferences">
@@ -84,6 +85,6 @@ export default class Profile extends React.Component{
     request.post(`/user/lock/${table}/${obj.id}`).end(()=>{});
   }
   _setPref(pref, e, checked){
-    request.put(`/user/preferences`, {[pref]:checked}).end(()=>{});
+    request.put(`/user/preferences`).send({[pref]:checked}).end(()=>{});
   }
 }
