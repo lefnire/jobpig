@@ -7,4 +7,7 @@ body {
   line-height: 20px;
   margin: 0px;
 }
-.padded {padding:20px;}
+.padded {
+  margin: 25px;
+  /*padding:20px;*/
+}

@@ -6,6 +6,7 @@ import {request} from '../../lib/util';
 import Thumb from './thumb.jsx';
 import Prospect from './prospect.jsx';
 import {setupHotkeys} from '../../lib/util';
+import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
 //Alt
 import JobStore from '../../lib/JobStore';
@@ -49,25 +50,46 @@ class Job extends React.Component {
       editing = this.props.editing == this.props.job.id;
 
     let mainSection = (
-      <mui.Card className='padded'>
-        <mui.CardTitle title={job.title} subtitle={this._subtitle(job)} />
-        <mui.CardText>
-          Tags:&nbsp;
-          <span style={{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}}>
-            {_.pluck(job.tags, 'key').join(', ')}
-          </span>
+      <div className='padded'>
+        <mui.Card>
+          <mui.CardTitle
+            title={job.title}
+            subtitle={this._subtitle(job)}
+            />
+          <mui.CardText>
+            Tags:&nbsp;
+            <span style={{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}}>
+              {_.pluck(job.tags, 'key').join(', ')}
+            </span>
+            {editing ?
+              <mui.TextField
+                ref='noteRef'
+                hintText="Add personal comments here. (Ctrl+Enter to save)"
+                defaultValue={this.props.job.note}
+                fullWidth={true}
+                multiLine={true} /> :
+              this.props.job.note && <mui.Paper
+                zDepth={2}
+                style={{padding:5}}>
+                  <p>{this.props.job.note}</p>
+                </mui.Paper>
+            }
+          </mui.CardText>
+          <mui.CardActions>
+            <mui.RaisedButton label="Open" onTouchTap={()=>window.open(this.props.job.url,'_blank')}/>
+            <mui.RaisedButton label="Mark Applied" onTouchTap={()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})}/>
+            <mui.RaisedButton label="Skip" onTouchTap={()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})}/>
+            <mui.RaisedButton label="Add Note" onTouchTap={()=>JobActions.setEditing(this.props.job.id)}/>
+          </mui.CardActions>
+        </mui.Card>
 
-          {editing ?
-            <mui.TextField ref='noteRef' hintText="Add personal comments here." defaultValue={this.props.job.note} multiLine={true} /> :
-            this.props.job.note && <mui.Paper zDepth={2} style={{padding:5}}><p>{this.props.job.note}</p></mui.Paper>
-          }
-
-          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
-
-          {job.users && job.users.map((u)=><Prospect prospect={u} />)}
-
-        </mui.CardText>
+        <mui.Card style={{background:'#f8f8f8'}}>
+          <mui.CardText>
+            <p dangerouslySetInnerHTML={{__html:job.description}}></p>
+            <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
+            {job.users && job.users.map((u)=><Prospect prospect={u} />)}
+          </mui.CardText>
+        </mui.Card>
 
         {job.status == 'inbox' ?
           <div style={{position:'fixed',bottom:10,right:10}}>
@@ -79,8 +101,8 @@ class Job extends React.Component {
               <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
             </mui.FloatingActionButton>
           </div>
-        : false}
-      </mui.Card>
+          : false}
+      </div>
     );
     if (!this.props.focus) return mainSection;
 
