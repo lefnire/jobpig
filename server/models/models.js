@@ -166,7 +166,7 @@ ORDER BY jobs.id
     },
     score(user_id, job_id, status){
       //TODO this can likely be cleaned up into a few efficient raw queries
-      this.findOne({
+      return this.findOne({
         where:{id:job_id},
         include:[
           {model:Tag, include:[User]},
@@ -174,13 +174,15 @@ ORDER BY jobs.id
         ]
       }).then(job=>{
 
+        var promises = [];
+
         // First set its status
         var uj = job.users[0];
         if (uj) {
           uj.user_jobs.status= status;
-          uj.user_jobs.save();
+          promises.push(uj.user_jobs.save());
         } else {
-          UserJob.create({user_id,job_id,status});
+          promises.push(UserJob.create({user_id,job_id,status}));
         }
 
         // then score attributes, unless setting to 'inbox' or 'hidden'
@@ -188,26 +190,29 @@ ORDER BY jobs.id
         var dir = (_.includes(['inbox','hidden'], status)) ? 0 : status=='disliked' ? -1 : +1;
         if (!dir) return;
 
+        promises.push(
         UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
-          sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id`,
+          return sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id`,
             { replacements: {user_id, title:job.company, score:dir}, type: sequelize.QueryTypes.UPDATE });
           //fixme: `_userCompany.save is not a function` wtf??
           //_userCompany.score += dir;
           //_userCompany.save();
         })
+        )
 
         _.each(job.tags, tag=>{
           var user_tag = tag.users[0] && tag.users[0].user_tags;
           if (user_tag) {
             user_tag.score += dir;
-            user_tag.save();
+            promises.push(user_tag.save());
           }
           else {
-            UserTag.create({user_id, tag_id:tag.id, score:dir});
+            promises.push(UserTag.create({user_id, tag_id:tag.id, score:dir}));
           }
         })
+
+        return Promise.all(promises);
       })
-      //fixme return promise
     }
   },
   indexes: [

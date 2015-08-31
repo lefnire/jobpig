@@ -8,9 +8,8 @@ exports.mine = function(req, res, next){
 }
 
 exports.list = function(req, res, next){
-  // FIXME: Where to put this?
-  db.Meta.runCronIfNecessary();
-  db.Job.filterJobs(req.user, req.params.filter).then((jobs)=>res.send(jobs));
+  db.Meta.runCronIfNecessary(); // FIXME: Where to put this?
+  db.Job.filterJobs(req.user, req.params.filter).then(jobs=>res.send(jobs));
 };
 
 exports.create = function(req, res, next){
@@ -22,8 +21,7 @@ exports.addNote = function(req, res, next){
 }
 
 exports.setStatus = function(req, res, next){
-  db.Job.score(req.user.id, req.params.id, req.params.status);
-  res.sendStatus(200);
+  db.Job.score(req.user.id, req.params.id, req.params.status).then(()=>res.sendStatus(200));
 }
 
 exports.expand = function (req, res, next) {
