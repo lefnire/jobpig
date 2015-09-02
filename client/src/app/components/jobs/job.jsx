@@ -1,11 +1,9 @@
 import React from 'react';
 import mui from 'material-ui';
-import {HotKeys, HotKeyMapMixin} from 'react-hotkeys';
 import _ from 'lodash';
 import {request} from '../../lib/util';
 import Thumb from './thumb.jsx';
 import Prospect from './prospect.jsx';
-import {setupHotkeys} from '../../lib/util';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
 //Alt
@@ -18,23 +16,6 @@ class Job extends React.Component {
   constructor(){
     super();
     this.state = {expanded:undefined};
-
-    // Setup keyboard shortcuts. Most defer to JobActions, so I inline them here. More complex bits defined below
-    this.shortcuts = setupHotkeys({
-      like: {k:'+', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'liked'})},
-      dislike: {k:'-', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'disliked'})},
-      hide: {k:'#', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})},
-      apply: {k:'a', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})},
-      inbox: {k:'i', fn:()=>JobActions.setStatus({id:this.props.job.id,status:'inbox'})},
-      expand: {k:'e', fn:this._expand.bind(this)},
-      addNote: {k:'n', fn:()=>JobActions.setEditing(this.props.job.id)},
-      open: {k:'enter', fn:()=>window.open(this.props.job.url,'_blank')},
-      //thumbsUp: {k:'shift+s', fn:()=>this.refs.thumb.show('Like')},
-      //thumbsDown: {k:'shift+h', fn:()=>this.refs.thumb.show('Dislike')},
-
-      cancelNote: {k:'esc', enabledWhenEditing:true, fn:()=>JobActions.setEditing(0)},
-      saveNote: {k:'ctrl+enter', enabledWhenEditing:true, fn:()=>JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})}
-    });
   }
 
   static getStores() {
@@ -47,79 +28,71 @@ class Job extends React.Component {
 
   render() {
     let job = this.props.job,
-      editing = this.props.editing == this.props.job.id;
-
-    let mainSection = (
-      <div className='padded'>
-        <mui.Card>
-          <mui.CardTitle
-            title={job.title}
-            subtitle={this._subtitle(job)}
-            />
-          <mui.CardText>
-            Tags:&nbsp;
-            <span style={{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}}>
-              {_.pluck(job.tags, 'key').join(', ')}
-            </span>
-            {editing ?
-              <mui.TextField
-                ref='noteRef'
-                hintText="Add personal comments here. (Ctrl+Enter to save)"
-                defaultValue={this.props.job.note}
-                fullWidth={true}
-                multiLine={true} /> :
-              this.props.job.note && <mui.Paper
-                zDepth={2}
-                style={{padding:5}}>
-                  <p>{this.props.job.note}</p>
-                </mui.Paper>
-            }
-          </mui.CardText>
-          <mui.CardActions>
-            <mui.RaisedButton label="Open" onTouchTap={()=>window.open(this.props.job.url,'_blank')}/>
-            <mui.RaisedButton label="Mark Applied" onTouchTap={()=>JobActions.setStatus({id:this.props.job.id,status:'applied'})}/>
-            <mui.RaisedButton label="Skip" onTouchTap={()=>JobActions.setStatus({id:this.props.job.id,status:'hidden'})}/>
-            <mui.RaisedButton label="Add Note" onTouchTap={()=>JobActions.setEditing(this.props.job.id)}/>
-          </mui.CardActions>
-        </mui.Card>
-
-        <mui.Card style={{background:'#f8f8f8'}}>
-          <mui.CardText>
-            <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-            <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
-            {job.users && job.users.map((u)=><Prospect prospect={u} />)}
-          </mui.CardText>
-        </mui.Card>
-
-        {job.status == 'inbox' ?
-          <div style={{position:'fixed',bottom:10,right:10}}>
-            <mui.FloatingActionButton onTouchTap={this.shortcuts.default.handlers.like}>
-              <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
-            </mui.FloatingActionButton>
-            &nbsp;&nbsp;
-            <mui.FloatingActionButton onTouchTap={this.shortcuts.default.handlers.dislike}>
-              <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
-            </mui.FloatingActionButton>
-          </div>
-          : false}
-      </div>
-    );
-    if (!this.props.focus) return mainSection;
+      editing = this.props.editing == job.id;
 
     window.setTimeout(()=> { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (editing) return this.refs.noteRef.focus();
-      this.refs.jobref.getDOMNode().focus();
     });
-    let mode = editing ? 'editing' : 'default';
-    return (
-      <HotKeys tabIndex="0"
-           keyMap={this.shortcuts[mode].keys}
-           handlers={this.shortcuts[mode].handlers}
-           ref={/*this._setFocus*/"jobref"}>
-        <Thumb ref='thumb' job={this.props.job} onAction={this.props.onAction} />
-        {mainSection}
-      </HotKeys>
-    )
+
+    return <div className='padded'>
+      <mui.Card>
+        <mui.CardTitle
+          title={<a href={job.url} target='_blank'>{job.title}</a>}
+          subtitle={this._subtitle(job)}
+        />
+        <mui.CardText>
+          Tags:&nbsp;
+          <span style={{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}}>
+            {_.pluck(job.tags, 'key').join(', ')}
+          </span>
+          {editing ?
+            <mui.Paper zDepth={2} style={{padding:5}}>
+              <mui.TextField
+                ref='noteRef'
+                hintText="Add personal comments here."
+                defaultValue={job.note}
+                fullWidth={true}
+                multiLine={true} />
+              <mui.FlatButton label="Save" onTouchTap={()=>this._saveNote()} />&nbsp;
+              <mui.FlatButton label="Cancel" onTouchTap={()=>this._cancelNote()} />
+            </mui.Paper>
+            : job.note && <mui.Paper zDepth={2} style={{padding:5}}>
+              <p>{job.note}</p>
+            </mui.Paper>
+          }
+        </mui.CardText>
+        <mui.CardActions>{
+          ( job.status=='inbox' ? [
+            <mui.FlatButton label="Skip" onTouchTap={()=>this._setStatus('hidden')}/>,
+            <mui.FlatButton label="Mark Applied" onTouchTap={()=>this._setStatus('applied')}/>
+          ] : [
+            <mui.FlatButton label="Send to Inbox" onTouchTap={()=>this._setStatus('inbox')}/>
+          ]).concat(
+            <mui.FlatButton label="Add Note" onTouchTap={()=>JobActions.setEditing(job.id)}/>
+          )
+        }</mui.CardActions>
+      </mui.Card>
+
+      <mui.Card style={{background:'#f8f8f8'}}>
+        <mui.CardText>
+          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
+          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
+          {job.users && job.users.map((u)=><Prospect prospect={u} />)}
+        </mui.CardText>
+      </mui.Card>
+
+      {job.status == 'inbox' ?
+        <div style={{position:'fixed',bottom:10,right:10}}>
+          <mui.FloatingActionButton onTouchTap={()=>this._setStatus('liked')}>
+            <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
+          </mui.FloatingActionButton>
+          &nbsp;&nbsp;
+          <mui.FloatingActionButton onTouchTap={()=>this._setStatus('disliked')}>
+            <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
+          </mui.FloatingActionButton>
+        </div>
+        : false}
+    </div>;
   }
 
   _subtitle(job){
@@ -130,15 +103,27 @@ class Job extends React.Component {
     }, []).join('; ');
   }
 
-  _expand(){
-    if (this.state.expanded)
-      return this.setState({expanded:undefined});
-    //job.expanding = true;
-    request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
-      //job.expanding = false;
-      this.setState({expanded: res.text});
-    });
+  _setStatus(status){
+    JobActions.setStatus({id:this.props.job.id,status});
   }
+
+  _cancelNote(){
+    JobActions.setEditing(0);
+  }
+
+  _saveNote(){
+    JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})
+  }
+
+  //_expand(){
+  //  if (this.state.expanded)
+  //    return this.setState({expanded:undefined});
+  //  //job.expanding = true;
+  //  request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
+  //    //job.expanding = false;
+  //    this.setState({expanded: res.text});
+  //  });
+  //}
 }
 
 export default Job
