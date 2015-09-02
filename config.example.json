@@ -4,6 +4,11 @@
     "server": "http://localhost:3000",
     "client": "http://localhost:3001"
   },
+  "aws":{
+    "accessKeyId":"accessKeyId",
+    "secretAccessKey":"secretAccessKey",
+    "bucket":"bucket"
+  },
   "development": {
     "username": "username",
     "password": null,

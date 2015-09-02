@@ -9,6 +9,10 @@ var gutil        = require('gulp-util');
 var prettyHrtime = require('pretty-hrtime');
 var startTime;
 
+var nconf = require('nconf');
+nconf.argv().env().file({ file: 'config.json' });
+var s3           = require('gulp-s3-upload')(nconf.get('aws'));
+
 var dest = './client/build';
 var src = './client/src';
 var markupSrc = src+'/www/**';
@@ -145,3 +149,11 @@ gulp.task('browserify', function(callback) {
   // Start bundling with Browserify for each bundleConfig specified
   bundleConfigs.forEach(browserifyThis);
 });
+
+gulp.task('s3', function(){
+  gulp.src("./client/build/**")
+    .pipe(s3({
+      Bucket: nconf.get('aws:bucket'), //  Required
+      ACL:    'public-read'       //  Needs to be user-defined
+    }));
+})
