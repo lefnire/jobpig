@@ -28,7 +28,7 @@ class Jobs extends React.Component {
   }
 
   render() {
-    if (!this.props.jobs[0])
+    if (!this.props.jobs[0] && window.location.hash=="#/jobs/inbox")
       return <mui.CircularProgress mode="indeterminate" size={1.5} />;
 
     return <div>

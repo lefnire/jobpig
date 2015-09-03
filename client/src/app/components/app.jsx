@@ -27,7 +27,7 @@ export default React.createClass({
       route:this.context.router.getCurrentPath().replace(/^\//,'')
     }).text;
 
-    return <mui.AppCanvas>
+    return <div>
       <mui.AppBar
         title={title}
         onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()}
@@ -39,7 +39,7 @@ export default React.createClass({
         onChange={this._goto}
         />
       <RouteHandler />
-    </mui.AppCanvas>;
+    </div>;
   },
 
   _goto(e, key, payload){
