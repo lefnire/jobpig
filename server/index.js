@@ -31,11 +31,11 @@ app.use('/', require('./routes'));
 // error handler
 app.use(function(err, req, res, next) {
   console.log(err);
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: err
-  });
+  if (err.name == 'AuthenticationError') // Passport just gives us "Unauthorized", not sure how to get specifics
+    err = {status:401, message:"Login failed, please check email address or password and try again."};
+  res
+    .status(err.status || 500)
+    .json({message: err.message || err});
 });
 
 module.exports = app;

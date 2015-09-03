@@ -9,6 +9,8 @@ var _login = (token) => {
   window.location = '/';
 }
 
+var _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
+
 class Login extends React.Component{
   constructor(){
     super();
@@ -41,7 +43,8 @@ class Login extends React.Component{
         password: this.refs.password.getValue()
       })
       .end((err,res)=>{
-        if (err) return this.setState({errors:{password:err}})
+        if (err)
+          return this.setState({errors:{password:_err(err,res)}})
         _login(res.body.token);
       })
   }
@@ -86,7 +89,8 @@ class Register extends React.Component{
         confirmPassword: this.refs.confirmPassword.getValue()
       })
       .end((err, res)=>{
-        if (err) return this.setState({errors:{confirmPassword:err}})
+        if (err)
+          return this.setState({errors:{confirmPassword:_err(err,res)}})
         _login(res.body.token);
       })
   }

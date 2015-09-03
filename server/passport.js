@@ -54,19 +54,22 @@ exports.setup = function (app) {
   app.get('/auth/linkedin/callback',
     passport.authenticate('linkedin', {failureRedirect: redirectUrl}), (req, res, next)=>res.redirect(redirectUrl));
 
+  var localOpts = {session:false, failWithError:true};
   app.post('/register', function (req, res, next) {
     if (req.body.password != req.body.confirmPassword)
       return next({status:403, message:'Password does not match Confirm Password'});
+    if (req.body.password.length < 3)
+      return next({status:403, message:'Password should be greater than 3 characters.'});
     User.register(User.build({email: req.body.email}), req.body.password, function (err, _user) {
       if (err) return next(err);
       //return res.sendStatus(200);
-      passport.authenticate('local', {session:false})(req, res, ()=>{
+      passport.authenticate('local', localOpts)(req, res, ()=>{
         res.json({token: sign(_user)});
       });
     });
   });
 
-  app.post('/login', passport.authenticate('local', {session:false}), function(req, res){
+  app.post('/login', passport.authenticate('local', localOpts), function(req, res){
     res.json({token:sign(req.user)});
   });
 
@@ -84,11 +87,11 @@ exports.ensureAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (!token)
-    return res.status(403).send({ error: 'No token provided.'});
+    return next({status:403, message: 'No token provided.'});
   // decode token
   jwt.verify(token, nconf.get('secret'), function(err, decoded) {
     if (err) {
-      return res.json({ error:'Failed to authenticate token.' });
+      return next({status:403, message:'Failed to authenticate token.'});
     } else {
       // if everything is good, save to request for use in other routes
       req.user = decoded;
