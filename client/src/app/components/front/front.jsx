@@ -1,10 +1,9 @@
 import React from 'react';
 import mui from 'material-ui';
-
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
-import FullWidthSection from '../material-ui-docs/full-width-section.jsx';
-let { Mixins, RaisedButton, Styles } = require('material-ui');
+import FullWidthSection from '../material-ui-docs/docs/src/app/components/full-width-section.jsx';
+let { Mixins, Styles } = require('material-ui');
 let { StylePropable, StyleResizable } = Mixins;
 let { Colors, Spacing, Typography } = Styles;
 let ThemeManager = new Styles.ThemeManager().getCurrentTheme();
@@ -13,15 +12,16 @@ export default React.createClass({
   mixins: [StylePropable, StyleResizable],
 
   _getStyles(){
-    var styles = {
+
+    let styles = {
       root: {
-        background: Colors.cyan500,
-        overflow: 'hidden'
+        backgroundColor: Colors.cyan500,
+        overflow: 'hidden',
       },
       tagline: {
         margin: '16px auto 0 auto',
         textAlign: 'center',
-        maxWidth: '575px'
+        maxWidth: 575,
       },
       examples: {
         margin: '-110px auto 0 auto',
@@ -35,28 +35,26 @@ export default React.createClass({
         fontWeight: Typography.fontWeightLight,
       },
       h2: {
-        //.mui-font-style-title
-        fontSize: '20px',
+        fontSize: 20,
         lineHeight: '28px',
-        paddingTop: '19px',
-        marginBottom: '13px',
-        letterSpacing: '0',
+        paddingTop: 19,
+        marginBottom: 13,
+        letterSpacing: 0,
       },
       nowrap: {
         whiteSpace: 'nowrap'
       },
       taglineWhenLarge: {
-        marginTop: '32px'
+        marginTop: 32
       },
       h1WhenLarge: {
-        fontSize: '56px'
+        fontSize: 56
       },
       h2WhenLarge: {
-        //.mui-font-style-headline;
-        fontSize: '24px',
+        fontSize: 24,
         lineHeight: '32px',
-        paddingTop: '16px',
-        marginBottom: '12px'
+        paddingTop: 16,
+        marginBottom: 12,
       }
     };
 

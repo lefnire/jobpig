@@ -28,7 +28,7 @@
     "jsdom": "^5.5.0",
     "jsonwebtoken": "^5.0.5",
     "lodash": "^3.10.0",
-    "material-ui": ">=0.10.2",
+    "material-ui": "callemall/material-ui",
     "method-override": "^2.3.3",
     "morgan": "^1.6.1",
     "nconf": "^0.7.1",
