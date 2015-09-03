@@ -1,3 +1,4 @@
+import util from './lib/util';
 import React from 'react/addons';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import routes from './routes.jsx';
@@ -12,7 +13,6 @@ var {Colors} = mui.Styles;
 
 //Needed for React Developer Tools
 window.React = React;
-window.API_URL = 'http://localhost:3000';
 
 //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();

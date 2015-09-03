@@ -5,6 +5,12 @@ import Alt from 'alt';
 var alt = new Alt();
 var request = defaults();
 
+window.API_URL = 'http://jobseedapp.herokuapp.com';
+//window.API_URL = 'http://localhost:3000';
+
+// wake up heroku if it's sleeping
+request.get(API_URL).end(()=>{})
+
 var setupHotkeys = function(shortcuts) {
   return _.reduce(shortcuts, (m,v,k)=>{
     let mode = v.enabledWhenEditing ? 'editing' : 'default';
@@ -19,7 +25,7 @@ if (token)
   request
     .set('x-access-token', token)
     .on('request', function (req) {
-      req.url = `http://localhost:3000${req.url}`;
+      req.url = API_URL+req.url;
     });
 
 export default {setupHotkeys, alt, request};
