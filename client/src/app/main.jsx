@@ -3,13 +3,10 @@ import React from 'react/addons';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import routes from './routes.jsx';
 import Router from 'react-router';
-var {Route} = Router;
-
 import mui from 'material-ui';
-var {RouteHandler} = Router;
+
 var ThemeManager = new mui.Styles.ThemeManager();
 var {Colors} = mui.Styles;
-
 
 //Needed for React Developer Tools
 window.React = React;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route,DefaultRoute,Redirect} from 'react-router';
+import {Route,Redirect} from 'react-router';
 import App from './components/app.jsx';
 import Front from './components/front/front.jsx';
 import Jobs from './components/jobs/jobs.jsx';

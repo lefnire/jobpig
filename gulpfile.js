@@ -94,13 +94,15 @@ gulp.task('browserify', function(callback) {
 
     var bundler = browserify({
       // Required watchify args
-      cache: {}, packageCache: {}, fullPaths: false,
+      cache: {},
+      packageCache: {},
+      fullPaths: false,
       // Specify the entry point of your app
       entries: bundleConfig.entries,
       // Add file extentions to make optional in your requires
       extensions: ['.js','.jsx'],
       // Enable source maps
-      debug: true
+      debug: !nconf.get('release')
     });
 
     var bundle = function() {
@@ -109,18 +111,16 @@ gulp.task('browserify', function(callback) {
 
       return bundler
         .bundle()
-        // Report compile errors
         .on('error', handleErrors)
-        // Use vinyl-source-stream to make the
-        // stream gulp compatible. Specifiy the
-        // desired output filename here.
+        // Use vinyl-source-stream to make the stream gulp compatible.
         .pipe(source(bundleConfig.outputName))
-        // Specify the output destination
         .pipe(gulp.dest(bundleConfig.dest))
         .on('end', reportFinished);
     };
 
     bundler.transform(babelify.configure({stage: 1}));
+    if (nconf.get('release'))
+      bundler.transform({global:true, sourcemap: false}, 'uglifyify');
 
     if (global.isWatching) {
       // Wrap with watchify and rebundle on changes

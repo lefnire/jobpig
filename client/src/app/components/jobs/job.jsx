@@ -2,7 +2,6 @@ import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
 import {request} from '../../lib/util';
-import Thumb from './thumb.jsx';
 import Prospect from './prospect.jsx';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
