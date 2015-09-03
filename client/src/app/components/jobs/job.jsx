@@ -38,6 +38,7 @@ class Job extends React.Component {
         <mui.CardTitle
           title={<a href={job.url} target='_blank'>{job.title}</a>}
           subtitle={this._subtitle(job)}
+          data-intro="Click here to go to the job!"
         />
         <mui.CardText>
           Tags:&nbsp;
