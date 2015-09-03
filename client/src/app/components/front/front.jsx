@@ -15,7 +15,7 @@ export default React.createClass({
 
     let styles = {
       root: {
-        backgroundColor: Colors.cyan500,
+        backgroundColor: Colors.blueGrey500,
         overflow: 'hidden',
       },
       tagline: {
