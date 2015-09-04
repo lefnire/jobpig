@@ -1,8 +1,14 @@
 {
   "secret": "secret",
   "urls": {
-    "server": "http://localhost:3000",
-    "client": "http://localhost:3001"
+    "production": {
+      "server": "http://jobpigapp.herokuapp.com",
+      "client": "http://jobpigapp.com"
+    },
+    "development": {
+      "server": "http://localhost:3000",
+      "client": "http://localhost:3001"
+    }
   },
   "aws":{
     "accessKeyId":"accessKeyId",

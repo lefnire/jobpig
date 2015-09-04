@@ -5,7 +5,7 @@
 var Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
-  db = nconf.get('development'),
+  db = nconf.get(nconf.get("NODE_ENV")),
   uuid = require('node-uuid'),
   passportLocalSequelize = require('passport-local-sequelize');
 

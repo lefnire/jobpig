@@ -16,7 +16,7 @@ exports.setup = function (app) {
   passport.use(new LinkedInStrategy({
     clientID: nconf.get('linkedin:key'),
     clientSecret: nconf.get('linkedin:secret'),
-    callbackURL: nconf.get('urls:server')+"/auth/linkedin/callback",
+    callbackURL: nconf.get(`urls:${nconf.get('NODE_ENV')}:server`)+"/auth/linkedin/callback",
     scope: ['r_emailaddress', 'r_basicprofile'],
     state: true,
     passReqToCallback: true
@@ -50,7 +50,7 @@ exports.setup = function (app) {
     },
     passport.authenticate('linkedin'));
 
-  var redirectUrl = nconf.get('urls:client') + '/#/profile';
+  var redirectUrl = nconf.get(`urls:${nconf.get('NODE_ENV')}:client`) + '/#/profile';
   app.get('/auth/linkedin/callback',
     passport.authenticate('linkedin', {failureRedirect: redirectUrl}), (req, res, next)=>res.redirect(redirectUrl));
 

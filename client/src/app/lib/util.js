@@ -5,8 +5,7 @@ import Alt from 'alt';
 var alt = new Alt();
 var request = defaults();
 
-//window.API_URL = 'http://jobpigapp.herokuapp.com';
-window.API_URL = 'http://localhost:3000';
+window.API_URL = "<nconf:urls:server>"; // this gets replaced from gulp-replace based on NODE_ENV. See config.json
 
 // wake up heroku if it's sleeping
 request.get(API_URL).end(()=>{})

@@ -7,11 +7,13 @@ var source       = require('vinyl-source-stream');
 var babelify     = require('babelify');
 var gutil        = require('gulp-util');
 var prettyHrtime = require('pretty-hrtime');
+var replace = require('gulp-replace');
 var startTime;
 
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
 var s3           = require('gulp-s3-upload')(nconf.get('aws'));
+var release = nconf.get('release');
 
 var dest = './client/build';
 var src = './client/src';
@@ -102,7 +104,7 @@ gulp.task('browserify', function(callback) {
       // Add file extentions to make optional in your requires
       extensions: ['.js','.jsx'],
       // Enable source maps
-      debug: !nconf.get('release')
+      debug: !release
     });
 
     var bundle = function() {
@@ -114,12 +116,17 @@ gulp.task('browserify', function(callback) {
         .on('error', handleErrors)
         // Use vinyl-source-stream to make the stream gulp compatible.
         .pipe(source(bundleConfig.outputName))
+        // replace server url based on release (ie, localhost:3000 or jobpigapp.herokuapp.com)
+        .pipe(replace(/<nconf\:urls\:server>/g,
+          nconf.get('urls:' + (release ? 'production' : 'development') +':server')))
+        // and replace any other configs floating around
+        .pipe(replace(/<nconf\:(.*)>/g, function(match, a1){return nconf.get(a1)}))
         .pipe(gulp.dest(bundleConfig.dest))
         .on('end', reportFinished);
     };
 
     bundler.transform(babelify.configure({stage: 1}));
-    if (nconf.get('release'))
+    if (release)
       bundler.transform({global:true, sourcemap: false}, 'uglifyify');
 
     if (global.isWatching) {
