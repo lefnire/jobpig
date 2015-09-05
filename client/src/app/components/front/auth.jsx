@@ -3,11 +3,7 @@ import mui from 'material-ui';
 import request from 'superagent';
 import _ from 'lodash';
 import validator from 'validator';
-
-var _login = (token) => {
-  window.sessionStorage.setItem('jwt', token);
-  window.location = '/';
-}
+import util from '../../lib/util';
 
 var _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
 
@@ -45,7 +41,7 @@ class Login extends React.Component{
       .end((err,res)=>{
         if (err)
           return this.setState({errors:{password:_err(err,res)}})
-        _login(res.body.token);
+        util.auth.login(res.body.token);
       })
   }
 }
@@ -91,7 +87,7 @@ class Register extends React.Component{
       .end((err, res)=>{
         if (err)
           return this.setState({errors:{confirmPassword:_err(err,res)}})
-        _login(res.body.token);
+        util.auth.login(res.body.token);
       })
   }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import mui from 'material-ui';
 import Router from 'react-router';
 import _ from 'lodash';
+import util from '../lib/util';
 
 import JobActions from '../lib/JobActions.js';
 
@@ -45,10 +46,7 @@ export default React.createClass({
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
 
-    if (payload.route=='logout') {
-      window.sessionStorage.removeItem('jwt');
-      return window.location = '/';
-    }
+    if (payload.route=='logout') return util.auth.logout();
 
     this.context.router.replaceWith('/'+payload.route);
     if (this.context.router.isActive('jobs')) JobActions.fetch();

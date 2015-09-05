@@ -14,7 +14,7 @@ export default class Profile extends React.Component{
     if (!this.state.profile) return null;
     var lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
     var p = this.state.profile;
-    var linkedinUrl = `${API_URL}/auth/linkedin?token=${window.sessionStorage.getItem("jwt")}`;
+    var linkedinUrl = `${API_URL}/auth/linkedin?token=${window.jwt}`;
     return (
       <mui.ClearFix>
 
