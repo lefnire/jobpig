@@ -28,17 +28,35 @@ class Jobs extends React.Component {
   }
 
   render() {
-    if (!this.props.jobs[0] && window.location.hash=="#/jobs/inbox")
-      return <mui.CircularProgress mode="indeterminate" size={1.5} />;
+    let dialogActions = [
+      { text: 'Skip' },
+      { text: 'Submit', onTouchTap: ()=>this._seedTags(), ref: 'submit' }
+    ];
+
+    //TODO: this depends on fact that request.get is async (aka, window.setTimeout). Move this to a post-render function
+    request.get('/user').end((err,res)=>{
+      if (_.isEmpty(res.body.tags))
+        this.refs.dialog.show();
+    });
 
     return <div>
-      {this.props.jobs.map(job=> <Job
-        job={job}
-        key={job.id}
-        onAction={JobActions.fetch}
-        />
-      )}
+      <mui.Dialog ref='dialog' actions={dialogActions}>
+        <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
+        <mui.TextField hintText="Enter a few tags (comma-delimited)" ref='tags' type='text' fullWidth={true} />
+      </mui.Dialog>
+      {(!this.props.jobs[0] && window.location.hash=="#/jobs/inbox") ?
+          <mui.CircularProgress mode="indeterminate" size={1.5} />
+        : this.props.jobs.map(job=> <Job job={job} key={job.id} onAction={JobActions.fetch}/>)}
     </div>
+  }
+
+  _seedTags(){
+    request.post('/user/seed-tags')
+      .send({tags:this.refs.tags.getValue()})
+      .end(()=>{
+        this.refs.dialog.dismiss();
+        JobActions.fetch()
+      });
   }
 }
 

@@ -13,6 +13,7 @@ router.get('/', function(req, res){
 router.get('/user', ensureAuth, user.get);
 router.post('/user/lock/:table/:id', ensureAuth, user.lock);
 router.put('/user/preferences', ensureAuth, user.setPref);
+router.post('/user/seed-tags', ensureAuth, user.seedTags);
 
 router.get('/jobs/mine', ensureAuth, jobs.mine);
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
@@ -22,5 +23,3 @@ router.post('/jobs/:id/add-note', ensureAuth, jobs.addNote); //before :status, c
 router.post('/jobs/:id/:status', ensureAuth, jobs.setStatus);
 
 module.exports = router;
-
-
