@@ -10,6 +10,7 @@
       "client": "http://localhost:3001"
     }
   },
+  "ga_tracking_id":"ga_tracking_id",
   "aws":{
     "accessKeyId":"accessKeyId",
     "secretAccessKey":"secretAccessKey",
