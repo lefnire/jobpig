@@ -83,12 +83,7 @@ export default React.createClass({
       <div>
         <Auth ref='auth' />
 
-        <mui.AppBar
-          iconElementRight={
-            <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
-          }
-          iconElementLeft={<span />}
-          />
+        <mui.RaisedButton style={{position:'absolute',right:10,top:10}} label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
         <FullWidthSection style={styles.root}>
           <img src="Pig.png" style={{position:'absolute', top:10}}/>
           <div style={styles.tagline}>
@@ -148,7 +143,7 @@ export default React.createClass({
                   ].map((i,n)=> <mui.ListItem
                     style={ i.disabled ? {textDecoration:'line-through', opacity:0.5} : {}}
                     leftAvatar={<mui.Avatar src={"http://lorempixel.com/100/100/technics/"+(n+1)} />}
-                    primaryText={i.title} 
+                    primaryText={i.title}
                     secondaryText={i.sub}
                     rightIconButton={rightIconMenu}
                     />
