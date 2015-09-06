@@ -7,12 +7,12 @@ var Sequelize = require('sequelize');
 var app = require('../index');
 var nconf = require('nconf');
 var jobsController = require('../controllers/jobs');
-var sepia = require('sepia');
 var db;
 
-var acct = function(email){
-  return _.defaults({password:'x',confirmPassword:'x'},{email});
-}
+var acct = email=> _.defaults({password:'xyz',confirmPassword:'xyz'},{email});
+var oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return m}, {});
+var revertSepia = ()=>
+  ['http','https'].forEach(protocol=> require(protocol).request=oldReqs[protocol]);
 
 describe('JobSeed', function() {
   this.timeout(0);
@@ -23,7 +23,8 @@ describe('JobSeed', function() {
 
   //after(app.close)
   it('runs cron', function(done) {
-    //process.env.VRC_MODE = 'playback'; fixme not working
+    process.env.VCR_MODE = 'playback';
+    var sepia = require('sepia');
     db.Meta.needsCron()
     .then(val=>{
       expect(val).to.be(true);
@@ -31,8 +32,8 @@ describe('JobSeed', function() {
     }).then(()=>db.Job.count())
     .then(ct=>{
       expect(ct).to.be.greaterThan(0);
+      revertSepia();
       done();
-      //delete process.env.VCR_MODE;
     })
   })
 
@@ -67,7 +68,7 @@ describe('JobSeed', function() {
     .then(_users=>{
       //store users in closure {good:[Object], bad:[Object], employer:[Object]}
       users = _.reduce(['good','bad','employer'],(m,v,k)=>{
-        m[v] = _.find(_users, {email:`${v}@x.com`});
+        m[v] = _.find(_users, {email:v+'@x.com'});
         return m;
       },{});
 
@@ -80,11 +81,11 @@ describe('JobSeed', function() {
     .then(()=>db.Job.findOne({where:{title:'x'}, include:[db.Tag]}))
 
     // users upvote / downvote the posting
-    .then((_job)=> {
+    .then(_job=> {
       jobPost = _job;
       return Promise.all(
-        jobPost.tags.map( t=>users.bad.addTag(t, {score:-10}) ).concat(
-          jobPost.tags.map( t=>users.good.addTag(t, {score:+10}) )
+        jobPost.tags.map(t=> users.bad.addTag(t, {score:-10}) ).concat(
+          jobPost.tags.map(t=>users.good.addTag(t, {score:+10}) )
         )
       )
     })
