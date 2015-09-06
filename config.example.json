@@ -1,4 +1,5 @@
 {
+  "NODE_ENV": "development",
   "secret": "secret",
   "urls": {
     "production": {

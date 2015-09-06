@@ -90,8 +90,9 @@ export default React.createClass({
           iconElementLeft={<span />}
           />
         <FullWidthSection style={styles.root}>
+          <img src="Pig.png" style={{position:'absolute', top:10}}/>
           <div style={styles.tagline}>
-            <h1 style={styles.h1}>JobPig</h1>
+            <h1 style={styles.h1}>Jobpig</h1>
             <h2 style={styles.h2}>Find jobs tailored to you.</h2>
           </div>
         </FullWidthSection>
@@ -108,11 +109,11 @@ export default React.createClass({
               <p>
                 Come work for the coolest company on earth! We use <b>React</b>, React Native, <b>Node.js</b>/Express, <b>Postgres</b>. PTO, paid vacation, 401k, and an HTC Vive room for competitive produce-juggling.
               </p>
-              <mui.FloatingActionButton secondary={true}>
+              <mui.FloatingActionButton>
                 <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
               </mui.FloatingActionButton>
               &nbsp;&nbsp;
-              <mui.FloatingActionButton secondary={true}>
+              <mui.FloatingActionButton>
                 <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
               </mui.FloatingActionButton>
             </mui.CardText>
