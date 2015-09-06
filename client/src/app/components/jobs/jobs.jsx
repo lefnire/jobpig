@@ -29,13 +29,13 @@ class Jobs extends React.Component {
 
   render() {
     let dialogActions = [
-      { text: 'Skip' },
+      { text: 'Skip', onTouchTap:()=>{this._seedSkipped=true;this.refs.dialog.dismiss();} },
       { text: 'Submit', onTouchTap: ()=>this._seedTags(), ref: 'submit' }
     ];
 
     //TODO: this depends on fact that request.get is async (aka, window.setTimeout). Move this to a post-render function
     request.get('/user').end((err,res)=>{
-      if (_.isEmpty(res.body.tags))
+      if (_.isEmpty(res.body.tags) && !this._seedSkipped)
         this.refs.dialog.show();
     });
 

@@ -30,7 +30,7 @@ var auth = {
 
   // If logged in, intercept every request with token header
   if (jwt) request.set('x-access-token', jwt).on('request', req=>req.url = API_URL+req.url);
-});
+})();
 
 var setupHotkeys = function(shortcuts) {
   return _.reduce(shortcuts, (m,v,k)=>{
