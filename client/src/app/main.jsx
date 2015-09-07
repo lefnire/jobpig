@@ -18,7 +18,7 @@ Router.run(routes, Router.HashLocation, (Root) => {
   var Main = React.createClass({
     componentWillMount() {
       ThemeManager.setPalette({
-        accent1Color: Colors.pink500,
+        accent1Color: Colors.cyan700,
         primary1Color: Colors.blueGrey500
       });
     },

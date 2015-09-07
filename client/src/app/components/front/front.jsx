@@ -31,12 +31,13 @@ export default React.createClass({
         color: ThemeManager.palette.primary1Color,
       },
       h1: {
-        color: Colors.darkWhite,
-        fontWeight: Typography.fontWeightLight,
+        color: Colors.grey50,
+        fontWeight: Typography.fontWeightMedium,
+        fontFamily: "'Special Elite', cursive"
       },
       h2: {
-        fontSize: 20,
-        lineHeight: '28px',
+        fontSize: 60,
+        lineHeight: 40,
         paddingTop: 19,
         marginBottom: 13,
         letterSpacing: 0,
