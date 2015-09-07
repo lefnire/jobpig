@@ -10,7 +10,7 @@ import Profile from './components/profile.jsx';
 export default window.jwt ? (
   <Route path='/' name='root' handler={App} >
     <Route path="jobs/:filter" name='jobs' handler={Jobs} />
-    <Route path="my-posts" name='my-posts' handler={MyPosts} />
+    {/*<Route path="my-posts" name='my-posts' handler={MyPosts} />*/}
     <Route path="profile" name='profile' handler={Profile} />
     <Redirect to="jobs" params={{filter: 'inbox'}} />
   </Route>
