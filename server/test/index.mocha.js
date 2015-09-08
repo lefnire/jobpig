@@ -14,7 +14,7 @@ var oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return 
 var revertSepia = ()=>
   ['http','https'].forEach(protocol=> require(protocol).request=oldReqs[protocol]);
 
-describe('JobSeed', function() {
+describe('Jobpig', function() {
   this.timeout(0);
   before(function(done){
     db = require('../models/models');

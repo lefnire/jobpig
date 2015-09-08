@@ -157,7 +157,7 @@ ORDER BY jobs.id
     addCustom(user, job){
       _.defaults(job, {
         key: job.url || uuid.v4(), // todo do we really need job.key for anything?
-        source: 'jobseed',
+        source: 'jobpig',
         url: 'http://127.0.0.1:3000',
         user_id: user.id
       });

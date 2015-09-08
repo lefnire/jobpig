@@ -130,7 +130,7 @@ export default React.createClass({
             </mui.CardText>
             <mui.CardTitle
               title='Filtering your job-hunt'
-              subtitle='Scores train JobSeed to narrow down jobs tailored for your interests.'
+              subtitle='Scores train Jobpig to narrow down jobs tailored for your interests.'
               />
             <mui.ListDivider />
             <mui.CardText>
