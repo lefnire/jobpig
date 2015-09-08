@@ -71,7 +71,7 @@ GROUP BY j.id, uj.note, uj.status, uc.score
 
 HAVING COALESCE(uj.status,'inbox')=:status AND COALESCE(SUM(ut.score),0)+COALESCE(uc.score,0)>-75
 
-ORDER BY score DESC, j.id
+ORDER BY score DESC, j.id DESC
 
 LIMIT :limit;
 `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
