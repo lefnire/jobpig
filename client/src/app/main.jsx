@@ -20,6 +20,11 @@ Router.run(routes, Router.HashLocation, (Root) => {
       ThemeManager.setPalette({
         accent1Color: Colors.cyan700,
         primary1Color: Colors.blueGrey500
+      })
+      ThemeManager.setComponentThemes({
+        paper: {
+          backgroundColor: Colors.blueGrey50,
+        }
       });
     },
     getChildContext() {
