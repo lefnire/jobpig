@@ -18,7 +18,8 @@ export default alt.createStore(class JobStore {
       if (_.isEmpty(res.body) && filter=='inbox') { // poll for new jobs (the server is crunching)
         window.setTimeout(()=>this.fetch(), 1000);
       }
-      this.setState({jobs: res.body})
+      this.setState({jobs: res.body});
+      window.scrollTo(0,0);
     })
   }
 
