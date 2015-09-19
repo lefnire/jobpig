@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon --harmony_arrow_functions --watch server server/index.js",
-    "start": "node --harmony_arrow_functions server/index.js",
+    "server": "nodemon --watch server server/index.js",
+    "start": "node server/index.js",
     "test": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
     "client": "gulp"
   },
@@ -67,6 +67,6 @@
     "watchify": "^2.2.1"
   },
   "engines": {
-    "iojs": "2.3.4"
+    "node": "4.x"
   }
 }
