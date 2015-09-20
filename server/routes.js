@@ -11,7 +11,8 @@ router.get('/', function(req, res){
 })
 
 router.get('/user', ensureAuth, user.get);
-router.post('/user/lock/:table/:id', ensureAuth, user.lock);
+router.put('/user/:table/:id', ensureAuth, user.override);
+router.delete('/user/:table/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 

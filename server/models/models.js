@@ -61,9 +61,9 @@ j.*
 FROM jobs j
 
 LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
-LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id AND (ut.locked IS NOT TRUE OR ut.score>0)
+LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id
 LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
-LEFT JOIN user_companies uc ON uc.user_id=:user_id AND uc.title=j.company AND (uc.locked<>true AND uc.score>0)
+LEFT JOIN user_companies uc ON uc.user_id=:user_id AND uc.title=j.company
 
 ${user.remote_only ? "WHERE j.remote=true" : ""}
 
@@ -192,7 +192,7 @@ ORDER BY jobs.id
 
         promises.push(
         UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
-          return sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id`,
+          return sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id and locked<>true`,
             { replacements: {user_id, title:job.company, score:dir}, type: sequelize.QueryTypes.UPDATE });
           //fixme: `_userCompany.save is not a function` wtf??
           //_userCompany.score += dir;
@@ -203,6 +203,7 @@ ORDER BY jobs.id
         _.each(job.tags, tag=>{
           var user_tag = tag.users[0] && tag.users[0].user_tags;
           if (user_tag) {
+            if (user_tag.locked) return;
             user_tag.score += dir;
             promises.push(user_tag.save());
           }
@@ -243,14 +244,6 @@ var UserCompany = sequelize.define('user_companies', {
 var UserTag = sequelize.define('user_tags', {
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false},
-},
-{
-  classMethods: {
-    lock(user_id, tag_id){
-      return sequelize.query(`UPDATE user_tags SET locked = NOT locked WHERE user_id=:user_id AND tag_id=:tag_id`,
-        { replacements: {user_id, tag_id:+tag_id}, type: sequelize.QueryTypes.UPDATE });
-    }
-  }
 });
 
 var Meta = sequelize.define('meta', {

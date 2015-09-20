@@ -9,13 +9,12 @@ export default class CreateJob extends React.Component {
     this.show = this.show.bind(this);
   }
   render() {
-    let standardActions = [
-      {text: 'Cancel'},
-      {text: 'Submit', onTouchTap: this._createJob.bind(this), ref: 'submit'}
-    ];
     //Handle on server: key, source
     return (
-      <mui.Dialog title="Create Job" actions={standardActions} ref="dialog">
+      <mui.Dialog title="Create Job" actions={[
+        {text: 'Cancel'},
+        {text: 'Submit', onTouchTap:()=>this._createJob(), ref: 'submit'}
+      ]} ref="dialog">
         <mui.ClearFix>
           <mui.TextField ref='title' required={true} type='text' hintText="*Title" autofocus={true} fullWidth={true}/>
           <mui.TextField ref='company' required={true} type='text' hintText="*Company" fullWidth={true}/>

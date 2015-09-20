@@ -1,20 +1,67 @@
 import React from 'react';
 import {request} from '../lib/util';
 import mui from 'material-ui';
+import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+
+class Tag extends React.Component {
+  // key,score,id,table
+  render(){
+    var {label,obj,id} = this.props;
+    var {score} = obj;
+    return <div>
+      <mui.ListItem
+        key={id}
+        primaryText={
+          <div>
+            <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>{score>0 ? '+' : ''}{score}</span> {label}
+          </div>
+        }
+        rightIconButton={
+          <mui.IconMenu iconButtonElement={
+            <mui.IconButton><MoreVertIcon /></mui.IconButton>
+          }>
+            <mui.MenuItem onTouchTap={()=>this.refs.dialog.show()}>Edit</mui.MenuItem>
+            <mui.MenuItem onTouchTap={()=>this._remove()}>Remove</mui.MenuItem>
+          </mui.IconMenu>
+        } />
+
+        <mui.Dialog title="Edit Tag" ref="dialog" actions={[
+            {text: 'Cancel'},
+            {text: 'Submit', onTouchTap:()=>this._submit(), ref: 'submit'}
+          ]} >
+          <mui.TextField ref='score' type='number' autofocus={true} fullWidth={true} defaultValue={score} floatingLabelText="Manually enter a score" />
+          <mui.Checkbox ref='lock' label="Lock tag to score (won't be effected when thumbing)." defaultChecked={obj.locked} />
+      </mui.Dialog>
+    </div>;
+  }
+
+  _submit(){
+    request.put(`/user/${this.props.table}/${this.props.id}`).send({
+      score: this.refs.score.getValue(),
+      lock: this.refs.lock.isChecked()
+    }).end(()=>{
+      this.refs.dialog.dismiss();
+      this.props.onUpdate();
+    });
+  }
+
+  _remove(){
+    request.del(`/user/${this.props.table}/${this.props.id}`).end(this.props.onUpdate);
+  }
+}
 
 export default class Profile extends React.Component{
   constructor(){
     super();
     this.state = {profile:null};
-    request.get('/user').end((err, res)=>{
-      this.setState({profile:res.body});
-    })
+    this._refresh();
   }
   render(){
     if (!this.state.profile) return null;
     var lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
     var p = this.state.profile;
     var linkedinUrl = `${API_URL}/auth/linkedin?token=${window.jwt}`;
+
     return (
       <mui.ClearFix>
 
@@ -45,46 +92,34 @@ export default class Profile extends React.Component{
             <mui.Tabs>
               <mui.Tab label="Tags" >
                 <mui.List>
-                  {this.state.profile.tags.map((t)=> {
-                    return <mui.ListItem
-                      primaryText={this._getScore(t.key, t.user_tags.score)}
-                      leftCheckbox={
-                        <mui.Checkbox onCheck={this._lock.bind(this, 'user_tags', t)} defaultChecked={t.user_tags.locked} />
-                      }
-                      />
-                  })}
+                  {this.state.profile.tags.map(t=>
+                    <Tag label={t.key} obj={t.user_tags} id={t.id} table='user_tags' onUpdate={this._refresh.bind(this)}/>
+                  )}
                 </mui.List>
               </mui.Tab>
 
               <mui.Tab label="Companies" >
                 <mui.List>
-                  {this.state.profile.user_companies.map((c)=> {
-                    return <mui.ListItem
-                      primaryText={this._getScore(c.title, c.score)}
-                      leftCheckbox={
-                        <mui.Checkbox onCheck={this._lock.bind(this, 'user_companies', c)} defaultChecked={c.locked} />
-                      }
-                      />
-                  })}
-                  </mui.List>
+                  {this.state.profile.user_companies.map(c=>
+                    <Tag label={c.title} obj={c} id={c.id} table='user_companies' onUpdate={this._refresh.bind(this)}/>
+                  )}
+                </mui.List>
               </mui.Tab>
+
             </mui.Tabs>
           </mui.CardText>
         </mui.Card>
-
       </mui.ClearFix>
     )
   }
-  _getScore(key, score){
-    return <div>
-      <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>{score>0 ? '+' : ''}{score}</span> {key}
-    </div>;
-  }
 
-  _lock(table, obj, e, checked){
-    request.post(`/user/lock/${table}/${obj.id}`).end(()=>{});
-  }
   _setPref(pref, e, checked){
     request.put(`/user/preferences`).send({[pref]:checked}).end(()=>{});
+  }
+
+  _refresh() {
+    request.get('/user').end((err, res)=>{
+      this.setState({profile:res.body});
+    })
   }
 }

@@ -141,13 +141,14 @@ export default React.createClass({
                     {title:'Python Machine Learning Expert', sub:'Singularity Ltd. | Boston, MA', disabled:true},
                     {title:'React + Flux Web/Mobile Developer', sub:'Agency LLC | Portland, OR'},
                     {title:'Backbone, Rails Full-Stack Dev', sub:'NotMyCup Co. | Austin, TX', disabled:true},
-                  ].map((i,n)=> <mui.ListItem
-                    style={ i.disabled ? {textDecoration:'line-through', opacity:0.5} : {}}
-                    leftAvatar={<mui.Avatar src={"http://lorempixel.com/100/100/technics/"+(n+1)} />}
-                    primaryText={i.title}
-                    secondaryText={i.sub}
-                    rightIconButton={rightIconMenu}
-                    />
+                  ].map((i,n)=>
+                    <mui.ListItem
+                      style={ i.disabled ? {textDecoration:'line-through', opacity:0.5} : {}}
+                      leftAvatar={<mui.Avatar src={"http://lorempixel.com/100/100/technics/"+(n+1)} />}
+                      primaryText={i.title}
+                      secondaryText={i.sub}
+                      rightIconButton={rightIconMenu}
+                      />
                   )
                 }
               </mui.List>
