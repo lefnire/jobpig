@@ -6,7 +6,8 @@
   "scripts": {
     "server": "nodemon --watch server server/index.js",
     "start": "node server/index.js",
-    "test": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
+    "test-server": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
+    "test-client": "karma start client/karma.conf.js",
     "client": "gulp"
   },
   "author": "",
@@ -48,15 +49,27 @@
     "xml2js": "^0.4.10"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
     "babelify": "^6.1.2",
     "browser-sync": "^1.8.1",
     "browserify": "^7.0.3",
+    "chai": "^3.3.0",
     "expect.js": "^0.3.1",
     "gulp": "^3.8.10",
     "gulp-notify": "^2.1.0",
     "gulp-replace": "^0.5.4",
     "gulp-s3-upload": "^1.2.0",
     "gulp-util": "^3.0.1",
+    "karma": "^0.13.10",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-cli": "^0.1.0",
+    "karma-mocha": "^0.2.0",
+    "karma-sourcemap-loader": "^0.3.5",
+    "karma-webpack": "^1.7.0",
+    "mocha": "^2.3.3",
     "pretty-hrtime": "^0.2.2",
     "require-dir": "^0.1.0",
     "sepia": "^2.0.1",
@@ -64,7 +77,8 @@
     "uglifyify": "^3.0.1",
     "underscore": "^1.7.0",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.2.1"
+    "watchify": "^2.2.1",
+    "webpack": "^1.12.2"
   },
   "engines": {
     "node": "4.x"
