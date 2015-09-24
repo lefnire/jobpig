@@ -236,9 +236,13 @@ var UserJob = sequelize.define('user_jobs', {
 });
 
 var UserCompany = sequelize.define('user_companies', {
-  title: {type:Sequelize.TEXT, unique:true},
+  title: Sequelize.TEXT,
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false}
+}, {
+  indexes: [
+    {unique:true, fields:['title','user_id']}
+  ]
 });
 
 var UserTag = sequelize.define('user_tags', {
