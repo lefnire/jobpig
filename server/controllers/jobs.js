@@ -24,12 +24,3 @@ exports.addNote = function(req, res, next){
 exports.setStatus = function(req, res, next){
   db.Job.score(req.user.id, req.params.id, req.params.status).then(()=>res.sendStatus(200)).catch(next);
 }
-
-exports.expand = function (req, res, next) {
-  db.Job.find({key:req.params.key}).then(function(job){
-    adaptors[job.source].expand(job, function (err, deets) {
-      if (err) return next(err);
-      res.send(deets);
-    })
-  }).catch(next);
-}

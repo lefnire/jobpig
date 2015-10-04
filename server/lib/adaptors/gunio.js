@@ -47,12 +47,6 @@ class GunIO extends Adaptor {
       });
     })
   }
-  expand(job, done){
-    //https://gun.io/api2/contractbody/1005/
-    request(`https://gun.io/api2/contractbody/${job.id}/`, function(err, response, html){
-      done(err, JSON.parse(html).description);
-    })
-  }
 }
 
 module.exports = GunIO;

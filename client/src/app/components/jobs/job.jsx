@@ -12,11 +12,6 @@ import connectToStores from 'alt/utils/connectToStores';
 
 @connectToStores
 class Job extends React.Component {
-  constructor(){
-    super();
-    this.state = {expanded:undefined};
-  }
-
   static getStores() {
     return [JobStore];
   }
@@ -71,7 +66,6 @@ class Job extends React.Component {
       <mui.Card style={{background:'#f8f8f8'}}>
         <mui.CardText>
           <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-          <div dangerouslySetInnerHTML={{__html:this.state.expanded}}></div>
           {job.users && job.users.map((u)=><Prospect prospect={u} />)}
         </mui.CardText>
       </mui.Card>
@@ -116,16 +110,6 @@ class Job extends React.Component {
   _saveNote(){
     JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})
   }
-
-  //_expand(){
-  //  if (this.state.expanded)
-  //    return this.setState({expanded:undefined});
-  //  //job.expanding = true;
-  //  request.get(`/jobs/${this.props.job.key}`).end((err, res) => {
-  //    //job.expanding = false;
-  //    this.setState({expanded: res.text});
-  //  });
-  //}
 }
 
 export default Job

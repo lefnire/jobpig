@@ -27,7 +27,4 @@ module.exports = class WeWorkRemotely extends Adaptor {
       return Adaptor.prototype.refresh(jobs);
     })
   }
-  expand(job, done){
-    done(null,'<h2>Contents not supported</h2>');
-  }
 }

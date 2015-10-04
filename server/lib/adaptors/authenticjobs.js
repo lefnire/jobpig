@@ -28,7 +28,4 @@ module.exports = class AuthenticJobs extends Adaptor {
       })
     })
   }
-  expand(job, done){
-    done(null,'<h2>Contents not supported</h2>');
-  }
 }

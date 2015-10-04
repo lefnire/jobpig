@@ -19,7 +19,6 @@ router.post('/user/seed-tags', ensureAuth, user.seedTags);
 router.get('/jobs/mine', ensureAuth, jobs.mine);
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
-router.get('/jobs/:id', ensureAuth, jobs.expand);
 router.post('/jobs/:id/add-note', ensureAuth, jobs.addNote); //before :status, cascades
 router.post('/jobs/:id/:status', ensureAuth, jobs.setStatus);
 

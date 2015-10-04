@@ -31,12 +31,6 @@ class RemoteOK extends Adaptor {
       })
     })
   }
-  expand(job, done){
-    done(null,'<h2>Contents not supported</h2>');
-    //request(job.url, function(error, response, html){
-    //  done(error, cheerio.load(html)('.expandContents').html());
-    //})
-  }
 }
 
 module.exports = RemoteOK;
