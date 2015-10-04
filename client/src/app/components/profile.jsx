@@ -13,7 +13,10 @@ class Tag extends React.Component {
         key={id}
         primaryText={
           <div>
-            <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>{score>0 ? '+' : ''}{score}</span> {label}
+            <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>
+              {obj.locked && <mui.FontIcon className="material-icons">lock_outline</mui.FontIcon>}
+              {score>0 ? '+' : ''}{score}
+            </span> {label}
           </div>
         }
         rightIconButton={
