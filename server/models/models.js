@@ -166,11 +166,12 @@ ORDER BY jobs.id
     },
     score(user_id, job_id, status){
       //TODO this can likely be cleaned up into a few efficient raw queries
+      var userInc = {model:User, where:{id:user_id}, required:false};
       return this.findOne({
         where:{id:job_id},
         include:[
-          {model:Tag, include:[User]},
-          User
+          {model:Tag, include:[userInc]},
+          userInc
         ]
       }).then(job=>{
 

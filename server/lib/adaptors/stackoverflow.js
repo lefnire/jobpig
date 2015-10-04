@@ -10,7 +10,7 @@ module.exports = class StackOverflow extends Adaptor {
   }
   refresh() {
     return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=>{
-      var jobs = _.map(results.rss.channel["0"].item, function(item){
+      var jobs = _.map(results.rss.channel[0].item, function(item){
         return {
           key: item.guid[0]._,
           source: 'stackoverflow',
@@ -18,7 +18,7 @@ module.exports = class StackOverflow extends Adaptor {
           company: item["a10:author"][0]["a10:name"][0],
           url: item.link[0],
           description: item.description[0],
-          location: item.location[0],
+          location: item.location && item.location[0],
           money: null,
           remote: /allows remote/gi.test(item.title[0]),
           tags: item.category
