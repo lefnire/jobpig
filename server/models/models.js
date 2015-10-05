@@ -267,7 +267,7 @@ var Meta = sequelize.define('meta', {
         if (!val) return Promise.resolve();
         console.log('Refreshing jobs....');
         // Update cron, delete stale jobs
-        return sequelize.query(`UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron'; DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '1 month';`)
+        return sequelize.query(`UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron'; DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '10 days';`)
           .then(()=>require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
       });
     }
