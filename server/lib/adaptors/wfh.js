@@ -4,10 +4,6 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class WFH extends Adaptor {
-  constructor(){
-    super();
-    this.seedsTags = false;
-  }
   refresh() {
     return this.fetchFeed('https://www.wfh.io/jobs.atom').then(results=>{
       var jobs = _.map(results.feed.entry, function(item){

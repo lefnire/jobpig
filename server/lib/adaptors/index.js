@@ -57,7 +57,8 @@ var adaptors = _.reduce([
   'github',
   'authenticjobs',
   'weworkremotely',
-  'wfh'
+  'wfh',
+  'jobspresso',
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;

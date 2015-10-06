@@ -4,10 +4,6 @@ var Adaptor = require('./index').Adaptor;
 var _ = require('lodash');
 
 module.exports = class WeWorkRemotely extends Adaptor {
-  constructor(){
-    super();
-    this.seedsTags = false;
-  }
   refresh() {
     return this.fetchFeed('https://weworkremotely.com/jobs.rss').then(results=>{
       var jobs = _.map(results.rss.channel["0"].item, function(item){
