@@ -52,11 +52,11 @@ class Job extends React.Component {
           }
           <mui.CardActions>{
             ( job.status=='inbox' ? [
-              <mui.FlatButton label="Skip" onTouchTap={()=>this._setStatus('hidden')}/>,
               <mui.FlatButton label="Mark Applied" onTouchTap={()=>this._setStatus('applied')}/>
             ] : [
               <mui.FlatButton label="Send to Inbox" onTouchTap={()=>this._setStatus('inbox')}/>
             ]).concat(
+              <mui.FlatButton label={job.status=='inbox' ? 'Skip' : 'Hide'} onTouchTap={()=>this._setStatus('hidden')}/>,
               <mui.FlatButton label="Add Note" onTouchTap={()=>JobActions.setEditing(job.id)}/>
             )
           }</mui.CardActions>

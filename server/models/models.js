@@ -166,12 +166,11 @@ ORDER BY jobs.id
     },
     score(user_id, job_id, status){
       //TODO this can likely be cleaned up into a few efficient raw queries
-      var userInc = {model:User, where:{id:user_id}, required:false};
       return this.findOne({
         where:{id:job_id},
         include:[
-          {model:Tag, include:[userInc]},
-          userInc
+          {model:Tag, include:[{model:User, where:{id:user_id}, required:false}]},
+          {model:User, where:{id:user_id}, required:false}
         ]
       }).then(job=>{
 
@@ -189,7 +188,7 @@ ORDER BY jobs.id
         // then score attributes, unless setting to 'inbox' or 'hidden'
         // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
         var dir = (_.includes(['inbox','hidden'], status)) ? 0 : status=='disliked' ? -1 : +1;
-        if (!dir) return;
+        if (!dir) return Promise.all(promises);
 
         promises.push(
         UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
