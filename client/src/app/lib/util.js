@@ -1,4 +1,14 @@
 import _ from 'lodash';
+import superagent from 'superagent';
+
+// If client gets an "unauthorized" response while logged in, log them out.
+var _cb = superagent.Request.prototype.callback;
+superagent.Request.prototype.callback = function(err, res) {
+  _cb.call(this, err, res);
+  if (err && err.status == 403)
+    auth.logout();
+}
+
 import defaults from 'superagent-defaults';
 import Alt from 'alt';
 var alt = new Alt();
