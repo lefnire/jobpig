@@ -165,55 +165,39 @@ ORDER BY jobs.id
       return this.bulkCreateWithTags([job]);
     },
     score(user_id, job_id, status){
-      //TODO this can likely be cleaned up into a few efficient raw queries
-      return this.findOne({
-        where:{id:job_id},
-        include:[
-          {model:Tag, include:[{model:User, where:{id:user_id}, required:false}]},
-          {model:User, where:{id:user_id}, required:false}
-        ]
-      }).then(job=>{
 
-        var promises = [];
+      // First set its status
+      let setStatus = UserJob.upsert({user_id,job_id,status});
 
-        // First set its status
-        var uj = job.users[0];
-        if (uj) {
-          uj.user_jobs.status= status;
-          promises.push(uj.user_jobs.save());
-        } else {
-          promises.push(UserJob.create({user_id,job_id,status}));
-        }
+      // Then score attributes, unless setting to 'inbox' or 'hidden'
+      // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
+      let score = ~['inbox','hidden'].indexOf(status) ? 0 : status=='disliked' ? -1 : +1;
+      if (!score)
+        return setStatus;
 
-        // then score attributes, unless setting to 'inbox' or 'hidden'
-        // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
-        var dir = (_.includes(['inbox','hidden'], status)) ? 0 : status=='disliked' ? -1 : +1;
-        if (!dir) return Promise.all(promises);
+      return Promise.all([
+        // Status
+        setStatus,
 
-        promises.push(
-        UserCompany.findOrCreate({where:{title:job.company,user_id}, defaults:{title:job.company,user_id}}).then(_userCompany=>{
-          return sequelize.query(`update user_companies set score=score+:score where title=:title and user_id=:user_id and locked<>true`,
-            { replacements: {user_id, title:job.company, score:dir}, type: sequelize.QueryTypes.UPDATE });
-          //fixme: `_userCompany.save is not a function` wtf??
-          //_userCompany.score += dir;
-          //_userCompany.save();
-        })
-        )
+        // Company
+        this.findOne({where:{id:job_id}, attributes:['company']}).then(job=>
+          UserCompany.upsert({title:job.company,user_id}).then(()=>
+            sequelize.query(`UPDATE user_companies SET score=score+:score WHERE title=:title AND user_id=:user_id AND locked<>TRUE`,
+              {replacements: {user_id, title:job.company, score}})
+          )
+        ),
 
-        _.each(job.tags, tag=>{
-          var user_tag = tag.users[0] && tag.users[0].user_tags;
-          if (user_tag) {
-            if (user_tag.locked) return;
-            user_tag.score += dir;
-            promises.push(user_tag.save());
-          }
-          else {
-            promises.push(UserTag.create({user_id, tag_id:tag.id, score:dir}));
-          }
-        })
-
-        return Promise.all(promises);
-      })
+        // Tags
+        sequelize.query(`
+          -- Bulk create any missing user_tags
+          INSERT INTO user_tags (user_id, tag_id, score, locked, created_at, updated_at)
+          SELECT :user_id, t.tag_id, 0, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+          FROM (SELECT tag_id FROM job_tags WHERE job_id=:job_id EXCEPT SELECT tag_id FROM user_tags WHERE user_id=:user_id) t;
+          -- Then increment their score
+          UPDATE user_tags SET score=score+:score
+          WHERE tag_id IN (SELECT tag_id FROM job_tags WHERE job_id=:job_id) AND user_id=:user_id AND locked<>true
+        `, {replacements: {user_id, job_id, score}})
+      ]);
     }
   },
   indexes: [
@@ -263,11 +247,14 @@ var Meta = sequelize.define('meta', {
     },
     runCronIfNecessary(){
       return this.needsCron().then(val=>{
-        if (!val) return Promise.resolve();
+        if (!val)
+          return Promise.resolve();
         console.log('Refreshing jobs....');
         // Update cron, delete stale jobs
-        return sequelize.query(`UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron'; DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '10 days';`)
-          .then(()=>require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
+        return sequelize.query(`
+          UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron';
+          DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '10 days';
+        `).then(()=>require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
       });
     }
   }
