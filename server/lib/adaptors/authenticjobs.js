@@ -1,13 +1,13 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var _ = require('lodash');
+let Adaptor = require('./index').Adaptor;
+let _ = require('lodash');
 
 module.exports = class AuthenticJobs extends Adaptor {
   refresh() {
-    return this.fetchFeed('https://authenticjobs.com/rss/custom.php').then(results=>{
-      var jobs = _.map(results.rss.channel["0"].item, item=>{
-        var company = /^(.*?)\:/.exec(item.title[0]),
+    return this.fetchFeed('https://authenticjobs.com/rss/custom.php').then(results=> {
+      let jobs = _.map(results.rss.channel["0"].item, item=>{
+        let company = /^(.*?)\:/.exec(item.title[0]),
           location = /<strong>\((.*?)\)<\/strong>/i.exec(item.description[0]);
         return {
           key: item.guid[0],
@@ -23,9 +23,7 @@ module.exports = class AuthenticJobs extends Adaptor {
         }
       })
       Adaptor.prototype.addRemoteFromContent(jobs);
-      return Adaptor.prototype.addTagsFromContent(jobs).then(jobs=>{
-        return Adaptor.prototype.refresh(jobs);
-      })
+      return Promise.resolve(jobs);
     })
   }
 }

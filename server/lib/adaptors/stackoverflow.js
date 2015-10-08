@@ -1,7 +1,7 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var _ = require('lodash');
+let Adaptor = require('./index').Adaptor;
+let _ = require('lodash');
 
 module.exports = class StackOverflow extends Adaptor {
   constructor(){
@@ -9,8 +9,8 @@ module.exports = class StackOverflow extends Adaptor {
     this.seedsTags = true;
   }
   refresh() {
-    return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=>{
-      var jobs = _.map(results.rss.channel[0].item, function(item){
+    return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=> {
+      let jobs = _.map(results.rss.channel[0].item, item=> {
         return {
           key: item.guid[0]._,
           source: 'stackoverflow',
@@ -24,7 +24,7 @@ module.exports = class StackOverflow extends Adaptor {
           tags: item.category
         }
       })
-      return Adaptor.prototype.refresh(jobs);
+      return Promise.resolve(jobs);
     })
   }
 }

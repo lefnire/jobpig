@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Jobspresso extends Adaptor {
   refresh() {
     return this.fetchFeed('https://jobspresso.co/?feed=job_feed').then(results=>{
-      let jobs = _.map(results.rss.channel[0].item, function(item){
+      let jobs = _.map(results.rss.channel[0].item, item=> {
         let location = item['job_listing:location'] ? item['job_listing:location'][0] : 'Anywhere';
         return {
           key: item.guid[0]._,
@@ -21,7 +21,7 @@ module.exports = class Jobspresso extends Adaptor {
           tags: []
         }
       })
-      return Adaptor.prototype.refresh(jobs);
+      return Promise.resolve(jobs);
     })
   }
 }

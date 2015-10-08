@@ -1,12 +1,12 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var _ = require('lodash');
+let Adaptor = require('./index').Adaptor;
+let _ = require('lodash');
 
 module.exports = class Github extends Adaptor {
   refresh() {
-    return this.fetchFeed('https://jobs.github.com/positions.atom').then(results=>{
-      var jobs = _.map(results.feed.entry, function(item){
+    return this.fetchFeed('https://jobs.github.com/positions.atom').then(results=> {
+      let jobs = _.map(results.feed.entry, item=> {
         return {
           key: item.id[0],
           source: 'github',
@@ -20,9 +20,7 @@ module.exports = class Github extends Adaptor {
           tags: [] // parsed below
         }
       })
-      return Adaptor.prototype.addTagsFromContent(jobs).then(jobs=>{
-        return Adaptor.prototype.refresh(jobs);
-      });
+      return Promise.resolve(jobs);
     })
   }
 }

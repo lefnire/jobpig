@@ -1,12 +1,12 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var _ = require('lodash');
+let Adaptor = require('./index').Adaptor;
+let _ = require('lodash');
 
 module.exports = class WFH extends Adaptor {
   refresh() {
-    return this.fetchFeed('https://www.wfh.io/jobs.atom').then(results=>{
-      var jobs = _.map(results.feed.entry, function(item){
+    return this.fetchFeed('https://www.wfh.io/jobs.atom').then(results=> {
+      let jobs = _.map(results.feed.entry, item=> {
         return {
           key: item.id[0],
           source: 'wfh',
@@ -20,7 +20,7 @@ module.exports = class WFH extends Adaptor {
           tags: []
         }
       })
-      return Adaptor.prototype.refresh(jobs);
+      return Promise.resolve(jobs);
     })
   }
 }

@@ -1,11 +1,11 @@
 'use strict';
 
-var _ = require('lodash');
-var nightmare = new (require('nightmare'))();
-var xml2js = require('xml2js');
-var parser = new xml2js.Parser();
-var request = require('request');
-var db = require('../../models/models');
+let _ = require('lodash');
+let nightmare = new (require('nightmare'))();
+let xml2js = require('xml2js');
+let parser = new xml2js.Parser();
+let request = require('request');
+let db = require('../../models/models');
 
 exports.Adaptor = class Adaptor {
   constructor() {
@@ -21,25 +21,33 @@ exports.Adaptor = class Adaptor {
     })
   }
 
-  refresh(jobs) {
-    _.each(jobs, job=>{
-      // job ids in database are alphanumeric URLs (in case of repeats from other websites)
-      job.key = job.key || job.url.replace(/\W+/g, "");
-    })
-    return db.Job.bulkCreateWithTags(jobs);
+  _refresh() {
+    return this.refresh()
+      .then(jobs=> {
+        jobs.forEach(job=> {
+          // job ids in database are alphanumeric URLs (in case of repeats from other websites)
+          job.key = job.key || job.url.replace(/\W+/g, "");
+          job.tags = job.tags || [];
+        })
+        return this.addTagsFromContent(jobs);
+      })
+      .then(jobs=> db.Job.bulkCreateWithTags(jobs) );
   }
 
   addTagsFromContent(jobs) {
     return db.Tag.findAll({attributes: ['key']}).then(tags=> {
-      _.each(jobs, job=> {
-        job.tags = _.reduce(tags, (m, v)=> {
-          // check whole word, but allow for punctuation
-          if (RegExp(`[^a-zA-Z\d]${_.escapeRegExp(v.key)}[^a-zA-Z\d]`, 'gi').test(job.description))
-            m.push(v.key);
-          return m;
-        }, []);
+      jobs.forEach(job=> {
+        job.tags = job.tags.concat(
+          _.reduce(tags, (m, v)=> {
+            // check whole word, but allow for punctuation
+            let exp = RegExp(`\\b${_.escapeRegExp(v.key)}\\b`, 'gi');
+            if (exp.test(job.description) || exp.test(job.title))
+              m.push(v.key);
+            return m;
+          }, [])
+        );
       })
-      return new Promise((resolve)=>resolve(jobs));
+      return Promise.resolve(jobs);
     })
   }
 
@@ -50,7 +58,7 @@ exports.Adaptor = class Adaptor {
   }
 }
 
-var adaptors = _.reduce([
+let adaptors = _.reduce([
   //'gunio',
   //'remoteok',
   'stackoverflow',
@@ -66,15 +74,15 @@ var adaptors = _.reduce([
 
 exports.adaptors = adaptors;
 
-exports.refresh = function () {
+exports.refresh = function() {
   //return Promise.all( _.map(exports.adaptors, a=>a.refresh() ));
 
   // seed tags
-  var promises = _.reduce(adaptors, (m,v,k)=>{
+  let promises = _.reduce(adaptors, (m,v,k)=>{
     m[v.seedsTags ? 'seedsTags' : 'needsTags'].push(v);
     return m;
   }, {seedsTags:[], needsTags:[]});
-  return Promise.all(promises.seedsTags.map(a=>a.refresh())).then(()=>{
-    return Promise.all(promises.needsTags.map(a=>a.refresh()));
-  })
+  return Promise.all(promises.seedsTags.map(a=>a._refresh())).then(()=>
+    Promise.all(promises.needsTags.map(a=>a._refresh()))
+  );
 }

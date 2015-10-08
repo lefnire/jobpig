@@ -1,16 +1,16 @@
 'use strict';
 
-var request = require("request");
-var cheerio = require("cheerio");
+let request = require("request");
+let cheerio = require("cheerio");
+let Adaptor = require('./index').Adaptor;
 
-var Adaptor = require('./index').Adaptor;
-class RemoteOK extends Adaptor {
+module.exports = class RemoteOK extends Adaptor {
   refresh() {
-    return new Promise(resolve=>{
-      request('https://remoteok.io', function(err, response, html){
-        var $ = cheerio.load(html);
-        var jobs = $('tr.job').map(function(){
-          var el = $(this);
+    return new Promise(resolve=> {
+      request('https://remoteok.io', (err, response, html)=> {
+        let $ = cheerio.load(html);
+        let jobs = $('tr.job').map(function(){
+          let el = $(this);
           return {
             source: 'remoteok',
             title: el.find('.company_and_position h2').text(),
@@ -27,10 +27,8 @@ class RemoteOK extends Adaptor {
             }).toArray()
           }
         }).toArray();
-        Adaptor.prototype.refresh(jobs).then(resolve);
+        resolve(jobs);
       })
     })
   }
 }
-
-module.exports = RemoteOK;

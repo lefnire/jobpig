@@ -1,12 +1,12 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var _ = require('lodash');
+let Adaptor = require('./index').Adaptor;
+let _ = require('lodash');
 
 module.exports = class WeWorkRemotely extends Adaptor {
   refresh() {
     return this.fetchFeed('https://weworkremotely.com/jobs.rss').then(results=>{
-      var jobs = _.map(results.rss.channel["0"].item, function(item){
+      let jobs = _.map(results.rss.channel["0"].item, item=> {
         return {
           key: item.guid[0],
           source: 'weworkremotely',
@@ -20,7 +20,7 @@ module.exports = class WeWorkRemotely extends Adaptor {
           tags: []
         }
       })
-      return Adaptor.prototype.refresh(jobs);
+      return Promise.resolve(jobs);
     })
   }
 }

@@ -1,10 +1,10 @@
 'use strict';
 
-var Adaptor = require('./index').Adaptor;
-var nconf = require('nconf');
-var request = require('request');
+let Adaptor = require('./index').Adaptor;
+let nconf = require('nconf');
+let request = require('request');
 
-class GunIO extends Adaptor {
+module.exports = class GunIO extends Adaptor {
   refresh() {
     return new Promise(resolve=>{
       let jobs;
@@ -43,10 +43,8 @@ class GunIO extends Adaptor {
         jobs = _jobs;
       })
       .run(function (err, nightmare) {
-          Adaptor.prototype.refresh(jobs).then(resolve);
+          resolve(jobs);
       });
     })
   }
 }
-
-module.exports = GunIO;
