@@ -76,6 +76,7 @@ let adaptors = _.reduce([
   'jobmote',
   'remotecoder',
   'remoteworkhunt',
+  'workingnomads',
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;
@@ -84,14 +85,19 @@ let adaptors = _.reduce([
 exports.adaptors = adaptors;
 
 exports.refresh = function() {
-  //return Promise.all( _.map(exports.adaptors, a=>a.refresh() ));
-
-  // seed tags
-  let promises = _.reduce(adaptors, (m,v,k)=>{
-    m[v.seedsTags ? 'seedsTags' : 'needsTags'].push(v);
+  // We break down the adaptors.refresh() into steps:
+  // 1. Those which scrape tags, so said tags can be provided to those which don't
+  // 2. "The rest", basically
+  // 3. And also, we kick off any adaptors which are extremely slow in the background, so nothing is waiting on them (not part of the promise chain)
+  let seq = _.reduce(adaptors, (m,v)=> {
+    m[v.seedsTags ? 'seedsTags' : v.slow ? 'slow' : 'standard'].push(v);
     return m;
-  }, {seedsTags:[], needsTags:[]});
-  return Promise.all(promises.seedsTags.map(a=>a._refresh())).then(()=>
-    Promise.all(promises.needsTags.map(a=>a._refresh()))
-  );
+  }, {seedsTags:[], slow:[], standard:[]});
+
+  let _refresh = a=>a._refresh();
+  return Promise.all(seq.seedsTags.map(_refresh))
+    .then(()=> {
+      seq.slow.map(_refresh)
+      return Promise.all(seq.standard.map(_refresh));
+    });
 }
