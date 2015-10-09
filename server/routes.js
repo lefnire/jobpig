@@ -16,6 +16,7 @@ router.delete('/user/:table/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 
+router.get('/jobs/cron', jobs.poormanscron);
 router.get('/jobs/mine', ensureAuth, jobs.mine);
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);

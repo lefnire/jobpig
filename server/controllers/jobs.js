@@ -9,7 +9,6 @@ exports.mine = function(req, res, next){
 }
 
 exports.list = function(req, res, next){
-  db.Meta.runCronIfNecessary(); // FIXME: Where to put this?
   db.Job.filterJobs(req.user, req.params.filter).then(jobs=>res.send(jobs)).catch(next);
 };
 
@@ -23,4 +22,9 @@ exports.addNote = function(req, res, next){
 
 exports.setStatus = function(req, res, next){
   db.Job.score(req.user.id, req.params.id, req.params.status).then(()=>res.sendStatus(200)).catch(next);
+}
+
+// Idea from https://www.drupal.org/project/poormanscron
+exports.poormanscron = function(req, res, next) {
+  db.Meta.runCronIfNecessary();
 }

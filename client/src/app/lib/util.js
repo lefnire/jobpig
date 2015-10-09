@@ -16,8 +16,9 @@ var request = defaults();
 window.API_URL = "<nconf:urls:server>"; // this gets replaced from gulp-replace based on NODE_ENV. See config.json
 window.jwt = null;
 
-// wake up heroku if it's sleeping, we'll need it soon
-request.get(API_URL).end(()=>{});
+// On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
+// This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
+request.get(API_URL+'/jobs/cron').end(()=>{});
 
 var auth = {
   login(token){
