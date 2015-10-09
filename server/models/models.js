@@ -114,7 +114,7 @@ ORDER BY jobs.id
         _.each(jobs, job=>{
           job.tags = _.map(job.tags, tag=>{
             var key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
-            if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
+            //if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
             return key;
           })
         })
