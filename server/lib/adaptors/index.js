@@ -71,6 +71,7 @@ let adaptors = _.reduce([
   'frontenddevjob',
   'offsite_careers',
   'virtualvocations',
+  'hasjob',
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;
