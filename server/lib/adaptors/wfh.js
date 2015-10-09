@@ -11,7 +11,7 @@ module.exports = class WFH extends Adaptor {
           key: item.id[0],
           source: 'wfh',
           title: item.title[0],
-          company: 'Unknown',
+          company: null,
           url: item.link[0].$.href,
           description: item.content[0]._,
           location: 'Remote',

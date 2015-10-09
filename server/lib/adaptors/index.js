@@ -61,6 +61,7 @@ exports.Adaptor = class Adaptor {
 let adaptors = _.reduce([
   //'gunio',
   //'remoteok',
+
   'stackoverflow',
   'github',
   'authenticjobs',
@@ -69,6 +70,7 @@ let adaptors = _.reduce([
   'jobspresso',
   'frontenddevjob',
   'offsite_careers',
+  'virtualvocations',
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;
