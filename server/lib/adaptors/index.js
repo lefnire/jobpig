@@ -74,6 +74,7 @@ let adaptors = _.reduce([
   'hasjob',
   'landing_jobs',
   'jobmote',
+  'remotecoder',
 ], function (m, v, k) {
   m[v] = new (require(`./${v}`))();
   return m;
