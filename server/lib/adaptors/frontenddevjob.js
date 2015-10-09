@@ -14,7 +14,7 @@ module.exports = class Frontenddevjob extends Adaptor {
           location = location && location[1];
 
         return {
-          key: j.guid[0],
+          key: j.guid[0]._,
           source: 'frontenddevjob',
           title: j.title[0],
           company,

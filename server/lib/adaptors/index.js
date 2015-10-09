@@ -85,19 +85,20 @@ let adaptors = _.reduce([
 exports.adaptors = adaptors;
 
 exports.refresh = function() {
-  // We break down the adaptors.refresh() into steps:
-  // 1. Those which scrape tags, so said tags can be provided to those which don't
-  // 2. "The rest", basically
-  // 3. And also, we kick off any adaptors which are extremely slow in the background, so nothing is waiting on them (not part of the promise chain)
   let seq = _.reduce(adaptors, (m,v)=> {
     m[v.seedsTags ? 'seedsTags' : v.slow ? 'slow' : 'standard'].push(v);
     return m;
   }, {seedsTags:[], slow:[], standard:[]});
 
   let _refresh = a=>a._refresh();
+
+  // First, scrape jobs which provide tags, as they will be needed by those which don't (below)
   return Promise.all(seq.seedsTags.map(_refresh))
-    .then(()=> {
-      seq.slow.map(_refresh)
-      return Promise.all(seq.standard.map(_refresh));
-    });
+  .then(()=> {
+    // Then kick off scraping slow-loading boards in the background, let's not wait for them (not part of promise chain)
+    seq.slow.map(_refresh);
+
+    // Then scrape the rest, using tags provided above
+    return Promise.all(seq.standard.map(_refresh));
+  });
 }
