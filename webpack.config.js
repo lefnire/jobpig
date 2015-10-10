@@ -5,6 +5,8 @@ let path = require('path');
 let nconf = require('nconf');
 let TransferWebpackPlugin = require('transfer-webpack-plugin');
 let StringReplacePlugin = require("string-replace-webpack-plugin");
+let Clean = require('clean-webpack-plugin');
+let S3Plugin = require('webpack-s3-plugin');
 
 nconf.argv().env().file({ file: 'config.json' });
 let prod = nconf.get('NODE_ENV') === 'production';
@@ -31,22 +33,33 @@ let config = {
     filename: 'app.js'  //Name of output file
   },
   plugins: [
-    //Enables Hot Modules Replacement
-    prod ? new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        //supresses warnings, usually from module minification
-        warnings: false
-      }
-    }) : new webpack.HotModuleReplacementPlugin(),
-    //Allows error warnings but does not stop compiling. Will remove when eslint is added
-    new webpack.NoErrorsPlugin(),
-    //Transfer Files
-    new TransferWebpackPlugin([
-      {from: 'www'}
-    ], path.resolve(__dirname, "client/src")),
+    // Clean up first
+    new Clean(['client/build']),
+
     // Replace <nconf:*>
-    new StringReplacePlugin()
+    new StringReplacePlugin(),
+
+    // Uglify in prod, module hot-loading in dev
+    prod? new webpack.optimize.UglifyJsPlugin({
+        compress: { warnings: false } //supresses warnings, usually from module minification
+      }) :
+      new webpack.HotModuleReplacementPlugin(),
+
+    // Allows error warnings but does not stop compiling. Will remove when eslint is added
+    new webpack.NoErrorsPlugin(),
+
+    // Copy
+    new TransferWebpackPlugin([
+      {from: 'client/src/www'},
+      {from: 'node_modules/css-social-buttons/css', to: 'node_modules/css-social-buttons/css'}
+    ], path.resolve(__dirname, ".")),
+
+    prod? new S3Plugin({
+      s3Options: nconf.get('aws:options'),
+      s3UploadOptions: nconf.get('aws:upload_options')
+    }) : {apply:()=>{}}
   ],
+
   module: {
     //Loaders to interpret non-vanilla javascript code as well as most other extensions including images and text.
     preLoaders: [

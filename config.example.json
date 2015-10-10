@@ -13,9 +13,15 @@
   },
   "ga_tracking_id":"ga_tracking_id",
   "aws":{
-    "accessKeyId":"accessKeyId",
-    "secretAccessKey":"secretAccessKey",
-    "bucket":"bucket"
+    "options":{
+      "accessKeyId":"accessKeyId",
+      "secretAccessKey":"secretAccessKey",
+      "region": "us-east-1"
+    },
+    "upload_options": {
+      "Bucket":"jobpigapp.com",
+      "ACL": "public-read"
+    }
   },
   "development": {
     "username": "username",
