@@ -5,7 +5,7 @@ import _ from 'lodash';
 import validator from 'validator';
 import util from '../../lib/util';
 
-var _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
+let _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
 
 class Login extends React.Component{
   constructor(){
@@ -92,13 +92,13 @@ class Register extends React.Component{
   }
 
   _validate(f){
-    var v = this.refs[f].getValue(),
+    let v = this.refs[f].getValue(),
       e = {};
-    if (f=='email' && !validator.isEmail(v))
+    if (f==='email' && !validator.isEmail(v))
       e[f] = 'Please enter an email address';
-    if (f=='password' && v.length<3)
+    if (f==='password' && v.length<3)
       e[f] = 'Password must be greater than 3 characters';
-    if (f=='confirmPassword' && v!=this.refs.password.getValue())
+    if (f==='confirmPassword' && v!==this.refs.password.getValue())
       e[f] = "Passwords don't match";
     this.setState({errors:e});
   }

@@ -44,7 +44,7 @@ class Jobs extends React.Component {
         <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
         <mui.TextField hintText="Enter a few tags (comma-delimited)" ref='tags' type='text' fullWidth={true} />
       </mui.Dialog>
-      {(!this.props.jobs[0] && window.location.hash=="#/jobs/inbox") ?
+      {(!this.props.jobs[0] && window.location.hash==="#/jobs/inbox") ?
           <mui.CircularProgress mode="indeterminate" size={1.5} />
         : this.props.jobs.map(job=> <Job job={job} key={job.id} onAction={JobActions.fetch}/>)}
     </div>

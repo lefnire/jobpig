@@ -2,17 +2,17 @@ import _ from 'lodash';
 import superagent from 'superagent';
 
 // If client gets an "unauthorized" response while logged in, log them out.
-var _cb = superagent.Request.prototype.callback;
+let _cb = superagent.Request.prototype.callback;
 superagent.Request.prototype.callback = function(err, res) {
   _cb.call(this, err, res);
-  if (err && err.status == 403)
+  if (err && err.status === 403)
     auth.logout();
 }
 
 import defaults from 'superagent-defaults';
 import Alt from 'alt';
-var alt = new Alt();
-var request = defaults();
+let alt = new Alt();
+let request = defaults();
 window.API_URL = "<nconf:urls:server>"; // this gets replaced from gulp-replace based on NODE_ENV. See config.json
 window.jwt = null;
 
@@ -20,10 +20,10 @@ window.jwt = null;
 // This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
 request.get(API_URL+'/jobs/cron').end(()=>{});
 
-var auth = {
+let auth = {
   login(token){
     window.localStorage.setItem('jwt', token);
-    var d = new Date();
+    let d = new Date();
     window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
     window.location = '/';
   },
@@ -43,7 +43,7 @@ var auth = {
   if (jwt) request.set('x-access-token', jwt).on('request', req=>req.url = API_URL+req.url);
 })();
 
-var setupHotkeys = function(shortcuts) {
+let setupHotkeys = function(shortcuts) {
   return _.reduce(shortcuts, (m,v,k)=>{
     let mode = v.enabledWhenEditing ? 'editing' : 'default';
     m[mode].keys[k] = v.k;

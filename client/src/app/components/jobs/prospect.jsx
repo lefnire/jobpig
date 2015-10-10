@@ -5,8 +5,8 @@ import {request} from '../../lib/util';
 
 export default class Prospect extends React.Component {
   render() {
-    var p = this.props.prospect;
-    var standardActions = [
+    let p = this.props.prospect;
+    let standardActions = [
       { text: 'Cancel' },
       { text: 'Send', onTouchTap: this._onDialogSubmit, ref: 'submit' }
     ];

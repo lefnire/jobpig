@@ -6,8 +6,8 @@ import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 class Tag extends React.Component {
   // key,score,id,table
   render(){
-    var {label,obj,id} = this.props;
-    var {score} = obj;
+    let {label,obj,id} = this.props;
+    let {score} = obj;
     return <div>
       <mui.ListItem
         key={id}
@@ -61,9 +61,9 @@ export default class Profile extends React.Component{
   }
   render(){
     if (!this.state.profile) return null;
-    var lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
-    var p = this.state.profile;
-    var linkedinUrl = `${API_URL}/auth/linkedin?token=${window.jwt}`;
+    let lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
+    let p = this.state.profile;
+    let linkedinUrl = `${API_URL}/auth/linkedin?token=${window.jwt}`;
 
     return (
       <mui.ClearFix>

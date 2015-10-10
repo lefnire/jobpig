@@ -5,8 +5,8 @@ import routes from './routes.jsx';
 import Router from 'react-router';
 import mui from 'material-ui';
 
-var ThemeManager = new mui.Styles.ThemeManager();
-var {Colors} = mui.Styles;
+let ThemeManager = new mui.Styles.ThemeManager();
+let {Colors} = mui.Styles;
 
 //Needed for React Developer Tools
 window.React = React;
@@ -15,7 +15,7 @@ window.React = React;
 injectTapEventPlugin();
 
 Router.run(routes, Router.HashLocation, (Root) => {
-  var Main = React.createClass({
+  let Main = React.createClass({
     componentWillMount() {
       ThemeManager.setPalette({
         accent1Color: Colors.cyan700,

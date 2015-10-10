@@ -71,8 +71,8 @@ export default React.createClass({
   },
 
   render(){
-    var styles = this._getStyles();
-    var rightIconMenu = (
+    let styles = this._getStyles();
+    let rightIconMenu = (
       <mui.IconMenu iconButtonElement={<mui.IconButton><MoreVertIcon /></mui.IconButton>}>
         <mui.MenuItem>Apply</mui.MenuItem>
         <mui.MenuItem>Like</mui.MenuItem>

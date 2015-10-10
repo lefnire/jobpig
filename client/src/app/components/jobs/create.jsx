@@ -36,8 +36,8 @@ export default class CreateJob extends React.Component {
 
   _createJob() {
 
-    var body = _.reduce('title company location remote tags money description'.split(' '), (m, v)=> {
-      var el = this.refs[v];
+    let body = _.reduce('title company location remote tags money description'.split(' '), (m, v)=> {
+      let el = this.refs[v];
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});

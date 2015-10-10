@@ -24,7 +24,7 @@ export default React.createClass({
     router: React.PropTypes.func.isRequired
   },
   render(){
-    var title = _.find(menuItems, {
+    let title = _.find(menuItems, {
       route:this.context.router.getCurrentPath().replace(/^\//,'')
     }).text;
 
@@ -46,14 +46,14 @@ export default React.createClass({
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
 
-    if (payload.route=='logout') return util.auth.logout();
+    if (payload.route==='logout') return util.auth.logout();
 
     this.context.router.replaceWith('/'+payload.route);
     if (this.context.router.isActive('jobs')) JobActions.fetch();
 
     //FIXME: router.transitionTo is only working the first click, any time after doesn't change routes???
     window.setTimeout(()=>{
-      if (this.context.router.getCurrentPath() != '/'+payload.route) return window.location.reload();
+      if (this.context.router.getCurrentPath() !== '/'+payload.route) return window.location.reload();
     })
   }
 
