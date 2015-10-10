@@ -2,7 +2,7 @@ import React from 'react';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
-import FullWidthSection from '../material-ui-docs/docs/src/app/components/full-width-section.jsx';
+import FullWidthSection from './full-width-section.jsx';
 let { Mixins, Styles } = require('material-ui');
 let { StylePropable, StyleResizable } = Mixins;
 let { Colors, Spacing, Typography } = Styles;

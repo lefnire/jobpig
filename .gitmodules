@@ -1,3 +1,0 @@
-[submodule "client/src/app/components/material-ui-docs"]
-	path = client/src/app/components/material-ui-docs
-	url = https://github.com/callemall/material-ui
