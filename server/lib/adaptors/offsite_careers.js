@@ -4,13 +4,10 @@ let Adaptor = require('./index').Adaptor;
 let _ = require('lodash');
 
 module.exports = class OffsiteCareers extends Adaptor {
-  constructor(){
-    super();
-    this.seedsTags = true;
-  }
   refresh() {
     return this.fetchFeed('http://offsite.careers/feeds/jobs').then(results=> {
-      let jobs = _.map(results.rss.channel[0].item, j=> {
+      let feed = results.rss.channel[0].item;
+      let jobs = _.map(feed.slice(0,100), j=> {
         return {
           key: j.guid[0]._,
           source: 'offsite_careers',

@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class Frontenddevjob extends Adaptor {
   refresh() {
     return this.fetchFeed('https://zapier.com/engine/rss/242783/frontenddevjob').then(results=> {
-      let jobs = _.map(results.rss.channel[0].item, j=> {
+      let feed = results.rss.channel[0].item
+      let jobs = _.map(feed.slice(0,100), j=> {
 
         let company = /at (.*?) (on site|remote)/.exec(j.title[0]);
           company = company && company[1];

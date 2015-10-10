@@ -6,6 +6,7 @@ let xml2js = require('xml2js');
 let parser = new xml2js.Parser();
 let request = require('request');
 let db = require('../../models/models');
+let Bluebird = require('sequelize/node_modules/bluebird');
 
 exports.Adaptor = class Adaptor {
   constructor() {
@@ -58,47 +59,34 @@ exports.Adaptor = class Adaptor {
   }
 }
 
-let adaptors = _.reduce([
+let adaptors = [
   //'gunio',
   //'remoteok',
 
+  // Process those which seed tags first
   'stackoverflow',
+  'remoteworkhunt',
+  'offsite_careers',
+
+  // Then the rest
   'github',
   'authenticjobs',
   'weworkremotely',
   'wfh',
   'jobspresso',
   'frontenddevjob',
-  'offsite_careers',
   'virtualvocations',
   'hasjob',
   'landing_jobs',
   'jobmote',
   'remotecoder',
-  'remoteworkhunt',
+
+  // And the really slow adaptors last
   'workingnomads',
-], function (m, v, k) {
-  m[v] = new (require(`./${v}`))();
-  return m;
-}, {});
+].map( a=> new (require('./'+a))() );
 
 exports.adaptors = adaptors;
 
-exports.refresh = function() {
-  let seq = _.reduce(adaptors, (m,v)=> {
-    m[v.seedsTags ? 'seedsTags' : v.slow ? 'slow' : 'standard'].push(v);
-    return m;
-  }, {seedsTags:[], slow:[], standard:[]});
-
-  let _refresh = a=>a._refresh();
-
-  // First, scrape jobs which provide tags, as they will be needed by those which don't (below)
-  return Promise.all(seq.seedsTags.map(_refresh))
-  .then(()=> {
-    // Then kick off scraping slow-loading boards in the background, let's not wait for them (not part of promise chain)
-    seq.slow.map(_refresh);
-
-    // Then scrape the rest, using tags provided above
-    return Promise.all(seq.standard.map(_refresh));
-  });
-}
+// Process adaptors.refresh() serially, as loading them all into memory crashes heroku. Slow, I know, but whatevs
+exports.refresh = () =>
+  Bluebird.each(adaptors, a=>a._refresh())

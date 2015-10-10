@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class Github extends Adaptor {
   refresh() {
     return this.fetchFeed('https://jobs.github.com/positions.atom').then(results=> {
-      let jobs = _.map(results.feed.entry, item=> {
+      let feed = results.feed.entry;
+      let jobs = _.map(feed.slice(0,100), item=> {
         return {
           key: item.id[0],
           source: 'github',

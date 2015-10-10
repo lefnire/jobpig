@@ -4,13 +4,10 @@ let Adaptor = require('./index').Adaptor;
 let _ = require('lodash');
 
 module.exports = class Workingnomads extends Adaptor {
-  constructor(){
-    super();
-    this.slow = true;
-  }
   refresh() {
     return this.fetchFeed('http://www.workingnomads.co/jobs/feed/all.atom').then(results=> {
-      let jobs = _.map(results.feed.entry.slice(0,100), j=> {
+      let feed = results.feed.entry.slice(0,100);
+      let jobs = _.map(feed.slice(0,100), j=> {
         return {
           key: j.id[0],
           source: 'workingnomads',

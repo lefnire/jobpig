@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class Jobspresso extends Adaptor {
   refresh() {
     return this.fetchFeed('https://jobspresso.co/?feed=job_feed').then(results=>{
-      let jobs = _.map(results.rss.channel[0].item, item=> {
+      let feed = results.rss.channel[0].item;
+      let jobs = _.map(feed.slice(0,100), item=> {
         let location = item['job_listing:location'] ? item['job_listing:location'][0] : 'Anywhere';
         return {
           key: item.guid[0]._,

@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class LandingJobs extends Adaptor {
   refresh() {
     return this.fetchFeed('https://landing.jobs/offers.atom').then(results=> {
-      let jobs = _.map(results.feed.entry, j=> {
+      let feed = results.feed.entry;
+      let jobs = _.map(feed.slice(0,100), j=> {
         return {
           key: j.id[0],
           source: 'landing_jobs',

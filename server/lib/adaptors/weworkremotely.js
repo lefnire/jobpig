@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class WeWorkRemotely extends Adaptor {
   refresh() {
     return this.fetchFeed('https://weworkremotely.com/jobs.rss').then(results=>{
-      let jobs = _.map(results.rss.channel["0"].item, item=> {
+      let feed = results.rss.channel["0"].item;
+      let jobs = _.map(feed.slice(0,100), item=> {
         return {
           key: item.guid[0],
           source: 'weworkremotely',

@@ -6,7 +6,8 @@ let _ = require('lodash');
 module.exports = class Hasjob extends Adaptor {
   refresh() {
     return this.fetchFeed('https://hasjob.co/feed').then(results=> {
-      let jobs = _.map(results.feed.entry, j=> {
+      let feed = results.feed.entry;
+      let jobs = _.map(feed.slice(0,100), j=> {
         let exp = /<strong><a.*?>(.*?)<\/a><\/strong><br\/>(.*?)\n/g.exec(j.content[0]._);
         return {
           key: j.id[0],
