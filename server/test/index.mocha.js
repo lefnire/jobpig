@@ -23,8 +23,8 @@ describe('Jobpig', function() {
 
   //after(app.close)
   it('runs cron', function(done) {
-    process.env.VCR_MODE = 'playback';
-    var sepia = require('sepia');
+    //process.env.VCR_MODE = 'playback';
+    //var sepia = require('sepia');
     db.Meta.needsCron()
     .then(val=>{
       expect(val).to.be(true);
@@ -32,7 +32,7 @@ describe('Jobpig', function() {
     }).then(()=>db.Job.count())
     .then(ct=>{
       expect(ct).to.be.greaterThan(0);
-      revertSepia();
+      //revertSepia();
       done();
     })
   })
