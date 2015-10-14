@@ -6,6 +6,10 @@
     "start": "node_modules/react-native/packager/packager.sh"
   },
   "dependencies": {
-    "react-native": "^0.12.0"
+    "lodash": "^3.10.1",
+    "react-native": "^0.12.0",
+    "tcomb": "^1.1.0",
+    "tcomb-form-native": "^0.2.7",
+    "tcomb-validation": "^1.0.4"
   }
 }
