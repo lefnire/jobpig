@@ -65,7 +65,7 @@ class Job extends React.Component {
       <mui.Card style={{background:'#f8f8f8'}}>
         <mui.CardText>
           <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-          {job.users && job.users.map((u)=><Prospect prospect={u} />)}
+          {job.users && job.users.map(u=> <Prospect key={u.id} prospect={u} />)}
         </mui.CardText>
       </mui.Card>
 

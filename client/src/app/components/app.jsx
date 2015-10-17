@@ -21,11 +21,11 @@ let menuItems = [
 
 export default React.createClass({
   contextTypes: {
-    router: React.PropTypes.func.isRequired
+    location: React.PropTypes.object
   },
   render(){
     let title = _.find(menuItems, {
-      route:this.context.router.getCurrentPath().replace(/^\//,'')
+      route: this.props.location.pathname.replace(/^\//,'')
     }).text;
 
     return <div>
@@ -39,22 +39,14 @@ export default React.createClass({
         menuItems={menuItems}
         onChange={this._goto}
         />
-      <RouteHandler />
+      {this.props.children}
     </div>;
   },
 
   _goto(e, key, payload){
     if (!payload) payload = {route:e};
-
     if (payload.route==='logout') return util.auth.logout();
-
-    this.context.router.replaceWith('/'+payload.route);
-    if (this.context.router.isActive('jobs')) JobActions.fetch();
-
-    //FIXME: router.transitionTo is only working the first click, any time after doesn't change routes???
-    window.setTimeout(()=>{
-      if (this.context.router.getCurrentPath() !== '/'+payload.route) return window.location.reload();
-    })
+    this.props.history.pushState(null, '/'+payload.route);
   }
 
 });

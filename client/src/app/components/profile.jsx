@@ -96,7 +96,7 @@ export default class Profile extends React.Component{
               <mui.Tab label="Tags" >
                 <mui.List>
                   {this.state.profile.tags.map(t=>
-                    <Tag label={t.key} obj={t.user_tags} id={t.id} table='user_tags' onUpdate={this._refresh.bind(this)}/>
+                    <Tag key={t.id} label={t.key} obj={t.user_tags} id={t.id} table='user_tags' onUpdate={this._refresh.bind(this)}/>
                   )}
                 </mui.List>
               </mui.Tab>
@@ -104,7 +104,7 @@ export default class Profile extends React.Component{
               <mui.Tab label="Companies" >
                 <mui.List>
                   {this.state.profile.user_companies.map(c=>
-                    <Tag label={c.title} obj={c} id={c.id} table='user_companies' onUpdate={this._refresh.bind(this)}/>
+                    <Tag key={c.id} label={c.title} obj={c} id={c.id} table='user_companies' onUpdate={this._refresh.bind(this)}/>
                   )}
                 </mui.List>
               </mui.Tab>

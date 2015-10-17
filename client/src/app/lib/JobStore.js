@@ -21,7 +21,6 @@ export default alt.createStore(class JobStore {
         window.setTimeout(()=>this.fetch(), 1000);
       }
       this.setState({jobs: res.body});
-      window.scrollTo(0,0);
     })
   }
 

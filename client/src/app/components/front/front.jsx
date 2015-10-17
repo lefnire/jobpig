@@ -3,10 +3,10 @@ import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
 let { Mixins, Styles } = require('material-ui');
 let { StylePropable, StyleResizable } = Mixins;
 let { Colors, Spacing, Typography } = Styles;
-let ThemeManager = new Styles.ThemeManager().getCurrentTheme();
 
 export default React.createClass({
   mixins: [StylePropable, StyleResizable],
@@ -28,7 +28,7 @@ export default React.createClass({
         maxWidth: '1204px'
       },
       label: {
-        color: ThemeManager.palette.primary1Color,
+        //color: ThemeManager.palette.primary1Color,
       },
       h1: {
         color: Colors.grey50,
