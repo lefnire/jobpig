@@ -1,12 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
-import Router from 'react-router';
 import _ from 'lodash';
 import util from '../lib/util';
-
-import JobActions from '../lib/JobActions.js';
-
-let {RouteHandler} = Router;
 
 let menuItems = [
   { route: 'jobs/inbox', text: 'Inbox' },
@@ -31,14 +26,12 @@ export default React.createClass({
     return <div>
       <mui.AppBar
         title={title}
-        onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()}
-        />
+        onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()} />
       <mui.LeftNav
         ref="leftNav"
         docked={false}
         menuItems={menuItems}
-        onChange={this._goto}
-        />
+        onChange={this._goto} />
       {this.props.children}
     </div>;
   },

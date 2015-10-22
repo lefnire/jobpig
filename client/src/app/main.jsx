@@ -1,13 +1,14 @@
 import util from './lib/util';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-const ThemeManager = require('material-ui/lib/styles/theme-manager');
-const LightRawTheme = require('material-ui/lib/styles/raw-themes/light-raw-theme');
-const Colors = require('material-ui/lib/styles/colors');
-
+import {Mixins, Styles} from 'material-ui';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Routes from './routes.jsx';
+
+const { StylePropable } = Mixins;
+const { Colors, Spacing, Typography } = Styles;
+const ThemeManager = Styles.ThemeManager;
+const DefaultRawTheme = Styles.LightRawTheme;
 
 //Needed for React Developer Tools
 window.React = React;
@@ -16,6 +17,7 @@ window.React = React;
 injectTapEventPlugin();
 
 let Main = React.createClass({
+  mixins: [StylePropable],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
@@ -23,7 +25,7 @@ let Main = React.createClass({
 
   getInitialState () {
     return {
-      muiTheme: ThemeManager.getMuiTheme(LightRawTheme),
+      muiTheme: ThemeManager.getMuiTheme(DefaultRawTheme),
     };
   },
 

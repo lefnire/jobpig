@@ -4,9 +4,10 @@ import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
-let { Mixins, Styles } = require('material-ui');
-let { StylePropable, StyleResizable } = Mixins;
-let { Colors, Spacing, Typography } = Styles;
+import { Mixins, Styles } from 'material-ui';
+
+const { StylePropable, StyleResizable } = Mixins;
+const { Colors, Spacing, Typography } = Styles;
 
 export default React.createClass({
   mixins: [StylePropable, StyleResizable],
@@ -30,14 +31,19 @@ export default React.createClass({
       label: {
         //color: ThemeManager.palette.primary1Color,
       },
+      login: {
+        position:'absolute',
+        right:10,
+        top:10,
+      },
       h1: {
         color: Colors.grey50,
         fontWeight: Typography.fontWeightMedium,
         fontFamily: "'Special Elite', cursive"
       },
       h2: {
-        fontSize: 60,
-        lineHeight: 40,
+        fontSize: 20,
+        lineHeight: '28px',
         paddingTop: 19,
         marginBottom: 13,
         letterSpacing: 0,
@@ -56,7 +62,12 @@ export default React.createClass({
         lineHeight: '32px',
         paddingTop: 16,
         marginBottom: 12,
-      }
+      },
+      pig: {
+        position:'absolute',
+        top:10,
+        width:'20%'
+      },
     };
 
     styles.h2 = this.mergeStyles(styles.h1, styles.h2);
@@ -65,6 +76,7 @@ export default React.createClass({
       styles.tagline = this.mergeStyles(styles.tagline, styles.taglineWhenLarge);
       styles.h1 = this.mergeStyles(styles.h1, styles.h1WhenLarge);
       styles.h2 = this.mergeStyles(styles.h2, styles.h2WhenLarge);
+      delete styles.pig.width;
     }
 
     return styles;
@@ -84,9 +96,9 @@ export default React.createClass({
       <div>
         <Auth ref='auth' />
 
-        <mui.RaisedButton style={{position:'absolute',right:10,top:10}} label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
+        <mui.RaisedButton style={styles.login} label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
         <FullWidthSection style={styles.root}>
-          <img src="Pig.png" style={{position:'absolute', top:10}}/>
+          <img src="Pig.png" style={styles.pig}/>
           <div style={styles.tagline}>
             <h1 style={styles.h1}>Jobpig</h1>
             <h2 style={styles.h2}>Find jobs tailored to you.</h2>
