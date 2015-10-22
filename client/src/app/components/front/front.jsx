@@ -12,78 +12,17 @@ const { Colors, Spacing, Typography } = Styles;
 export default React.createClass({
   mixins: [StylePropable, StyleResizable],
 
-  _getStyles(){
-
+  render(){
     let styles = {
       root: {
         backgroundColor: Colors.blueGrey500,
-        overflow: 'hidden',
       },
-      tagline: {
-        margin: '16px auto 0 auto',
-        textAlign: 'center',
-        maxWidth: 575,
-      },
-      examples: {
-        margin: '-110px auto 0 auto',
-        maxWidth: '1204px'
-      },
-      label: {
-        //color: ThemeManager.palette.primary1Color,
-      },
-      login: {
-        position:'absolute',
-        right:10,
-        top:10,
-      },
-      h1: {
+      title: {
         color: Colors.grey50,
         fontWeight: Typography.fontWeightMedium,
-        fontFamily: "'Special Elite', cursive"
-      },
-      h2: {
-        fontSize: 20,
-        lineHeight: '28px',
-        paddingTop: 19,
-        marginBottom: 13,
-        letterSpacing: 0,
-      },
-      nowrap: {
-        whiteSpace: 'nowrap'
-      },
-      taglineWhenLarge: {
-        marginTop: 32
-      },
-      h1WhenLarge: {
-        fontSize: 56
-      },
-      h2WhenLarge: {
-        fontSize: 24,
-        lineHeight: '32px',
-        paddingTop: 16,
-        marginBottom: 12,
-      },
-      pig: {
-        position:'absolute',
-        top:10,
-        width:'20%'
       },
     };
 
-    styles.h2 = this.mergeStyles(styles.h1, styles.h2);
-
-    if (this.isDeviceSize(StyleResizable.statics.Sizes.LARGE)) {
-      styles.tagline = this.mergeStyles(styles.tagline, styles.taglineWhenLarge);
-      styles.h1 = this.mergeStyles(styles.h1, styles.h1WhenLarge);
-      styles.h2 = this.mergeStyles(styles.h2, styles.h2WhenLarge);
-      delete styles.pig.width;
-    }
-
-    return styles;
-  },
-
-  render(){
-    let styles = this._getStyles();
     let rightIconMenu = (
       <mui.IconMenu iconButtonElement={<mui.IconButton><MoreVertIcon /></mui.IconButton>}>
         <mui.MenuItem>Apply</mui.MenuItem>
@@ -96,15 +35,17 @@ export default React.createClass({
       <div>
         <Auth ref='auth' />
 
-        <mui.RaisedButton style={styles.login} label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
-        <FullWidthSection style={styles.root}>
-          <img src="Pig.png" style={styles.pig}/>
-          <div style={styles.tagline}>
-            <h1 style={styles.h1}>Jobpig</h1>
-            <h2 style={styles.h2}>Find jobs tailored to you.</h2>
+        <div className='login'>
+          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
+        </div>
+        <FullWidthSection style={styles.root} className='root'>
+          <img src="Pig.png" className='pig' />
+          <div className='tagline' >
+            <h1 style={styles.title} className='front-title'>Jobpig</h1>
+            <h2 style={styles.title} className='front-subtitle'>Find jobs tailored to you.</h2>
           </div>
         </FullWidthSection>
-        <FullWidthSection style={styles.examples}>
+        <FullWidthSection className='examples'>
           <mui.Card>
             <mui.CardTitle title='Rate job posts' />
             <mui.ListDivider />
@@ -135,7 +76,7 @@ export default React.createClass({
               <mui.List>
                 {['React', 'Node', 'Postgres', 'San Francisco, CA', 'Company, inc.'].map(k => {
                   return <mui.ListItem primaryText={
-                    <div><span style={{fontWeight:'bold', color:'green'}}>+1</span> {k}</div>
+                    <div><span className='plus-one'>+1</span> {k}</div>
                   } />
                 })}
               </mui.List>
