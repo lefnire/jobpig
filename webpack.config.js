@@ -18,7 +18,7 @@ let config = {
   entry: (prod ? [] :
     ['webpack/hot/dev-server',
     'webpack/hot/only-dev-server'])
-    .concat(path.join(__dirname, 'client/src/app/main.jsx')),
+    .concat(path.join(__dirname, 'client/src/app/index.jsx')),
   //Config options on how to interpret requires imports
   resolve: {
     //When require, do not have to add these extensions to file's name

@@ -1,5 +1,5 @@
 import React from 'react';
-import {request} from '../lib/util';
+import {request} from '../util';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 

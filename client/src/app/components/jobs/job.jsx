@@ -1,25 +1,11 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {request} from '../../lib/util';
+import {request} from '../../util';
 import Prospect from './prospect.jsx';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
-//Alt
-import JobStore from '../../lib/JobStore';
-import JobActions from '../../lib/JobActions';
-import connectToStores from 'alt/utils/connectToStores';
-
-@connectToStores
 class Job extends React.Component {
-  static getStores() {
-    return [JobStore];
-  }
-
-  static getPropsFromStores() {
-    return JobStore.getState();
-  }
-
   render() {
     let job = this.props.job,
       editing = this.props.editing === job.id;
@@ -99,7 +85,7 @@ class Job extends React.Component {
   }
 
   _setStatus(status){
-    JobActions.setStatus({id:this.props.job.id,status});
+    this.props.onSetStatus(this.props.job.id, status);
   }
 
   _cancelNote(){

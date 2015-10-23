@@ -3,7 +3,7 @@ import mui from 'material-ui';
 import request from 'superagent';
 import _ from 'lodash';
 import validator from 'validator';
-import util from '../../lib/util';
+import util from '../../util';
 
 let _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
 

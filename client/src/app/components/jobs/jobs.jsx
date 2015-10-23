@@ -1,37 +1,32 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
 import Job from './job.jsx';
-import {request} from '../../lib/util';
+import {request} from '../../util';
 
-//Alt
-import JobStore from '../../lib/JobStore';
-import JobActions from '../../lib/JobActions';
-import connectToStores from 'alt/utils/connectToStores';
+import { connect, dispatch } from 'react-redux';
+import { pushState } from 'redux-router';
+import { fetchJobs, setStatus } from '../../actions';
 
 let {Colors} = mui.Styles;
 
-@connectToStores
-class Jobs extends React.Component {
-
-  constructor(){
-    super();
-    JobActions.fetch();
-  }
-
-  static getStores() {
-    return [JobStore];
-  }
-
-  static getPropsFromStores() {
-    return JobStore.getState();
-  }
+class Jobs extends Component {
 
   componentDidMount() {
-    request.get('/user').end((err,res)=>{
-      if (_.isEmpty(res.body.tags) && !this._seedSkipped)
-        this.refs.dialog.show();
-    });
+    const { fetchJobs, filter } = this.props;
+    fetchJobs(filter);
+
+    //request.get('/user').end((err,res)=>{
+    //  if (_.isEmpty(res.body.tags) && !this._seedSkipped)
+    //    this.refs.dialog.show();
+    //});
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.filter !== this.props.filter) {
+      const { fetchJobs, filter } = nextProps;
+      fetchJobs(filter);
+    }
   }
 
   render() {
@@ -47,7 +42,7 @@ class Jobs extends React.Component {
       </mui.Dialog>
       {(!this.props.jobs[0] && window.location.hash==="#/jobs/inbox") ?
           <mui.CircularProgress mode="indeterminate" size={1.5} />
-        : this.props.jobs.map(job=> <Job job={job} key={job.id} onAction={JobActions.fetch}/>)}
+        : this.props.jobs.map(job=> <Job job={job} key={job.id} onSetStatus={this.props.setStatus} />)}
     </div>
   }
 
@@ -56,9 +51,25 @@ class Jobs extends React.Component {
       .send({tags:this.refs.tags.getValue()})
       .end(()=>{
         this.refs.dialog.dismiss();
-        JobActions.fetch()
+        this.props.fetchJobs();
       });
   }
 }
 
-export default Jobs;
+Jobs.propTypes = {
+  filter: PropTypes.string.isRequired,
+  jobs: PropTypes.array.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+};
+
+
+function mapStateToProps(state) {
+  const { filter } = state.router.params;
+  const { isFetching, jobs } = state.jobsByFilter[filter] || { isFetching: true, jobs: []};
+  return { jobs, isFetching, filter };
+}
+
+export default connect(
+  mapStateToProps,
+  { pushState, fetchJobs, setStatus }
+)(Jobs);

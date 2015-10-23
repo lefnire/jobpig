@@ -3,7 +3,7 @@ import mui from 'material-ui';
 import CreateJob from './jobs/create.jsx';
 import Job from './jobs/job.jsx';
 import _ from 'lodash';
-import {request} from '../lib/util';
+import {request} from '../util';
 
 export default class MyPosts extends React.Component {
   constructor(){

@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {request} from '../../lib/util';
+import {request} from '../../util';
 
 export default class Prospect extends React.Component {
   render() {

@@ -1,20 +1,26 @@
-import util from './lib/util';
+// React
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+// Material UI
 import {Mixins, Styles} from 'material-ui';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import Routes from './routes.jsx';
-
 const { StylePropable } = Mixins;
 const { Colors, Spacing, Typography } = Styles;
 const ThemeManager = Styles.ThemeManager;
 const DefaultRawTheme = Styles.LightRawTheme;
-
-//Needed for React Developer Tools
-window.React = React;
-
+window.React = React; //Needed for React Developer Tools
 //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
+
+// Redux
+import { Provider } from 'react-redux';
+import configureStore from './store/configureStore';
+const store = configureStore();
+import { ReduxRouter } from 'redux-router';
+
+// Custom
+import util from './util';
 
 let Main = React.createClass({
   mixins: [StylePropable],
@@ -51,7 +57,10 @@ let Main = React.createClass({
   },
 
   render(){
-    return Routes;
+    return <Provider store={store}>
+      <ReduxRouter />
+    </Provider>;
   }
-})
+});
+
 ReactDOM.render(<Main/>, document.getElementById('app'));

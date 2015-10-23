@@ -10,8 +10,6 @@ superagent.Request.prototype.callback = function(err, res) {
 }
 
 import defaults from 'superagent-defaults';
-import Alt from 'alt';
-let alt = new Alt();
 let request = defaults();
 window.API_URL = "<nconf:urls:server>"; // this gets replaced from gulp-replace based on NODE_ENV. See config.json
 window.jwt = null;
@@ -63,4 +61,4 @@ window.setTimeout(function setupGoogleAnalytics(){
   ga('send', 'pageview');
 });
 
-export default {alt, request, auth, setupHotkeys};
+export default {request, auth, setupHotkeys};
