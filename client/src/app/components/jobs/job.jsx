@@ -1,14 +1,12 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {request} from '../../util';
 import Prospect from './prospect.jsx';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
-class Job extends React.Component {
+export default class Job extends React.Component {
   render() {
-    let job = this.props.job,
-      editing = this.props.editing === job.id;
+    const { job, editing, onSaveNote, onSetEditing } = this.props;
 
     window.setTimeout(()=> { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (editing) return this.refs.noteRef.focus();
@@ -29,8 +27,8 @@ class Job extends React.Component {
                 defaultValue={job.note}
                 fullWidth={true}
                 multiLine={true} />
-              <mui.FlatButton label="Save" onTouchTap={()=>this._saveNote()} />&nbsp;
-              <mui.FlatButton label="Cancel" onTouchTap={()=>this._cancelNote()} />
+              <mui.FlatButton label="Save" onTouchTap={()=>onSaveNote(job.id, this.refs.noteRef.getValue())} />&nbsp;
+              <mui.FlatButton label="Cancel" onTouchTap={()=>onSetEditing(0)} />
             </mui.Paper>
             : job.note && <mui.Paper zDepth={2} style={{padding:5}}>
               <p>{job.note}</p>
@@ -42,7 +40,7 @@ class Job extends React.Component {
             ] : []).concat(
               <mui.FlatButton label="Mark Applied" onTouchTap={()=>this._setStatus('applied')}/>,
               <mui.FlatButton label={job.status==='inbox' ? 'Skip' : 'Hide'} onTouchTap={()=>this._setStatus('hidden')}/>,
-              <mui.FlatButton label="Add Note" onTouchTap={()=>JobActions.setEditing(job.id)}/>
+              <mui.FlatButton label="Add Note" onTouchTap={()=>onSetEditing(job.id)}/>
             )
           }</mui.CardActions>
         </mui.CardText>
@@ -87,14 +85,4 @@ class Job extends React.Component {
   _setStatus(status){
     this.props.onSetStatus(this.props.job.id, status);
   }
-
-  _cancelNote(){
-    JobActions.setEditing(0);
-  }
-
-  _saveNote(){
-    JobActions.saveNote({id:this.props.job.id, note:this.refs.noteRef.getValue()})
-  }
 }
-
-export default Job

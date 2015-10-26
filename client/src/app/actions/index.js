@@ -3,8 +3,8 @@ import fetch from 'isomorphic-fetch';
 export const REQUEST_JOBS = 'REQUEST_JOBS';
 export const RECEIVE_JOBS = 'RECEIVE_JOBS';
 export const SET_STATUS = 'SET_STATUS';
-//'setEditing',
-//'saveNote',
+export const SET_EDITING = 'SET_EDITING';
+export const SAVE_NOTE = 'SAVE_NOTE';
 
 const API_URL = "<nconf:urls:server>";
 
@@ -41,7 +41,7 @@ export function setStatus(id, status) {
 export function fetchJobs(filter) {
   return dispatch => {
     dispatch(requestJobs(filter));
-    return fetch(`${API_URL}/jobs/${filter}`, {headers:{'x-access-token': window.jwt}})
+    return fetch(`${API_URL}/jobs/${filter}`, {headers: headers()})
       .then(response => response.json())
       .then(json => {
         if (_.isEmpty(json) && filter === 'inbox') // poll for new jobs (the server is crunching)
@@ -51,12 +51,22 @@ export function fetchJobs(filter) {
   };
 }
 
-//setEditing(id){
-//  this.setState({editing: id===this.state.editing ? 0 : id});
-//}
-//
-//saveNote({id, note}){
-//  request.post(`/jobs/${id}/add-note`).send({note}).end(()=>{});
-//  _.merge(_.find(this.state.jobs,{id}), {note}); //fixme
-//  this.setState({editing:0});
-//}
+export function setEditing(id) {
+  return {
+    type: SET_EDITING,
+    id
+  }
+}
+
+export function saveNote(id, note){
+  return dispatch => {
+    return fetch(`${API_URL}/jobs/${id}/add-note`, {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify({note})
+    })
+    .then(response => {
+      return dispatch({type: SAVE_NOTE, id, note}); // TODO better way to handle this?
+    });
+  };
+}

@@ -6,7 +6,7 @@ import {request} from '../../util';
 
 import { connect, dispatch } from 'react-redux';
 import { pushState } from 'redux-router';
-import { fetchJobs, setStatus } from '../../actions';
+import { fetchJobs, setStatus, setEditing, saveNote } from '../../actions';
 
 let {Colors} = mui.Styles;
 
@@ -35,14 +35,25 @@ class Jobs extends Component {
       { text: 'Submit', onTouchTap: ()=>this._seedTags(), ref: 'submit' }
     ];
 
+    let fetching = this.props.isFetching || (!this.props.jobs[0] && this.props.filter==='inbox');
+
     return <div>
       <mui.Dialog ref='dialog' actions={dialogActions}>
         <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
         <mui.TextField hintText="Enter a few tags (comma-delimited)" ref='tags' type='text' fullWidth={true} />
       </mui.Dialog>
-      {(!this.props.jobs[0] && window.location.hash==="#/jobs/inbox") ?
-          <mui.CircularProgress mode="indeterminate" size={1.5} />
-        : this.props.jobs.map(job=> <Job job={job} key={job.id} onSetStatus={this.props.setStatus} />)}
+      { fetching ?
+        <mui.CircularProgress mode="indeterminate" size={1.5} />
+        : this.props.jobs.map(job =>
+          <Job
+            job={job}
+            key={job.id}
+            onSetStatus={this.props.setStatus}
+            onSetEditing={this.props.setEditing}
+            onSaveNote={this.props.saveNote}
+            editing={this.props.editing === job.id} />
+        )
+      }
     </div>
   }
 
@@ -60,16 +71,16 @@ Jobs.propTypes = {
   filter: PropTypes.string.isRequired,
   jobs: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  editing: PropTypes.number.isRequired,
 };
 
 
 function mapStateToProps(state) {
-  const { filter } = state.router.params;
-  const { isFetching, jobs } = state.jobsByFilter[filter] || { isFetching: true, jobs: []};
-  return { jobs, isFetching, filter };
+  const { isFetching, jobs, editing } = state.jobs || { isFetching: true, jobs: [], editing: 0};
+  return { jobs, isFetching, editing, filter: state.router.params.filter };
 }
 
 export default connect(
   mapStateToProps,
-  { pushState, fetchJobs, setStatus }
+  { pushState, fetchJobs, setStatus, setEditing, saveNote }
 )(Jobs);
