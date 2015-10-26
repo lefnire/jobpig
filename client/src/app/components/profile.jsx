@@ -1,7 +1,8 @@
 import React from 'react';
-import {request} from '../util';
+import { API_URL } from '../actions';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import { _fetch } from '../actions';
 
 class Tag extends React.Component {
   // key,score,id,table
@@ -39,17 +40,19 @@ class Tag extends React.Component {
   }
 
   _submit(){
-    request.put(`/user/${this.props.table}/${this.props.id}`).send({
+    _fetch(`user/${this.props.table}/${this.props.id}`, {method:"PUT", body:{
       score: this.refs.score.getValue(),
       lock: this.refs.lock.isChecked()
-    }).end(()=>{
+    }})
+    .then(json => {
       this.refs.dialog.dismiss();
       this.props.onUpdate();
     });
   }
 
   _remove(){
-    request.del(`/user/${this.props.table}/${this.props.id}`).end(this.props.onUpdate);
+    _fetch(`user/${this.props.table}/${this.props.id}`, {method:"DELETE"})
+      .then(()=> this.props.onUpdate() );
   }
 }
 
@@ -117,12 +120,12 @@ export default class Profile extends React.Component{
   }
 
   _setPref(pref, e, checked){
-    request.put(`/user/preferences`).send({[pref]:checked}).end(()=>{});
+    _fetch(`user/preferences`, {method:"PUT", body:{
+      [pref]:checked
+    }})
   }
 
   _refresh() {
-    request.get('/user').end((err, res)=>{
-      this.setState({profile:res.body});
-    })
+    _fetch('user').then(json=> this.setState({profile:json}));
   }
 }

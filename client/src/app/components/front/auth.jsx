@@ -1,11 +1,10 @@
 import React from 'react';
 import mui from 'material-ui';
-import request from 'superagent';
 import _ from 'lodash';
 import validator from 'validator';
-import util from '../../util';
+import { login, logout, _fetch } from '../../actions';
 
-let _err = (err,res) => (res && res.body && res.body.message) ? res.body.message : err;
+let _err = (err) => err.json.message || err.response.statusText
 
 class Login extends React.Component{
   constructor(){
@@ -14,6 +13,7 @@ class Login extends React.Component{
   }
 
   render(){
+    console.log(this.state);
     return <form role='form' onSubmit={this._submit.bind(this)}>
     {[
       {hint:'Email Address', name:'email', type:'email'},
@@ -33,16 +33,12 @@ class Login extends React.Component{
 
   _submit(e){
     e.preventDefault();
-    request.post(`${API_URL}/login`)
-      .send({
-        email: this.refs.email.getValue(),
-        password: this.refs.password.getValue()
-      })
-      .end((err,res)=>{
-        if (err)
-          return this.setState({errors:{password:_err(err,res)}})
-        util.auth.login(res.body.token);
-      })
+    _fetch(`login`, {method:"POST", body:{
+      email: this.refs.email.getValue(),
+      password: this.refs.password.getValue()
+    }})
+      .then(json=> login(json.token))
+      .catch(err=> this.setState({errors:{password:_err(err)}}) )
   }
 }
 
@@ -78,17 +74,13 @@ class Register extends React.Component{
     ['email','password','confirmPassword'].forEach(f=>this._validate(f))
     if (!_.isEmpty(this.state.errors))
       return false;
-    request.post(`${API_URL}/register`)
-      .send({
-        email: this.refs.email.getValue(),
-        password: this.refs.password.getValue(),
-        confirmPassword: this.refs.confirmPassword.getValue()
-      })
-      .end((err, res)=>{
-        if (err)
-          return this.setState({errors:{confirmPassword:_err(err,res)}})
-        util.auth.login(res.body.token);
-      })
+    _fetch('register', {method:"POST", body:{
+      email: this.refs.email.getValue(),
+      password: this.refs.password.getValue(),
+      confirmPassword: this.refs.confirmPassword.getValue()
+    }})
+      .then(json=> login(json.token))
+      .catch(err => this.setState({errors:{confirmPassword:_err(err)}}) )
   }
 
   _validate(f){

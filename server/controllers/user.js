@@ -19,11 +19,12 @@ exports.override = function(req, res, next) {
   var prom = sequelize.model(req.params.table);
   prom = (req.method == 'DELETE')
     ? prom.destroy({where}) : prom.update({locked:req.body.lock, score:req.body.score}, {where});
-  prom.then(()=>res.sendStatus(200));
+  prom.then(()=>res.send({}));
 }
 
 exports.setPref = function(req, res, next) {
-  db.User.update(req.body, {where:{id:req.user.id}}).then(()=>res.sendStatus(200));
+  db.User.update(req.body, {where:{id:req.user.id}})
+      .then(()=>res.send({}));
 }
 
 exports.seedTags = function(req, res, next) {
@@ -32,6 +33,6 @@ exports.seedTags = function(req, res, next) {
   .then(_tags=> sequelize.model('user_tags').bulkCreate(
     _tags.map(t=>{return {tag_id:t.id, user_id:req.user.id, score:5} })
   ))
-  .then(()=>res.sendStatus(200))
+  .then(()=>res.send({}))
   .catch(next);
 }

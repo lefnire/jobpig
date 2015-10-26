@@ -2,11 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
 import Job from './job.jsx';
-import {request} from '../../util';
 
 import { connect, dispatch } from 'react-redux';
 import { pushState } from 'redux-router';
-import { fetchJobs, setStatus, setEditing, saveNote } from '../../actions';
+import { fetchJobs, setStatus, setEditing, saveNote, _fetch } from '../../actions';
 
 let {Colors} = mui.Styles;
 
@@ -16,10 +15,12 @@ class Jobs extends Component {
     const { fetchJobs, filter } = this.props;
     fetchJobs(filter);
 
-    //request.get('/user').end((err,res)=>{
-    //  if (_.isEmpty(res.body.tags) && !this._seedSkipped)
-    //    this.refs.dialog.show();
-    //});
+    // FIXME - move to Redux
+    _fetch('user').then(json =>{
+      debugger;
+      if (_.isEmpty(json.tags) && !this._seedSkipped)
+        this.refs.dialog.show();
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -58,11 +59,13 @@ class Jobs extends Component {
   }
 
   _seedTags(){
-    request.post('/user/seed-tags')
-      .send({tags:this.refs.tags.getValue()})
-      .end(()=>{
+    //FIXME - move to redux
+    _fetch('user/seed-tags', {method:"POST", body: {
+      tags: this.refs.tags.getValue()
+    }})
+      .then(()=> {
         this.refs.dialog.dismiss();
-        this.props.fetchJobs();
+        this.props.fetchJobs(this.props.filter);
       });
   }
 }

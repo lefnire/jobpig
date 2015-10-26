@@ -5,23 +5,23 @@ import Front from './components/front/front.jsx';
 import Jobs from './components/jobs/jobs.jsx';
 //import MyPosts from './components/myPosts.jsx';
 import Profile from './components/profile.jsx';
-import util from './util';
+import { loggedIn, logout } from './actions';
 
-export default window.jwt ? (
+export default loggedIn() ? (
   <Route path="/"
    onUpdate={()=> window.scrollTo(0, 0)}
    component={App} >
     <Route path="jobs/:filter" component={Jobs} />
     {/*<Route path="my-posts" component={MyPosts} />*/}
     <Route path="profile" component={Profile} />
-    <Route path="logout" onEnter={util.auth.logout} />
+    <Route path="logout" onEnter={logout} />
     <IndexRedirect to="jobs/inbox" />
     <Redirect path="*" to="jobs/inbox"/>
   </Route>
 ) : (
   <Route>
     <Route path="/" component={Front} />
-    <Route path="logout" onEnter={util.auth.logout} />
+    <Route path="logout" onEnter={logout} />
     <Redirect path="*" to="/" />
   </Route>
 );

@@ -41,7 +41,7 @@ export default class CreateJob extends React.Component {
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});
-    request.post('/jobs').send(body).end(()=>this.props.onAction());
+    _fetch('jobs', {method:"POST", body}).then(()=> this.props.onAction());
   }
 }
 
