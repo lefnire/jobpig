@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import Prospect from './prospect.jsx';
+import Prospect from '../employer/prospect.jsx';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
 export default class Job extends React.Component {

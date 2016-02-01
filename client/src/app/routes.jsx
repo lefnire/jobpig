@@ -3,14 +3,14 @@ import {Router, Route, Redirect, IndexRedirect} from 'react-router';
 import App from './components/app.jsx';
 import Front from './components/front/front.jsx';
 import Jobs from './components/jobs/jobs.jsx';
-//import MyPosts from './components/myPosts.jsx';
+//import MyPosts from './components/employer/myposts.jsx';
 import Profile from './components/profile.jsx';
 import { loggedIn, logout } from './actions';
 
 export default loggedIn() ? (
   <Route path="/"
-   onUpdate={()=> window.scrollTo(0, 0)}
-   component={App} >
+   component={App}
+   onUpdate={() => window.scrollTo(0, 0)} >
     <Route path="jobs/:filter" component={Jobs} />
     {/*<Route path="my-posts" component={MyPosts} />*/}
     <Route path="profile" component={Profile} />
