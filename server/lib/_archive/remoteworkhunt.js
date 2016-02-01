@@ -5,7 +5,7 @@ let _ = require('lodash');
 
 module.exports = class Remoteworkhunt extends Adaptor {
   refresh() {
-    return this.fetchFeed('http://www.remoteworkhunt.com/feed').then(results=> {
+    return this.fetchFeed('http://www.remoteworkhunt.com/feed').then(results => {
       let feed = results.rss.channel[0].item;
       let jobs = _.map(feed.slice(0,100), j=> {
         return {
