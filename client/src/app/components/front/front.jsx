@@ -5,6 +5,7 @@ import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import { Mixins, Styles } from 'material-ui';
+import Footer from '../footer';
 
 const { StylePropable, StyleResizable } = Mixins;
 const { Colors, Spacing, Typography } = Styles;
@@ -128,6 +129,7 @@ export default React.createClass({
           </mui.Card>
 
         </FullWidthSection>
+        <Footer />
       </div>
     );
   },

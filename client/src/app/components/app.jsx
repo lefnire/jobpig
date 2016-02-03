@@ -1,6 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
+import Footer from './footer';
 
 // Redux
 import { connect } from 'react-redux';
@@ -35,6 +36,7 @@ class App extends React.Component {
         menuItems={menuItems}
         onChange={this._goto.bind(this)} />
       {this.props.children}
+      <Footer />
     </div>;
   }
 
