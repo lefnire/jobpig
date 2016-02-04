@@ -3,18 +3,10 @@ import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import Footer from '../footer';
+import { Colors, Typography } from 'material-ui/lib/styles';
 
-import {StylePropable, StyleResizable} from 'material-ui/lib/mixins';
-import {Colors, Spacing, Typography, lightBaseTheme} from 'material-ui/lib/styles';
-
-export default React.createClass({
-  mixins: [
-    StylePropable,
-    StyleResizable,
-  ],
-
+export default class Front extends React.Component {
   render(){
     let styles = {
       root: {
@@ -135,5 +127,5 @@ export default React.createClass({
         <Footer />
       </div>
     );
-  },
-})
+  }
+}

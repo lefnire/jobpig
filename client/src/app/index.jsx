@@ -10,9 +10,9 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import { StylePropable, StyleResizable } from 'material-ui/lib/mixins';
-import { Colors, getMuiTheme } from 'material-ui/lib/styles';
+import { Colors } from 'material-ui/lib/styles';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 // Redux
 import { Provider } from 'react-redux';
@@ -20,59 +20,21 @@ import configureStore from './store/configureStore';
 const store = configureStore();
 import { ReduxRouter } from 'redux-router';
 
-let Main = React.createClass({
-  propTypes: {
-    children: React.PropTypes.node,
-    history: React.PropTypes.object,
-    location: React.PropTypes.object,
-  },
+const myTheme = {
+  palette: {
+    accent1Color: Colors.cyan700,
+    primary1Color: Colors.blueGrey500
+  }
+};
 
-  childContextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  mixins: [
-    StylePropable,
-    StyleResizable,
-  ],
-
-  getInitialState() {
-    return {
-      muiTheme: ThemeManager.getMuiTheme({
-        palette: {
-          accent1Color: Colors.cyan700,
-          primary1Color: Colors.blueGrey500
-        }
-      }),
-      leftNavOpen: false,
-    };
-  },
-
-  getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme,
-    };
-  },
-
-  componentWillMount() {
-    this.setState({
-      muiTheme: this.state.muiTheme,
-    });
-  },
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    const newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-    this.setState({
-      muiTheme: newMuiTheme,
-    });
-  },
-
+@ThemeDecorator(ThemeManager.getMuiTheme(myTheme))
+class Main extends React.Component {
   render(){
     return <Provider store={store}>
       <ReduxRouter />
     </Provider>;
   }
-});
+};
 
 ReactDOM.render(<Main/>, document.getElementById('app'));
 
