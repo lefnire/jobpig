@@ -10,14 +10,9 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import {
-    StylePropable,
-    StyleResizable,
-} from 'material-ui/lib/mixins';
-import {
-    Colors,
-    getMuiTheme,
-} from 'material-ui/lib/styles';
+import { StylePropable, StyleResizable } from 'material-ui/lib/mixins';
+import { Colors, getMuiTheme } from 'material-ui/lib/styles';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
 
 // Redux
 import { Provider } from 'react-redux';
@@ -43,7 +38,12 @@ let Main = React.createClass({
 
   getInitialState() {
     return {
-      muiTheme: getMuiTheme(),
+      muiTheme: ThemeManager.getMuiTheme({
+        palette: {
+          accent1Color: Colors.cyan700,
+          primary1Color: Colors.blueGrey500
+        }
+      }),
       leftNavOpen: false,
     };
   },
