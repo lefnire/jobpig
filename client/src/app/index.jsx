@@ -7,15 +7,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 // Material UI
-import {Mixins, Styles} from 'material-ui';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-const { StylePropable } = Mixins;
-const { Colors, Spacing, Typography } = Styles;
-const ThemeManager = Styles.ThemeManager;
-const DefaultRawTheme = Styles.LightRawTheme;
+injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-//Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin();
+import {
+    StylePropable,
+    StyleResizable,
+} from 'material-ui/lib/mixins';
+import {
+    Colors,
+    getMuiTheme,
+} from 'material-ui/lib/styles';
 
 // Redux
 import { Provider } from 'react-redux';
@@ -24,15 +26,25 @@ const store = configureStore();
 import { ReduxRouter } from 'redux-router';
 
 let Main = React.createClass({
-  mixins: [StylePropable],
+  propTypes: {
+    children: React.PropTypes.node,
+    history: React.PropTypes.object,
+    location: React.PropTypes.object,
+  },
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
   },
 
-  getInitialState () {
+  mixins: [
+    StylePropable,
+    StyleResizable,
+  ],
+
+  getInitialState() {
     return {
-      muiTheme: ThemeManager.getMuiTheme(DefaultRawTheme),
+      muiTheme: getMuiTheme(),
+      leftNavOpen: false,
     };
   },
 
@@ -43,18 +55,16 @@ let Main = React.createClass({
   },
 
   componentWillMount() {
-    let newMuiTheme = ThemeManager.modifyRawThemePalette(this.state.muiTheme, {
-      accent1Color: Colors.cyan700,
-      primary1Color: Colors.blueGrey500
+    this.setState({
+      muiTheme: this.state.muiTheme,
     });
+  },
 
-    //ThemeManager.setComponentThemes({
-    //  paper: {
-    //    backgroundColor: Colors.blueGrey50,
-    //  }
-    //});
-
-    this.setState({muiTheme: newMuiTheme});
+  componentWillReceiveProps(nextProps, nextContext) {
+    const newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({
+      muiTheme: newMuiTheme,
+    });
   },
 
   render(){

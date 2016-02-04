@@ -4,14 +4,16 @@ import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
-import { Mixins, Styles } from 'material-ui';
 import Footer from '../footer';
 
-const { StylePropable, StyleResizable } = Mixins;
-const { Colors, Spacing, Typography } = Styles;
+import {StylePropable, StyleResizable} from 'material-ui/lib/mixins';
+import {Colors, Spacing, Typography, lightBaseTheme} from 'material-ui/lib/styles';
 
 export default React.createClass({
-  mixins: [StylePropable, StyleResizable],
+  mixins: [
+    StylePropable,
+    StyleResizable,
+  ],
 
   render(){
     let styles = {
@@ -37,7 +39,7 @@ export default React.createClass({
         <Auth ref='auth' />
 
         <div className='login'>
-          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.show()} />
+          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.handleOpen()} />
         </div>
         <FullWidthSection style={styles.root} className='root'>
           <img src="Pig.png" className='pig' />
@@ -49,7 +51,7 @@ export default React.createClass({
         <FullWidthSection className='examples'>
           <mui.Card>
             <mui.CardTitle title='Rate job posts' />
-            <mui.ListDivider />
+            <mui.Divider />
             <mui.CardHeader
               title='Seeking Senior JavaScript Developer'
               subtitle='Company, Inc | San Francisco, CA'
@@ -72,11 +74,11 @@ export default React.createClass({
           <br/>
           <mui.Card>
             <mui.CardTitle title='That adjusts scores' />
-            <mui.ListDivider />
+            <mui.Divider />
             <mui.CardText>
               <mui.List>
                 {['React', 'Node', 'Postgres', 'San Francisco, CA', 'Company, inc.'].map(k => {
-                  return <mui.ListItem primaryText={
+                  return <mui.ListItem key={'scores-example-' + k} primaryText={
                     <div><span className='plus-one'>+1</span> {k}</div>
                   } />
                 })}
@@ -86,7 +88,7 @@ export default React.createClass({
               title='Filtering your job-hunt'
               subtitle='Scores train Jobpig to narrow down jobs tailored for your interests.'
               />
-            <mui.ListDivider />
+            <mui.Divider />
             <mui.CardText>
               <mui.List>
                 {
@@ -102,6 +104,7 @@ export default React.createClass({
                       primaryText={i.title}
                       secondaryText={i.sub}
                       rightIconButton={rightIconMenu}
+                      key={'jobs-example-' + n}
                       />
                   )
                 }
@@ -114,7 +117,7 @@ export default React.createClass({
             <mui.CardTitle
               title={<span>And making <i>you</i> easier to find</span>}
               subtitle={`No more "didn't do their homework" recuiter emails, companies find you because you're a good fit.`} />
-            <mui.ListDivider />
+            <mui.Divider />
             <mui.CardHeader
               title='Me'
               subtitle='Full-stack JavaScript Developer'

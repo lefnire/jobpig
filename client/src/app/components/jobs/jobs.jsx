@@ -7,8 +7,6 @@ import { connect, dispatch } from 'react-redux';
 import { pushState } from 'redux-router';
 import { fetchJobs, setStatus, setEditing, saveNote, _fetch } from '../../actions';
 
-let {Colors} = mui.Styles;
-
 class Jobs extends Component {
 
   componentDidMount() {
@@ -17,7 +15,7 @@ class Jobs extends Component {
 
     // FIXME - move to Redux
     _fetch('user').then(json =>{
-      debugger;
+      //debugger;
       if (_.isEmpty(json.tags) && !this._seedSkipped)
         this.refs.dialog.show();
     });

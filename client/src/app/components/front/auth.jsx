@@ -96,14 +96,32 @@ class Register extends React.Component{
   }
 }
 
-export default class Auth extends React.Component{
+export default class Auth extends React.Component {
   constructor(){
     super();
-    this.show = this.show.bind(this);
+    this.state = {
+      open: false,
+    };
   }
 
   render() {
-    return <mui.Dialog ref='dialog'>
+    const actions = [
+      <mui.FlatButton
+          label="Cancel"
+          secondary={true}
+          onTouchTap={this.handleClose}
+      />,
+      //<mui.FlatButton
+      //    label="Submit"
+      //    primary={true}
+      //    disabled={true}
+      //    onTouchTap={this.handleClose}
+      ///>,
+    ];
+    return <mui.Dialog
+        actions={actions}
+        modal={true}
+        open={this.state.open}>
       <mui.Tabs>
         <mui.Tab label="Login" >
           <Login />
@@ -115,7 +133,11 @@ export default class Auth extends React.Component{
     </mui.Dialog>
   }
 
-  show() {
-    this.refs.dialog.show();
-  }
+  handleOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleClose = () => {
+    this.setState({open: false});
+  };
 }

@@ -12,7 +12,7 @@ const menuItems = [
   { route: 'jobs/applied', text: 'Applied' },
   { route: 'jobs/liked', text: 'Liked' },
   { route: 'jobs/disliked', text: 'Disliked' },
-  { type: mui.MenuItem.Types.SUBHEADER },
+  //{ type: mui.MenuItem.Types.SUBHEADER },
   //{ route: 'my-posts', text: 'My Posts' },
   { route: 'profile', text: 'Profile' },
   { route: 'logout', text:"Logout"}
@@ -24,24 +24,39 @@ function mapStateToProps(state) {
 
 export default @connect(mapStateToProps, {pushState})
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {open: false};
+  }
+
+  handleToggle = () => this.setState({open: !this.state.open});
+
+  handleClose = () => this.setState({open: false});
+
   render(){
     const {route} = this.props;
     return <div>
       <mui.AppBar
         title={_.find(menuItems, {route}).text}
-        onLeftIconButtonTouchTap={()=>this.refs.leftNav.toggle()} />
+        onLeftIconButtonTouchTap={this.handleToggle}
+        onRequestChange={open => this.setState({open})} />
       <mui.LeftNav
-        ref="leftNav"
-        docked={false}
-        menuItems={menuItems}
-        onChange={this._goto.bind(this)} />
+        open={this.state.open}
+        docked={false} >
+        {menuItems.map((v,i) =>
+          <mui.MenuItem
+              primaryText={v.text}
+              onTouchTap={() => this._goto(v.route)}
+              key={'menu-item-' + i} />
+        )}
+      </mui.LeftNav>
       {this.props.children}
       <Footer />
     </div>;
   }
 
-  _goto(e, key, payload){
-    //if (!payload) payload = {route:e};
-    this.props.pushState(null, '/'+payload.route);
+  _goto(route){
+    this.handleClose();
+    this.props.pushState(null, '/' + route);
   }
 }
