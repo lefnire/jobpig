@@ -1,20 +1,46 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {request} from '../../util';
+import {_fetch} from '../../actions';
 
 export default class CreateJob extends React.Component {
-  constructor(){
-    super();
-    this.show = this.show.bind(this);
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+    };
   }
+
+  handleOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleClose = () => {
+    this.setState({open: false});
+  };
+
   render() {
+    const actions = [
+      <mui.FlatButton
+          label="Cancel"
+          secondary={true}
+          onTouchTap={this.handleClose}
+      />,
+      <mui.FlatButton
+          label="Submit"
+          primary={true}
+          onTouchTap={this._createJob}
+      />,
+    ];
+
     //Handle on server: key, source
     return (
-      <mui.Dialog title="Create Job" actions={[
-        {text: 'Cancel'},
-        {text: 'Submit', onTouchTap:()=>this._createJob(), ref: 'submit'}
-      ]} ref="dialog">
+      <mui.Dialog
+          title="Create Job"
+          actions={actions}
+          modal={true}
+          open={this.state.open}
+      >
         <mui.ClearFix>
           <mui.TextField ref='title' required={true} type='text' hintText="*Title" autofocus={true} fullWidth={true}/>
           <mui.TextField ref='company' required={true} type='text' hintText="*Company" fullWidth={true}/>
@@ -30,18 +56,17 @@ export default class CreateJob extends React.Component {
     )
   }
 
-  show() {
-    this.refs.dialog.show();
-  }
+  show = () => this.refs.dialog.show();
 
-  _createJob() {
-
+  _createJob = () => {
+    this.handleClose();
     let body = _.reduce('title company location remote tags money description'.split(' '), (m, v)=> {
       let el = this.refs[v];
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});
+    debugger;
     _fetch('jobs', {method:"POST", body}).then(()=> this.props.onAction());
-  }
+  };
 }
 

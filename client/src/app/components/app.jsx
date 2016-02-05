@@ -13,7 +13,7 @@ const menuItems = [
   { route: 'jobs/liked', text: 'Liked' },
   { route: 'jobs/disliked', text: 'Disliked' },
   //{ type: mui.MenuItem.Types.SUBHEADER },
-  //{ route: 'my-posts', text: 'My Posts' },
+  { route: 'employer', text: 'Employer' },
   { route: 'profile', text: 'Profile' },
   { route: 'logout', text:"Logout"}
 ];

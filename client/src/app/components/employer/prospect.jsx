@@ -13,7 +13,7 @@ export default class Prospect extends React.Component {
       <mui.Card initiallyExpanded={true}>
         <mui.CardHeader
           title={p.fullname}
-          subtitle={'Score: '+p.score+', Tags: '+_.pluck(p.tags,'key').join(', ')}
+          subtitle={`Score: ${p.score}, Tags: ${_.pluck(p.tags,'key').join(', ')}`}
           avatar={p.pic}
           showExpandableButton={true} />
         <mui.CardText expandable={true}>
@@ -21,7 +21,7 @@ export default class Prospect extends React.Component {
           <div>{p.bio}</div>
         </mui.CardText>
         <mui.CardActions expandable={true}>
-          <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap.bind(this)} />
+          <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap} />
         </mui.CardActions>
       </mui.Card>
 
@@ -33,7 +33,6 @@ export default class Prospect extends React.Component {
       </mui.Dialog>
     </div>
   }
-  _handleTouchTap() {
-    this.refs.contact.show();
-  }
+
+  _handleTouchTap = () => this.refs.contact.show();
 }
