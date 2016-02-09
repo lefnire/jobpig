@@ -2,7 +2,7 @@ import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
 import validator from 'validator';
-import { login, logout, _fetch } from '../../actions';
+import {login, logout, _fetch} from '../../helpers';
 
 let _err = (err) => err.json.message || err.response.statusText
 
@@ -13,7 +13,6 @@ class Login extends React.Component{
   }
 
   render(){
-    console.log(this.state);
     return <form role='form' onSubmit={this._submit.bind(this)}>
     {[
       {hint:'Email Address', name:'email', type:'email'},
@@ -37,8 +36,8 @@ class Login extends React.Component{
       email: this.refs.email.getValue(),
       password: this.refs.password.getValue()
     }})
-      .then(json=> login(json.token))
-      .catch(err=> this.setState({errors:{password:_err(err)}}) )
+      .then(json => login(json.token))
+      .catch(err => this.setState({errors:{password:_err(err)}}) )
   }
 }
 
@@ -79,7 +78,7 @@ class Register extends React.Component{
       password: this.refs.password.getValue(),
       confirmPassword: this.refs.confirmPassword.getValue()
     }})
-      .then(json=> login(json.token))
+      .then(json => login(json.token))
       .catch(err => this.setState({errors:{confirmPassword:_err(err)}}) )
   }
 
@@ -133,11 +132,7 @@ export default class Auth extends React.Component {
     </mui.Dialog>
   }
 
-  handleOpen = () => {
-    this.setState({open: true});
-  };
+  handleOpen = () => this.setState({open: true});
+  handleClose = () => this.setState({open: false});
 
-  handleClose = () => {
-    this.setState({open: false});
-  };
 }

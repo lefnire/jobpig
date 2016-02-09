@@ -1,24 +1,27 @@
 // Custom
-import { API_URL } from './actions';
+import {API_URL} from './helpers';
 import fetch from 'isomorphic-fetch';
 
 // React
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
 // Material UI
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import { Colors } from 'material-ui/lib/styles';
+import {Colors} from 'material-ui/lib/styles';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
-// Redux
-import { Provider } from 'react-redux';
-import configureStore from './store/configureStore';
-const store = configureStore();
-import { ReduxRouter } from 'redux-router';
+// React-Router
+import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
+import App from './components/app.jsx';
+import Front from './components/front/front.jsx';
+import Jobs from './components/jobs/jobs.jsx';
+import Employer from './components/employer/employer.jsx';
+import Profile from './components/profile.jsx';
+import {loggedIn, logout} from './helpers';
 
 const myTheme = {
   palette: {
@@ -28,19 +31,38 @@ const myTheme = {
 };
 
 @ThemeDecorator(ThemeManager.getMuiTheme(myTheme))
-class Main extends React.Component {
-  render(){
-    return <Provider store={store}>
-      <ReduxRouter />
-    </Provider>;
+class Main extends Component {
+  render() {
+    return loggedIn() ? (
+      <Router history={hashHistory}>
+        <Route path="/"
+             component={App}
+             onUpdate={() => window.scrollTo(0, 0)}>
+          <Route path="jobs/:filter" component={Jobs} />
+          <Route path="employer" component={Employer} />
+          <Route path="profile" component={Profile} />
+          <Route path="logout" onEnter={logout} />
+          <IndexRedirect to="jobs/inbox" />
+          <Redirect path="*" to="jobs/inbox"/>
+        </Route>
+      </Router>
+      ) : (
+      <Router history={hashHistory}>
+        <Route>
+          <Route path="/" component={Front} />
+          <Route path="logout" onEnter={logout} />
+          <Redirect path="*" to="/" />
+        </Route>
+      </Router>
+    );
   }
 };
 
 ReactDOM.render(<Main/>, document.getElementById('app'));
 
-{}// On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
+// On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
 // This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
-fetch(API_URL+'/jobs/cron');
+fetch(API_URL + '/jobs/cron');
 
 // Setup google analytics, defer
 window.setTimeout(function setupGoogleAnalytics(){

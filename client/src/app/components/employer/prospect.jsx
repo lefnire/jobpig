@@ -10,13 +10,8 @@ class Contact extends React.Component {
     };
   }
 
-  handleOpen = () => {
-    this.setState({open: true});
-  };
-
-  handleClose = () => {
-    this.setState({open: false});
-  };
+  handleOpen = () => this.setState({open: true});
+  handleClose = () => this.setState({open: false});
 
   render() {
     const actions = [

@@ -22,8 +22,8 @@ exports.create = function(req, res, next){
 
 exports.addNote = function(req, res, next){
   db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, note:req.body.note})
-    .then(()=> res.send({}))
-    .catch(next);;
+    .then(() => res.send({}))
+    .catch(next);
 }
 
 exports.setStatus = function(req, res, next){

@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch} from '../../actions';
+import {_fetch} from '../../helpers';
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -60,13 +60,12 @@ export default class CreateJob extends React.Component {
 
   _createJob = () => {
     this.handleClose();
-    let body = _.reduce('title company location remote tags money description'.split(' '), (m, v)=> {
+    let body = _.reduce('title company location remote tags money description'.split(' '), (m, v) => {
       let el = this.refs[v];
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});
-    debugger;
-    _fetch('jobs', {method:"POST", body}).then(()=> this.props.onAction());
+    _fetch('jobs', {method:"POST", body}).then(() => this.props.onAction());
   };
 }
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import FullWidthSection from './front/full-width-section';
 import mui from 'material-ui';
-
-const Colors = mui.Styles.Colors;
+const {Colors} = mui.Styles;
 
 export default class Footer extends React.Component {
   render() {
