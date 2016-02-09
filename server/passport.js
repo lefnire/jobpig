@@ -1,58 +1,15 @@
 'use strict';
 
-var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy,
-  passport = require('passport'),
+const passport = require('passport'),
   nconf = require('nconf'),
   User = require('./models/models').User,
   _ = require('lodash'),
-  jwt = require('jsonwebtoken');
+  jwt = require('jsonwebtoken'),
+  crypto = require('crypto');
 
 exports.setup = function (app) {
-
   app.use(passport.initialize());
-
   passport.use(User.createStrategy());
-
-  passport.use(new LinkedInStrategy({
-    clientID: nconf.get('linkedin:key'),
-    clientSecret: nconf.get('linkedin:secret'),
-    callbackURL: nconf.get(`urls:${nconf.get('NODE_ENV')}:server`)+"/auth/linkedin/callback",
-    scope: ['r_emailaddress', 'r_basicprofile'],
-    state: true,
-    passReqToCallback: true
-  }, function (req, accessToken, refreshToken, profile, done) {
-    var defaults = {
-      linkedin_id: profile.id,
-      linkedin_url: profile._json.publicProfileUrl,
-      fullname: profile.displayName,
-      pic: profile.photos[0],
-      bio: profile._json.summary
-    }
-    if (req.session.user) {
-      return User.update(defaults, {where:{id: req.session.user.id}}).then(()=>done());
-    }
-
-    return done("FIXME: Standalone Linkedin profiles aren't yet supported, currently require a local-auth account to be tied to.")
-    User.findOrCreate({
-      where: {linkedin_id: profile.id},
-      defaults: defaults,
-    }).spread(function (user, created) {
-      done(null, user);
-      //user.get({plain: true}))
-    })
-  }));
-
-  app.get('/auth/linkedin',
-    exports.ensureAuth,
-    function(req, res, next){
-      req.session.user = req.user;
-      next();
-    },
-    passport.authenticate('linkedin'));
-
-  var redirectUrl = nconf.get(`urls:${nconf.get('NODE_ENV')}:client`) + '/#/profile';
-  app.get('/auth/linkedin/callback',
-    passport.authenticate('linkedin', {failureRedirect: redirectUrl}), (req, res, next)=>res.redirect(redirectUrl));
 
   var localOpts = {session:false, failWithError:true};
   app.post('/register', function (req, res, next) {
@@ -60,7 +17,10 @@ exports.setup = function (app) {
       return next({status:403, message:'Password does not match Confirm Password'});
     if (req.body.password.length < 3)
       return next({status:403, message:'Password should be greater than 3 characters.'});
-    User.register(User.build({email: req.body.email}), req.body.password, function (err, _user) {
+    User.register(User.build({
+      email: req.body.email,
+      pic: 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(req.body.email).digest("hex")
+    }), req.body.password, function (err, _user) {
       if (err) return next(err);
       //return res.sendStatus(200);
       passport.authenticate('local', localOpts)(req, res, ()=>{

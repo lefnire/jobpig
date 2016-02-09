@@ -25,8 +25,10 @@ var User = sequelize.define('users', _.defaults({
   email: {type:Sequelize.STRING, validate:{ isEmail:true }, unique:true, allowNull:false},
   hash: {type: Sequelize.TEXT, allowNull: false}, //FIXME overriding passportLocalSequelize because hash=STRING (aka varchar 255) but the generated hash is huge
   remote_only: {type:Sequelize.BOOLEAN, defaultValue:false},
-  linkedin_id: {type:Sequelize.STRING, unique:true},
   linkedin_url: {type:Sequelize.STRING, validate:{isUrl:true}},
+  twitter_url: {type:Sequelize.STRING, validate:{isUrl:true}},
+  stackoverflow_url: {type:Sequelize.STRING, validate:{isUrl:true}},
+  github_url: {type:Sequelize.STRING, validate:{isUrl:true}},
   fullname: Sequelize.STRING,
   pic: {type:Sequelize.STRING, validate:{isUrl:true}},
   bio: Sequelize.TEXT,

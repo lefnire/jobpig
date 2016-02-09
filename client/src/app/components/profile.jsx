@@ -13,9 +13,9 @@ class Tag extends React.Component {
         key={id}
         primaryText={
           <div>
-            <span style={{fontWeight:'bold', color:score>0 ? 'green' : 'red'}}>
+            <span style={{fontWeight:'bold', color: score > 0 ? 'green' : 'red'}}>
               {obj.locked && <mui.FontIcon className="material-icons">lock_outline</mui.FontIcon>}
-              {score>0 ? '+' : ''}{score}
+              {score > 0 ? '+' : ''}{score}
             </span> {label}
           </div>
         }
@@ -23,7 +23,7 @@ class Tag extends React.Component {
           <mui.IconMenu iconButtonElement={
             <mui.IconButton><MoreVertIcon /></mui.IconButton>
           }>
-            <mui.MenuItem onTouchTap={()=>this.refs.dialog.show()}>Edit</mui.MenuItem>
+            <mui.MenuItem onTouchTap={() => this.refs.dialog.show()}>Edit</mui.MenuItem>
             <mui.MenuItem onTouchTap={this._remove}>Remove</mui.MenuItem>
           </mui.IconMenu>
         } />
@@ -65,23 +65,42 @@ export default class Profile extends React.Component{
   render(){
     if (!this.state.profile) return null;
     let lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
-    let p = this.state.profile;
-    let linkedinUrl = `${API_URL}/auth/linkedin?token=${window.jwt}`;
+    let {profile} = this.state;
 
     return (
       <mui.ClearFix>
 
-        {p.linkedin_id ?
-          <mui.Card>
-            <mui.CardHeader title={p.fullname} avatar={p.pic} />
-            <mui.CardText>
-              <a href={p.linkedin_url}>LinkedIn Profile</a>
-              <div>{p.bio}</div>
-            </mui.CardText>
-          </mui.Card>
-
-          : <h1><a href={linkedinUrl} className='zocial linkedin'>Connect LinkedIn</a></h1>
-        }
+        <mui.Card>
+          <mui.CardHeader avatar={profile.pic} />
+          <mui.CardText>
+            <mui.TextField
+              hintText="Full Name"
+              ref="fullname"
+              defaultValue={profile.fullname}
+            /><br/>
+            <mui.TextField
+              hintText="LinkedIn URL"
+              ref="linkedin_url"
+              defaultValue={profile.linkedin_url}
+            /><br/>
+            <mui.TextField
+              hintText="Github URL"
+              ref="github_url"
+              defaultValue={profile.github_url}
+            /><br/>
+            <mui.TextField
+              hintText="Twitter URL"
+              ref="twitter_url"
+              defaultValue={profile.twitter_url}
+            /><br/>
+            <mui.TextField
+              hintText="Bio"
+              multiLine={true}
+              rows={3}
+            /><br/>
+            <mui.RaisedButton label="Save" primary={true} onTouchTap={this._saveProfile} />
+          </mui.CardText>
+        </mui.Card>
 
         <mui.List subheader="Search Preferences">
           <mui.ListItem
@@ -126,4 +145,15 @@ export default class Profile extends React.Component{
   };
 
   _refresh = () => _fetch('user').then(profile => this.setState({profile}));
+
+  _saveProfile = () => {
+    _fetch(`user/preferences`, {
+      method: "PUT",
+      body: _.reduce('fullname linkedin_url github_url twitter_url bio'.split(' '), (m, k) => {
+        let val = this.refs[k] && this.refs[k].getValue();
+        if (val) m[k] = val; // don't set blanks, error on backend (fix)
+        return m;
+      }, {})
+    });
+  }
 }

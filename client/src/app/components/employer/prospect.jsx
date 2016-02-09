@@ -11,6 +11,7 @@ class Contact extends React.Component {
   }
 
   handleOpen = () => this.setState({open: true});
+
   handleClose = () => this.setState({open: false});
 
   render() {
@@ -55,10 +56,12 @@ export default class Prospect extends React.Component {
           subtitle={`Score: ${p.score}, Tags: ${_.pluck(p.tags,'key').join(', ')}`}
           avatar={p.pic}
           showExpandableButton={true} />
-        {p.linkedin_url ? <mui.CardText expandable={true}>
-          <a href={p.linkedin_url}>LinkedIn</a>
+        <mui.CardText expandable={true}>
+          {_.map({linkedin_url: "LinkedIn", twitter_url: "Twitter", github_url: "Github"}, (v, k) =>
+            p[k] ? <a href={p[k]} target="_blank" key={k}>{v}</a> : null
+          )}
           <div>{p.bio}</div>
-        </mui.CardText> : null}
+        </mui.CardText>}
         <mui.CardActions expandable={true}>
           <mui.RaisedButton label="Contact" onTouchTap={this._handleTouchTap} />
         </mui.CardActions>

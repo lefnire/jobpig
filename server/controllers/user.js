@@ -24,7 +24,7 @@ exports.override = function(req, res, next) {
 
 exports.setPref = function(req, res, next) {
   db.User.update(req.body, {where:{id:req.user.id}})
-      .then(()=>res.send({}));
+      .then(() => res.send({}));
 }
 
 exports.seedTags = function(req, res, next) {
