@@ -94,7 +94,7 @@ export default class Job extends Component {
 
   _setStatus = status => {
     _fetch(`jobs/${this.props.job.id}/${status}`, {method: "POST"})
-      .then(this.props.onSetStatus);
+      .then(() => this.props.onSetStatus());
   };
 
   _saveNote = () => {

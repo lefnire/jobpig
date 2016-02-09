@@ -20,9 +20,6 @@ export default class App extends React.Component {
     this.state = {open: false};
   }
 
-  handleToggle = () => this.setState({open: !this.state.open});
-  handleClose = () => this.setState({open: false});
-
   render(){
     //let {route} = this.props;
     let route = this.props.location.pathname.replace(/^\//,'');
@@ -48,7 +45,10 @@ export default class App extends React.Component {
     );
   }
 
-  _goto(route){
+  handleToggle = () => this.setState({open: !this.state.open});
+  handleClose = () => this.setState({open: false});
+
+  _goto = route => {
     this.handleClose();
     window.location = '/#/' + route;
   }
