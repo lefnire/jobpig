@@ -6,18 +6,8 @@ import {_fetch} from '../../helpers';
 export default class CreateJob extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      open: false,
-    };
+    this.state = {open: false};
   }
-
-  handleOpen = () => {
-    this.setState({open: true});
-  };
-
-  handleClose = () => {
-    this.setState({open: false});
-  };
 
   render() {
     const actions = [
@@ -56,7 +46,8 @@ export default class CreateJob extends React.Component {
     )
   }
 
-  show = () => this.refs.dialog.show();
+  handleOpen = () => this.setState({open: true});
+  handleClose = () => this.setState({open: false});
 
   _createJob = () => {
     this.handleClose();
@@ -65,7 +56,7 @@ export default class CreateJob extends React.Component {
       m[v] = el.isChecked ? el.isChecked() : el.getValue();
       return m;
     },{});
-    _fetch('jobs', {method:"POST", body}).then(() => this.props.onAction());
+    _fetch('jobs', {method:"POST", body}).then(this.props.onCreate);
   };
 }
 

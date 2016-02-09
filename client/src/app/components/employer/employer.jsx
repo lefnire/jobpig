@@ -9,15 +9,13 @@ export default class Employer extends React.Component {
   constructor(){
     super();
     this.state = {jobs: []};
-    _fetch('jobs/mine', {method:"GET"}).then(jobs => {
-      this.setState({jobs});
-    })
+    this._fetchMine();
   }
 
   render() {
     return (
       <div>
-        <CreateJob ref='createJob'/>
+        <CreateJob ref='createJob' onCreate={this._fetchMine}/>
 
         <mui.FloatingActionButton style={{position:'fixed',bottom:10,right:10}} onTouchTap={()=>this.refs.createJob.handleOpen()}>
           <mui.FontIcon className="material-icons">add</mui.FontIcon>
@@ -30,5 +28,9 @@ export default class Employer extends React.Component {
         )}
       </div>
     )
+  }
+
+  _fetchMine = () => {
+    _fetch('jobs/mine', {method: "GET"}).then(jobs => this.setState({jobs}));
   }
 }

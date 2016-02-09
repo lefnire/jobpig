@@ -102,9 +102,7 @@ export default class Job extends Component {
     _fetch(`jobs/${this.props.job.id}/add-note`, {method: "POST", body: {note}})
       .then(json => {
         this.props.job.note = note;
-        this.setState({
-          editing: false,
-        });
+        this.setState({editing: false});
       });
   };
 }

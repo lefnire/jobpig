@@ -43,7 +43,7 @@ export default class Jobs extends Component {
     filter = filter || this.props.params.filter;
     _fetch(`jobs/${filter}`).then(jobs => {
       if (_.isEmpty(jobs) && filter === 'inbox') // poll for new jobs (the server is crunching)
-        return window.setTimeout(() => this._fetchJobs(), 2000);
+        return window.setTimeout(this._fetchJobs, 2000);
       this.setState({jobs, isFetching: false});
     });
   }
