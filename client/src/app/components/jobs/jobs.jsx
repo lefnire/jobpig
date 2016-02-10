@@ -27,10 +27,19 @@ export default class Jobs extends Component {
   render() {
     let isInbox = this.props.params.filter === 'inbox';
     let fetching = this.state.isFetching || (!this.state.jobs[0] && isInbox);
+    let isEmpty = !fetching && this.state.jobs.length === 0;
+
+    let emptySection = (
+      <div>
+        <h1>Empty</h1>
+        <p>This section will be populated once you've done some stuff</p>
+      </div>
+    );
 
     return <div>
       <SeedTags onSeed={this._fetchJobs} />
-      {fetching ? <mui.CircularProgress mode="indeterminate" size={1.5} />
+      {fetching? <mui.CircularProgress mode="indeterminate" size={1.5} />
+        : isEmpty? emptySection
         : this.state.jobs.map(job =>
           <Job job={job} key={job.id} onSetStatus={this._fetchJobs} />
         )

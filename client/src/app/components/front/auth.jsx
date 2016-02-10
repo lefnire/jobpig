@@ -1,43 +1,58 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import validator from 'validator';
 import {login, logout, _fetch} from '../../helpers';
+import Formsy from 'formsy-react'
+import fui from 'formsy-material-ui';
 
-let _err = (err) => err.json.message || err.response.statusText
+class Error extends React.Component {
+  render(){
+    if (!this.props.error) return null;
+    let err = this.props.error.json.message || this.props.error.response.statusText;
+    return <div style={{color:'red'}}>{err}</div>;
+  }
+}
 
-class Login extends React.Component{
+class Login extends React.Component {
   constructor(){
     super();
-    this.state = {errors:{}};
+    this.state = {
+      error: null,
+      canSubmit: false
+    };
   }
 
   render(){
-    return <form role='form' onSubmit={this._submit.bind(this)}>
-    {[
-      {hint:'Email Address', name:'email', type:'email'},
-      {hint:'Password', name:'password', type:'password'},
-    ].map(f=> <mui.TextField
-      hintText={f.hint}
-      ref={f.name}
-      type={f.type}
-      errorText={this.state.errors[f.name]}
-      required={true}
-      fullWidth={true}
-      />
-    )}
-      <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-    </form>
+    return (
+      <Formsy.Form
+        ref="form"
+        onValid={() => this.setState({canSubmit: true})}
+        onInvalid={() => this.setState({canSubmit: false})}
+        onValidSubmit={this.submitForm}>
+        <Error error={this.state.error} />
+        <fui.FormsyText
+          name='email'
+          required
+          hintText="Email Address"
+          fullWidth={true}
+          validations="isEmail"
+          validationError="Please enter a valid email address"
+          type="email"/>
+        <fui.FormsyText
+          name="password"
+          required
+          hintText="Password"
+          fullWidth={true}
+          type="password"/>
+        <mui.RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
+      </Formsy.Form>
+    );
   }
 
-  _submit(e){
-    e.preventDefault();
-    _fetch(`login`, {method:"POST", body:{
-      email: this.refs.email.getValue(),
-      password: this.refs.password.getValue()
-    }})
+  submitForm = (body) => {
+    _fetch(`login`, {method:"POST", body})
       .then(json => login(json.token))
-      .catch(err => this.setState({errors:{password:_err(err)}}) )
+      .catch(error => this.setState({error}))
   }
 }
 
@@ -45,53 +60,51 @@ class Register extends React.Component{
   constructor(){
     super();
     this.state = {
-      errors:{}
+      error: null,
+      canSubmit: false
     };
   }
   render(){
-    return <form role='form' onSubmit={this._submit.bind(this)}>
-      {[
-        {hint:'Email Address', name:'email', type:'email'},
-        {hint:'Password', name:'password', type:'password'},
-        {hint:'Confirm Password', name:'confirmPassword', type:'password'}
-      ].map(f=> <mui.TextField
-        hintText={f.hint}
-        ref={f.name}
-        type={f.type}
-        errorText={this.state.errors[f.name]}
-        onBlur={this._validate.bind(this, f.name)}
-        required={true}
-        fullWidth={true}
-        />
-      )}
-      <mui.RaisedButton primary={true} label='Submit' type='submit'/>
-    </form>
+    return (
+      <Formsy.Form
+        ref="form"
+        onValid={() => this.setState({canSubmit: true})}
+        onInvalid={() => this.setState({canSubmit: false})}
+        onValidSubmit={this.submitForm}>
+        <Error error={this.state.error} />
+        <fui.FormsyText
+          name='email'
+          required
+          hintText="Email Address"
+          fullWidth={true}
+          validations="isEmail"
+          validationError="Please enter an email address"
+          type="email"/>
+        <fui.FormsyText
+          name="password"
+          required
+          hintText="Password"
+          validations="minLength:3"
+          validationError="Password must be at least 3 characters"
+          fullWidth={true}
+          type="password"/>
+        <fui.FormsyText
+          name="confirmPassword"
+          required
+          validations="equalsField:password"
+          validationError="Passwords don't match"
+          hintText="Confirm Password"
+          fullWidth={true}
+          type="password"/>
+        <mui.RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+      </Formsy.Form>
+    )
   }
 
-  _submit(e){
-    e.preventDefault();
-    ['email','password','confirmPassword'].forEach(f=>this._validate(f))
-    if (!_.isEmpty(this.state.errors))
-      return false;
-    _fetch('register', {method:"POST", body:{
-      email: this.refs.email.getValue(),
-      password: this.refs.password.getValue(),
-      confirmPassword: this.refs.confirmPassword.getValue()
-    }})
+  submitForm = body => {
+    _fetch('register', {method:"POST", body})
       .then(json => login(json.token))
-      .catch(err => this.setState({errors:{confirmPassword:_err(err)}}) )
-  }
-
-  _validate(f){
-    let v = this.refs[f].getValue(),
-      e = {};
-    if (f==='email' && !validator.isEmail(v))
-      e[f] = 'Please enter an email address';
-    if (f==='password' && v.length<3)
-      e[f] = 'Password must be greater than 3 characters';
-    if (f==='confirmPassword' && v!==this.refs.password.getValue())
-      e[f] = "Passwords don't match";
-    this.setState({errors:e});
+      .catch(error => this.setState({error}))
   }
 }
 

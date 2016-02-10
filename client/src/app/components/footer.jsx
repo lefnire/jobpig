@@ -22,13 +22,13 @@ export default class Footer extends React.Component {
 
     return (
       <FullWidthSection style={styles.footer}>
-      <ul className='footer-links'>
-      <li style={styles.li}>
-        <a href="http://www.freepik.com/free-photos-vectors/animal" style={styles.link}>Animal vector designed by Freepik</a>
-      </li>
-      <li style={styles.li}>
-          <a href= "https://github/lefnire/jobpig" style={styles.link}>Fork on Github</a>
-        </li>
+        <ul className='footer-links'>
+          <li style={styles.li}>
+            <a href="http://www.freepik.com/free-photos-vectors/animal" style={styles.link}>Animal vector designed by Freepik</a>
+          </li>
+          <li style={styles.li}>
+            <a href= "https://github/lefnire/jobpig" style={styles.link}>Fork on Github</a>
+          </li>
         </ul>
       </FullWidthSection>
     );
