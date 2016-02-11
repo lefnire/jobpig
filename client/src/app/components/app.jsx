@@ -10,6 +10,7 @@ const menuItems = [
   {route: 'jobs/disliked', text: 'Disliked' },
   //{ type: mui.MenuItem.Types.SUBHEADER },
   {route: 'employer', text: 'Employer' },
+  {route: 'messages', text: 'Messages' },
   {route: 'profile', text: 'Profile' },
   {route: 'logout', text:"Logout"}
 ];

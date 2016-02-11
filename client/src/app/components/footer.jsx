@@ -10,6 +10,10 @@ export default class Footer extends React.Component {
         backgroundColor: Colors.blueGrey500,
         textAlign: 'center',
         color: Colors.grey50,
+        marginTop: 200, 
+
+
+
       },
       li: {
         listStyle: 'none'
