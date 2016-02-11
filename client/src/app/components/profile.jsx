@@ -2,6 +2,8 @@ import React from 'react';
 import {API_URL, _fetch} from '../helpers';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import Formsy from 'formsy-react'
+import fui from 'formsy-material-ui';
 
 class Tag extends React.Component {
   // key,score,id,table
@@ -58,7 +60,13 @@ class Tag extends React.Component {
 export default class Profile extends React.Component{
   constructor(){
     super();
-    this.state = {profile:null};
+    this.state = {
+      profile: {
+        tags: [],
+        user_companies: []
+      },
+      canSubmit: false
+    };
     this._refresh();
   }
 
@@ -67,38 +75,30 @@ export default class Profile extends React.Component{
     let lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
     let {profile} = this.state;
 
+    let isUrl = "Must be a url";
+
     return (
       <mui.ClearFix>
 
         <mui.Card>
           <mui.CardHeader avatar={profile.pic} />
           <mui.CardText>
-            <mui.TextField
-              hintText="Full Name"
-              ref="fullname"
-              defaultValue={profile.fullname}
-            /><br/>
-            <mui.TextField
-              hintText="LinkedIn URL"
-              ref="linkedin_url"
-              defaultValue={profile.linkedin_url}
-            /><br/>
-            <mui.TextField
-              hintText="Github URL"
-              ref="github_url"
-              defaultValue={profile.github_url}
-            /><br/>
-            <mui.TextField
-              hintText="Twitter URL"
-              ref="twitter_url"
-              defaultValue={profile.twitter_url}
-            /><br/>
-            <mui.TextField
-              hintText="Bio"
-              multiLine={true}
-              rows={3}
-            /><br/>
-            <mui.RaisedButton label="Save" primary={true} onTouchTap={this._saveProfile} />
+
+            <Formsy.Form
+              ref="form"
+              onValid={() => this.setState({canSubmit: true})}
+              onInvalid={() => this.setState({canSubmit: false})}
+              onValidSubmit={this.submitForm}>
+
+              <fui.FormsyText name='fullname' required hintText="Full Name" value={profile.fullname} fullWidth={true}/>
+              <fui.FormsyText name='linkedin_url' hintText="LinkedIn URL" value={profile.linkedin_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <fui.FormsyText name='github_url' hintText="Github URL" value={profile.github_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <fui.FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <fui.FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
+
+              <mui.RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
+
+            </Formsy.Form>
           </mui.CardText>
         </mui.Card>
 
@@ -124,7 +124,7 @@ export default class Profile extends React.Component{
               </mui.Tab>
 
               <mui.Tab label="Companies" >
-                <mui.List>
+                <mui.List ref="whatever">
                   {this.state.profile.user_companies.map(c =>
                     <Tag key={c.id} label={c.title} obj={c} id={c.id} table='user_companies' onUpdate={this._refresh}/>
                   )}
@@ -146,14 +146,7 @@ export default class Profile extends React.Component{
 
   _refresh = () => _fetch('user').then(profile => this.setState({profile}));
 
-  _saveProfile = () => {
-    _fetch(`user/preferences`, {
-      method: "PUT",
-      body: _.reduce('fullname linkedin_url github_url twitter_url bio'.split(' '), (m, k) => {
-        let val = this.refs[k] && this.refs[k].getValue();
-        if (val) m[k] = val; // don't set blanks, error on backend (fix)
-        return m;
-      }, {})
-    });
-  }
+  submitForm = (body) => {
+    _fetch(`user/preferences`, {method: "PUT", body});
+  };
 }

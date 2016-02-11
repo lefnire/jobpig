@@ -27,7 +27,7 @@
     "jade": "^1.11.0",
     "jsdom": "^5.5.0",
     "jsonwebtoken": "^5.0.5",
-    "lodash": "^3.10.0",
+    "lodash": "^4.3.0",
     "material-ui": "^0.14.4",
     "method-override": "^2.3.3",
     "morgan": "^1.6.1",

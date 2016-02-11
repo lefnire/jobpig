@@ -23,6 +23,7 @@ exports.override = function(req, res, next) {
 }
 
 exports.setPref = function(req, res, next) {
+  req.body = _.omitBy(req.body, _.isEmpty);
   db.User.update(req.body, {where:{id:req.user.id}})
       .then(() => res.send({}));
 }
