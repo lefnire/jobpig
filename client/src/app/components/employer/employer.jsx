@@ -32,11 +32,31 @@ export default class Employer extends React.Component {
         </mui.FloatingActionButton>
 
         {isEmpty ?
-          <div>
-            <h1>Post a job!</h1>
-            <p>You can post a job by clicking the + button in the bottom right. Jobs cost $100/30d. Return to this
-              section after posting your job to see visitor stats, prospective candidates, etc.</p>
-          </div>
+          <mui.Card style={{margin:40}}>
+            <mui.CardText>
+              <h1 style={{paddingBottom:10, borderBottom: '1px solid #eee'}}>Employers, post a job here!</h1>
+              <ul style={{padding:20, margin: 40, fontSize:"1.2em"}}>
+                <li>You can post a job by clicking the + button in the bottom right corner.</li>
+                <li>Return to this section after posting your job to see:</li>
+                    <ul>
+                        <li>Statistics on you job posting.</li>
+                        <li>Prospective candidates for your job.</li>
+                        <li>Links to see your prospective canadates profile.</li>
+                        <li>Messaging system to recieve and send email to prospective canadates.</li>
+                        <li>Your job posts.</li>
+                    </ul>
+                    
+                <li>Jobs posted through Jobpig will have special features that other postings will not have:</li>
+                  <ul>
+                    <li>Jobs will automatically show up first for searchers.</li>
+                    <li>Jobs will have a "CONTACT EMPLOYER" button.</li>
+                    <li>Jobs will have bold coloring to ensure that your job stands out to canadates.</li>
+                    </ul>
+                  <li>Posting a job costs $100 for 30 days. Sign up today and find a perfect employee match for your company!</li>
+              </ul>
+
+            </mui.CardText>
+          </mui.Card>
           :
           this.state.jobs.map((job, i) =>
             <div>

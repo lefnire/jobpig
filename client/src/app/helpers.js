@@ -6,6 +6,9 @@ export function login(token) {
   window.localStorage.setItem('jwt', token);
   let d = new Date();
   window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
+
+  // if this was registration, or no profile-data
+  // then window.location = '/#/profile';
   window.location = '/';
 }
 
