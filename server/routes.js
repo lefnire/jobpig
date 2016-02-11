@@ -14,6 +14,7 @@ router.get('/user', ensureAuth, user.get);
 router.put('/user/:table/:id', ensureAuth, user.override);
 router.delete('/user/:table/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
+router.get('/user/messages', ensureAuth, user.getMessages);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 
 router.get('/jobs/cron', jobs.poormanscron);

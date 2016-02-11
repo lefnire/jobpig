@@ -37,3 +37,11 @@ exports.seedTags = function(req, res, next) {
   .then(()=>res.send({}))
   .catch(next);
 }
+
+exports.getMessages = function(req, res, next) {
+  res.send([{
+    sender: '1', subject: 'hello', body: 'there'
+  }, {
+    sender: '2', subject: 'how', body: 'are you?'
+  }]);
+}
