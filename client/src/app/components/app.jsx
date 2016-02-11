@@ -7,7 +7,7 @@ const menuItems = [
   {route: 'jobs/inbox', text: 'Inbox' },
   {route: 'jobs/applied', text: 'Applied' },
   {route: 'jobs/liked', text: 'Liked' },
-  {route: 'jobs/disliked', text: 'Disliked' },
+  //{route: 'jobs/disliked', text: 'Disliked' },
   //{ type: mui.MenuItem.Types.SUBHEADER },
   {route: 'employer', text: 'Employer' },
   {route: 'messages', text: 'Messages' },
