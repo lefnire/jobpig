@@ -37,3 +37,6 @@ exports.poormanscron = function(req, res, next) {
   db.Meta.runCronIfNecessary();
   res.send({});
 }
+
+exports.getTags = (req, res, next) =>
+  db.Tag.findAll().then(tags => res.send(tags)).catch(next);

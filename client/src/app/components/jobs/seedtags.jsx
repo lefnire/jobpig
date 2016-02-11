@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch} from '../../helpers';
+import {_fetch, getTags} from '../../helpers';
+import Select from 'react-select';
 
 export default class SeedTags extends React.Component {
   constructor(props) {
@@ -30,12 +31,18 @@ export default class SeedTags extends React.Component {
 
     return (
       <mui.Dialog title="Seed Tags"
-                  actions={actions}
-                  modal={false}
-                  open={this.state.open}
-                  onRequestClose={this.handleClose}>
+        actions={actions}
+        modal={false}
+        open={this.state.open}
+        onRequestClose={this.handleClose}>
         <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
-        <mui.TextField hintText="Enter a few tags (comma-delimited)" ref='tags' type='text' fullWidth={true} />
+
+        <Select.Async
+          multi={true}
+          value={this.state.selected}
+          loadOptions={() => getTags().then(options => {return {options}}) }
+          onChange={selected => this.setState({selected})}
+        />
       </mui.Dialog>
     );
   }
@@ -51,9 +58,8 @@ export default class SeedTags extends React.Component {
   }
 
   _seedTags = () => {
-    _fetch('user/seed-tags', {method:"POST", body: {
-      tags: this.refs.tags.getValue()
-    }}).then(() => {
+    let tags = _.pluck(this.state.selected, 'label').join(',');
+    _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(() => {
       this.handleClose();
       this.props.onSeed();
     });

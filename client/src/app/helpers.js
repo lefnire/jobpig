@@ -40,3 +40,14 @@ export function _fetch(url, opts={}) {
       }
     })
 }
+
+let tags;
+export function getTags() {
+  return new Promise((resolve, reject) => {
+  if (tags) return resolve(tags);
+  _fetch('jobs/tags').then(_tags => {
+      tags = _tags.map(t => {return {value: t.id, label: t.key}});
+      resolve(tags);
+    }).catch(reject);
+  })
+}
