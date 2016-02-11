@@ -122,7 +122,7 @@ ORDER BY jobs.id
         })
 
         // full list of (unique) tags
-        var tags = _(_.pluck(jobs,'tags')).flatten().unique().value();
+        var tags = _(_.map(jobs,'tags')).flatten().uniq().value();
 
         // Create jobs (ignore duplicates, unhandled exceptions)
         var _jobs;
@@ -132,7 +132,7 @@ ORDER BY jobs.id
         // case of dupes (which we ignore). I'm lucky that bulkCreate doesn't return anything, since finally() is argument-less.
         // This bad magic is luck, so find a better way!
         Job.bulkCreate(jobs).finally(()=> { // will error on dupes
-          return Job.findAll({where: {key: {$in: _.pluck(jobs, 'key')}}, attributes: ['id', 'key']}).then(__jobs=> {
+          return Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes: ['id', 'key']}).then(__jobs=> {
             _jobs = __jobs;
             return Tag.bulkCreate(_.map(tags, function (t) {return {key: t}}));
           }).finally(()=> {

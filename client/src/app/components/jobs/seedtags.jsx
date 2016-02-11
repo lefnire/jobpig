@@ -58,7 +58,7 @@ export default class SeedTags extends React.Component {
   }
 
   _seedTags = () => {
-    let tags = _.pluck(this.state.selected, 'label').join(',');
+    let tags = _.map(this.state.selected, 'label').join(',');
     _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(() => {
       this.handleClose();
       this.props.onSeed();

@@ -10,7 +10,7 @@ export default class Prospect extends React.Component {
       <mui.Card initiallyExpanded={true}>
         <mui.CardHeader
           title={p.fullname || 'Anonymous'}
-          subtitle={`Score: ${p.score}, Tags: ${_.pluck(p.tags,'key').join(', ')}`}
+          subtitle={`Score: ${p.score}, Tags: ${_.map(p.tags,'key').join(', ')}`}
           avatar={p.pic}
           showExpandableButton={true} />
         <mui.CardText expandable={true}>

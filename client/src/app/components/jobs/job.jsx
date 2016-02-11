@@ -83,7 +83,7 @@ export default class Job extends Component {
       {name:"Location", text:job.location, icon:'room'},
       {name:"Budget", text:job.budget, icon:'attach_money'},
       {name:"Score", text:score, icon:'thumb_up'},
-      {name:"Tags", icon:'label', style:{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}, text: _.pluck(job.tags, 'key').join(', ') }
+      {name:"Tags", icon:'label', style:{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}, text: _.map(job.tags, 'key').join(', ') }
     ], 'text');
     return <span>
       {meta.map(m => <mui.ListItem key={m.name} primaryText={m.text} style={m.style} leftIcon={

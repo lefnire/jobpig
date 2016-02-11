@@ -1,9 +1,11 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch} from '../../helpers';
+import {_fetch, getTags} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
+import Select from 'react-select';
+
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -35,7 +37,15 @@ export default class CreateJob extends React.Component {
             <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
             <fui.FormsyText name='location' hintText="Location" fullWidth={true}/>
             <fui.FormsyCheckbox name='remote' label="Remote"/>
-            <fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>
+
+            {/*<fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>*/}
+            <Select.Async
+              multi={true}
+              value={this.state.selected}
+              loadOptions={() => getTags().then(options => {return {options}}) }
+              onChange={selected => this.setState({selected})}
+            />
+
             <fui.FormsyText name='money' validations='isAlpha' validationError="Please enter numbers" hintText="Money (budget, salary, hourly-rate, etc)" fullWidth={true}/>
             <fui.FormsyText name='description' required hintText="*Description" multiline={true} rows={2} fullWidth={true}/>
           </Formsy.Form>
@@ -48,6 +58,8 @@ export default class CreateJob extends React.Component {
   handleClose = () => this.setState({open: false});
 
   submitForm = (body) => {
+    body.tags = _.map(this.state.selected, 'label').join(',');
+    debugger;
     this.handleClose();
     _fetch('jobs', {method:"POST", body}).then(this.props.onCreate);
   };
