@@ -52,5 +52,9 @@
   "linkedin": {
     "key": "key",
     "secret": "secret"
+  },
+  "stripe": {
+    "public": "public",
+    "private": "private"
   }
 }

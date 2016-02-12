@@ -5,7 +5,7 @@ import {_fetch, getTags} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
-
+import StripeCheckout from 'react-stripe-checkout';
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -27,6 +27,11 @@ export default class CreateJob extends React.Component {
           <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
           <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
         ]} >
+        <StripeCheckout
+          token={this.onToken}
+          stripeKey="<nconf:stripe:public>"
+          amount={10000}/>
+
         <mui.ClearFix>
           <Formsy.Form
             ref="form"
@@ -54,6 +59,7 @@ export default class CreateJob extends React.Component {
     )
   }
 
+
   handleOpen = () => this.setState({open: true});
   handleClose = () => this.setState({open: false});
 
@@ -63,5 +69,10 @@ export default class CreateJob extends React.Component {
     this.handleClose();
     _fetch('jobs', {method:"POST", body}).then(this.props.onCreate);
   };
-}
 
+  onToken = (token) => {
+    xhrStripeTokenToMyServer(token).then( () => {
+      // please do with HTTPS
+    });
+  };
+}
