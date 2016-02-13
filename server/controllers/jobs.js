@@ -19,7 +19,7 @@ exports.list = function(req, res, next){
 exports.create = function(req, res, next){
   req.body = _.omitBy(req.body, _.isEmpty);
   db.Job.addCustom(req.user, req.body)
-    .then(()=> res.send({}))
+    .then(() => res.send({}))
     .catch(next);
 }
 

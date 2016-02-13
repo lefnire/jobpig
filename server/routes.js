@@ -4,7 +4,8 @@ const _ = require('lodash'),
   ensureAuth = require('./passport').ensureAuth,
   jobs = require('./controllers/jobs'),
   user = require('./controllers/user'),
-  payments = require('./controllers/payments');
+  payments = require('./controllers/payments'),
+  messages = require('./controllers/messages');
 
 router.get('/', function(req, res){
   res.sendStatus(200);
@@ -18,6 +19,12 @@ router.delete('/user/:table/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
 router.get('/user/messages', ensureAuth, user.getMessages);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
+
+router.get('/messages', ensureAuth, messages.inbox);
+router.get('/messages/sent', ensureAuth, messages.sent);
+router.post('/messages/contact/:uid', ensureAuth, messages.contact);
+router.post('/messages/reply/:mid', ensureAuth, messages.reply);
+router.delete('/messages/:mid', ensureAuth, messages.remove);
 
 router.get('/jobs/cron', jobs.poormanscron);
 router.get('/jobs/mine', ensureAuth, jobs.mine);

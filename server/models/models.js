@@ -2,7 +2,7 @@
 
 //FIXME separate to multiple files
 
-var Sequelize = require('sequelize'),
+const Sequelize = require('sequelize'),
   nconf = require('nconf'),
   _ = require('lodash'),
   db = nconf.get(nconf.get("NODE_ENV")),
@@ -19,9 +19,9 @@ global.sequelize = new Sequelize(db.database, db.username, db.password, {
   }
 });
 
-var defaultUserSchema = passportLocalSequelize.defaultUserSchema;
+let defaultUserSchema = passportLocalSequelize.defaultUserSchema;
 delete defaultUserSchema.username;
-var User = sequelize.define('users', _.defaults({
+let User = sequelize.define('users', _.defaults({
   email: {type:Sequelize.STRING, validate:{ isEmail:true }, unique:true, allowNull:false},
   hash: {type: Sequelize.TEXT, allowNull: false}, //FIXME overriding passportLocalSequelize because hash=STRING (aka varchar 255) but the generated hash is huge
   remote_only: {type:Sequelize.BOOLEAN, defaultValue:false},
@@ -32,13 +32,14 @@ var User = sequelize.define('users', _.defaults({
   fullname: Sequelize.STRING,
   pic: {type:Sequelize.STRING, validate:{isUrl:true}},
   bio: Sequelize.TEXT,
+  company: Sequelize.STRING
 }, defaultUserSchema));
 passportLocalSequelize.attachToUser(User, {
   usernameField: 'email',
   usernameLowerCase: true,
 });
 
-var Job = sequelize.define('jobs', {
+let Job = sequelize.define('jobs', {
   money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
   company: Sequelize.STRING,
   description: Sequelize.TEXT,
@@ -46,7 +47,7 @@ var Job = sequelize.define('jobs', {
   location: Sequelize.STRING,
   source: {type:Sequelize.STRING, allowNull:false},
   title: {type:Sequelize.STRING, allowNull:false},
-  url: {type:Sequelize.STRING, allowNull:false, unique:true},
+  url: {type:Sequelize.STRING, allowNull:false},
   remote: Sequelize.BOOLEAN
 }, {
   classMethods: {
@@ -115,17 +116,17 @@ ORDER BY jobs.id
         // clean up job tags
         _.each(jobs, job=>{
           job.tags = _.map(job.tags, tag=>{
-            var key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
+            let key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
             //if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
             return key;
           })
         })
 
         // full list of (unique) tags
-        var tags = _(_.map(jobs,'tags')).flatten().uniq().value();
+        let tags = _(_.map(jobs,'tags')).flatten().uniq().value();
 
         // Create jobs (ignore duplicates, unhandled exceptions)
-        var _jobs;
+        let _jobs;
 
         // Ok, here we begin some bad magic. Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate
         // while ignoring constraint errors (duplicates) for Postgres. So here I'm running bulkCreate, followed by finally() in
@@ -137,7 +138,7 @@ ORDER BY jobs.id
             return Tag.bulkCreate(_.map(tags, function (t) {return {key: t}}));
           }).finally(()=> {
             return Tag.findAll({where: {key: {$in: tags}}, attributes: ['id', 'key']}).then(_tags=> {
-              var joins = [];
+              let joins = [];
               _.each(jobs, j=> {
                 _.each(j.tags, t=> {
                   try {
@@ -207,7 +208,7 @@ ORDER BY jobs.id
   ]
 });
 
-var Tag = sequelize.define('tags', {
+let Tag = sequelize.define('tags', {
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   //text: Sequelize.STRING
 }, {
@@ -216,12 +217,12 @@ var Tag = sequelize.define('tags', {
   ]
 });
 
-var UserJob = sequelize.define('user_jobs', {
+let UserJob = sequelize.define('user_jobs', {
   status: {type:Sequelize.ENUM('inbox','disliked','liked','applied','hidden'), defaultValue:'inbox', allowNull:false},
   note: Sequelize.TEXT
 });
 
-var UserCompany = sequelize.define('user_companies', {
+let UserCompany = sequelize.define('user_companies', {
   title: Sequelize.TEXT,
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false}
@@ -231,12 +232,22 @@ var UserCompany = sequelize.define('user_companies', {
   ]
 });
 
-var UserTag = sequelize.define('user_tags', {
+let UserTag = sequelize.define('user_tags', {
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false},
 });
 
-var Meta = sequelize.define('meta', {
+let Message = sequelize.define('messages', {
+  to: {
+    type: Sequelize.INTEGER,
+    references: {model: User, key: 'id'}
+  },
+  subject: {type: Sequelize.STRING, allowNull: false},
+  body: {type: Sequelize.TEXT, allowNull: false},
+});
+
+
+let Meta = sequelize.define('meta', {
   key: {type:Sequelize.STRING, primaryKey:true},
   val: Sequelize.STRING
 }, {
@@ -248,7 +259,7 @@ var Meta = sequelize.define('meta', {
         } );
     },
     runCronIfNecessary(){
-      return this.needsCron().then(val=>{
+      return this.needsCron().then(val => {
         if (!val)
           return Promise.resolve();
         console.log('Refreshing jobs....');
@@ -261,7 +272,6 @@ var Meta = sequelize.define('meta', {
     }
   }
 })
-
 
 Tag.belongsToMany(Job, {through: 'job_tags'});
 Job.belongsToMany(Tag, {through: 'job_tags'});
@@ -276,10 +286,15 @@ User.hasMany(UserCompany);
 
 // For employers creating jobs
 User.hasMany(Job);
-Job.belongsTo(User)
+Job.belongsTo(User);
+
+User.hasMany(Message); // sent
+Message.belongsTo(User); // sent
+Message.belongsTo(Message); // Response thread
+// Message.to for received
 
 // If new setup, init db.
-var syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)
+let syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)
   .then(()=> Meta.count({$where:{key:'cron'}}))
   .then(ct=>{
     return (ct) ? Promise.resolve() :
@@ -287,4 +302,14 @@ var syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)
       {type:sequelize.QueryTypes.UPDATE})
   })
 
-module.exports = {User,Job,Tag,UserJob,UserTag,UserCompany,Meta, syncPromise};
+module.exports = {
+  User,
+  Job,
+  Tag,
+  UserJob,
+  UserTag,
+  UserCompany,
+  Message,
+  Meta,
+  syncPromise
+};

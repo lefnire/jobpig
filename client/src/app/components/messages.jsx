@@ -34,7 +34,7 @@ export default class Messages extends React.Component {
             </mui.CardText>
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
-              <mui.FlatButton label="Delete" />
+              <mui.FlatButton label="Delete" onTouchTap={() => this.remove(message)} />
             </mui.CardActions>
 
             { message.showReply ?
@@ -47,7 +47,7 @@ export default class Messages extends React.Component {
                   />
                 </mui.CardText>
                 <mui.CardActions>
-                  <mui.FlatButton label="Send" onTouchTap={() => this.sendReply(message)} />
+                  <mui.FlatButton label="Send" onTouchTap={() => this.send(message)} />
                   <mui.FlatButton label="Cancel" onTouchTap={() => this.toggleReply(message)} />
                 </mui.CardActions>
               </mui.Card>
@@ -66,6 +66,16 @@ export default class Messages extends React.Component {
   }
 
   getMessages = () => {
-    _fetch('user/messages').then(messages => this.setState({messages}));
+    _fetch('messages').then(messages => this.setState({messages}));
   }
+
+  remove = (message) => {
+    //_.pull(this.state.messages, message);
+    //this.setState({});
+    _fetch('messages/'+message.id, {method: "DELETE"})
+  };
+
+  send = (response) => {
+    _fetch('messages', {method: "POST", body: response})
+  };
 }

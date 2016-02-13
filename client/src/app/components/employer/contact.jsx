@@ -1,26 +1,23 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
+import {_fetch} from '../../helpers';
+import Formsy from 'formsy-react'
+import fui from 'formsy-material-ui';
 
 export default class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {open: false};
+    this.state = {
+      open: false,
+      canSubmit: false
+    };
   }
 
   render() {
     const actions = [
-      <mui.FlatButton
-        label="Cancel"
-        secondary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <mui.FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleClose}
-      />,
+      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
+      <mui.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={() => this.refs.form.submit()}/>,
     ];
 
     return (
@@ -32,8 +29,13 @@ export default class Contact extends React.Component {
         onRequestClose={this.handleClose}
       >
         <mui.ClearFix>
-          <mui.TextField hintText="Subject" fullWidth={true}/>
-          <mui.TextField hintText="Message" fullWidth={true} multiLine={true} />
+          <Formsy.Form
+          onValid={() => this.setState({canSubmit: true})}
+          onInvalid={() => this.setState({canSubmit: false})}
+          onValidSubmit={this.submitForm}>
+            <mui.TextField hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
+            <mui.TextField hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
+          </Formsy.Form>
         </mui.ClearFix>
       </mui.Dialog>
     );
@@ -41,4 +43,7 @@ export default class Contact extends React.Component {
 
   handleOpen = () => this.setState({open: true});
   handleClose = () => this.setState({open: false});
+  submitForm = (form) => {
+    debugger;
+  }
 }

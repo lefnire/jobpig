@@ -24,7 +24,7 @@ export default class Prospect extends React.Component {
         </mui.CardActions>
       </mui.Card>
 
-      <Contact ref="contact" />
+      <Contact ref="contact" prospect={p} />
     </div>
   }
 
