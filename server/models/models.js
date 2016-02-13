@@ -111,52 +111,49 @@ WHERE jobs.user_id=:user_id
 ORDER BY jobs.id
 `, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
     },
-    bulkCreateWithTags(jobs){
-      return new Promise(resolve=>{
-        // clean up job tags
-        _.each(jobs, job=>{
-          job.tags = _.map(job.tags, tag=>{
-            let key = tag.toLowerCase().replace(/\s/g, ''); // Angular JS, AngularJS => 'angularjs'
-            //if (key!='js') key = key.replace(/\.?js$/g, ''); // nodejs, node js, node.js, node => 'node'
-            return key;
-          })
+
+    // Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate while ignoring constraint
+    // errors (duplicates) for Postgres. So we're doing some custom joojoo here
+    bulkCreateWithTags(jobs) {
+      // clean up job tags (Angular JS, AngularJS => 'angularjs')
+      jobs.forEach(job => {
+        job.tags = _.map(job.tags, tag => tag.toLowerCase().replace(/\s/g, ''));
+      });
+
+      // full list of (unique) tags
+      let tags = _(jobs).map('tags').flatten().uniq().map(key => {return {key}}).value();
+
+      // Find existing jobs & tags so we don't have a validation error
+      let attributes = ['id', 'key'];
+      return Promise.all([
+        Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes}),
+        Tag.findAll({where: {key: {$in: _.map(tags, 'key')}}, attributes})
+      ]).then(vals => {
+        // Replace tag "shells" w/ the full models if available
+        tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
+
+        // Then create any that don't already exist
+        return Promise.all([
+          Job.bulkCreate(_.filter(jobs, j => !_.find(vals[0], {key: j.key})), {returning: true}),
+          Tag.bulkCreate(_.reject(tags, 'id'), {returning: true}),
+        ]);
+      }).then(vals => {
+        let newJobs = vals[0],
+          joins = [];
+        tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
+
+        newJobs.forEach(j => {
+          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(key => {
+            return {
+              job_id: j.id,
+              tag_id: _.find(tags, {key}).id
+            };
+          }));
         })
-
-        // full list of (unique) tags
-        let tags = _(_.map(jobs,'tags')).flatten().uniq().value();
-
-        // Create jobs (ignore duplicates, unhandled exceptions)
-        let _jobs;
-
-        // Ok, here we begin some bad magic. Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate
-        // while ignoring constraint errors (duplicates) for Postgres. So here I'm running bulkCreate, followed by finally() in
-        // case of dupes (which we ignore). I'm lucky that bulkCreate doesn't return anything, since finally() is argument-less.
-        // This bad magic is luck, so find a better way!
-        Job.bulkCreate(jobs).finally(()=> { // will error on dupes
-          return Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes: ['id', 'key']}).then(__jobs=> {
-            _jobs = __jobs;
-            return Tag.bulkCreate(_.map(tags, function (t) {return {key: t}}));
-          }).finally(()=> {
-            return Tag.findAll({where: {key: {$in: tags}}, attributes: ['id', 'key']}).then(_tags=> {
-              let joins = [];
-              _.each(jobs, j=> {
-                _.each(j.tags, t=> {
-                  try {
-                    let join = {
-                      job_id: _.find(_jobs, {key: j.key}).id,
-                      tag_id: _.find(_tags, {key: t}).id //fixme,  Cannot read property 'id' of undefined
-                    }
-                    joins.push(join);
-                  }catch(e){}
-                })
-              })
-              sequelize.model('job_tags').bulkCreate(joins).finally(resolve);
-            });
-          })
-        })
-      })
-
+        return sequelize.model('job_tags').bulkCreate(joins);
+      });
     },
+
     addCustom(user, job){
       _.defaults(job, {
         key: job.url || uuid.v4(), // todo do we really need job.key for anything?

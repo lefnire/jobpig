@@ -64,7 +64,7 @@ let adaptors = [
   //'remoteok',
 
   // Process those which seed tags first
-  'stackoverflow',
+  //'stackoverflow',  //FIXME temporary issues
   //'remoteworkhunt',
   'offsite_careers',
 
@@ -77,7 +77,7 @@ let adaptors = [
   'frontenddevjob',
   'virtualvocations',
   'hasjob',
-  'landing_jobs',
+  //'landing_jobs', //FIXME temporary issues
   'jobmote',
   'remotecoder',
 
