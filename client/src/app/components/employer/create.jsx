@@ -25,12 +25,13 @@ export default class CreateJob extends React.Component {
         open={this.state.open}
         actions={[
           <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
-          <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
+          <StripeCheckout
+            token={this.onToken}
+            stripeKey="<nconf:stripe:public>"
+            amount={10000}>
+            <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
+          </StripeCheckout>
         ]} >
-        <StripeCheckout
-          token={this.onToken}
-          stripeKey="<nconf:stripe:public>"
-          amount={10000}/>
 
         <mui.ClearFix>
           <Formsy.Form
@@ -65,14 +66,12 @@ export default class CreateJob extends React.Component {
 
   submitForm = (body) => {
     body.tags = _.map(this.state.selected, 'label').join(',');
-    debugger;
     this.handleClose();
     _fetch('jobs', {method:"POST", body}).then(this.props.onCreate);
   };
 
   onToken = (token) => {
-    xhrStripeTokenToMyServer(token).then( () => {
-      // please do with HTTPS
-    });
+    // POST server/payments {token: token}
+    _fetch('payments', {method: "POST", body:{token}}).then(function() {debugger});
   };
 }

@@ -1,6 +1,8 @@
-var db = require('../models/models');
-var _ = require('lodash');
-var adaptors = require('../lib/adaptors');
+'use strict';
+const db = require('../models/models');
+const _ = require('lodash');
+const adaptors = require('../lib/adaptors');
+
 
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
