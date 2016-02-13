@@ -15,19 +15,54 @@ export default class Messages extends React.Component {
   }
 
   render () {
+
+    let styles = {
+      card: {margin:40}
+    };
     return (
-      <mui.Card style={{margin:40}}>
-        <mui.CardText>
-          {this.state.messages.map(m => (
-            <div>
-              <h2>{m.subject}</h2>
-              <p>{m.body}</p>
-              <hr/>
-            </div>
-          ))}
-        </mui.CardText>
-      </mui.Card>
+      <div>
+        {this.state.messages.map(message => (
+          <mui.Card style={styles.card}>
+            <mui.CardHeader
+              title={message.employer || 'Anonymous Employer'}
+              subtitle={message.company || 'Anonymous Company'}
+              avatar="http://lorempixel.com/100/100/nature/"
+            />
+            <mui.CardTitle title={message.subject} />
+            <mui.CardText>
+              <p>{message.body}</p>
+            </mui.CardText>
+            <mui.CardActions>
+              <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
+              <mui.FlatButton label="Delete" />
+            </mui.CardActions>
+
+            { message.showReply ?
+              <mui.Card>
+                <mui.CardText>
+                  <mui.TextField
+                    hintText="Reply to sender"
+                    multiLine={true}
+                    rows={2}
+                  />
+                </mui.CardText>
+                <mui.CardActions>
+                  <mui.FlatButton label="Send" onTouchTap={() => this.sendReply(message)} />
+                  <mui.FlatButton label="Cancel" onTouchTap={() => this.toggleReply(message)} />
+                </mui.CardActions>
+              </mui.Card>
+              : null
+            }
+
+          </mui.Card>
+        ))}
+      </div>
     );
+  }
+
+  toggleReply = (message) => {
+    message.showReply = !message.showReply;
+    this.setState({});
   }
 
   getMessages = () => {
