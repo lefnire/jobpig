@@ -239,7 +239,7 @@ let Message = sequelize.define('messages', {
     type: Sequelize.INTEGER,
     references: {model: User, key: 'id'}
   },
-  subject: {type: Sequelize.STRING, allowNull: false},
+  subject: Sequelize.STRING,
   body: {type: Sequelize.TEXT, allowNull: false},
 });
 
@@ -288,6 +288,7 @@ Job.belongsTo(User);
 User.hasMany(Message); // sent
 Message.belongsTo(User); // sent
 Message.belongsTo(Message); // Response thread
+Message.hasOne(Message)
 // Message.to for received
 
 // If new setup, init db.

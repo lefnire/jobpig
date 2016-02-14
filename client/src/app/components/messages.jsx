@@ -15,14 +15,10 @@ export default class Messages extends React.Component {
   }
 
   render () {
-
-    let styles = {
-      card: {margin:40}
-    };
     return (
       <div>
         {this.state.messages.map(message => (
-          <mui.Card style={styles.card}>
+          <mui.Card style={{margin:40}}>
             <mui.CardHeader
               title={message.employer || 'Anonymous Employer'}
               subtitle={message.company || 'Anonymous Company'}
@@ -31,6 +27,7 @@ export default class Messages extends React.Component {
             <mui.CardTitle title={message.subject} />
             <mui.CardText>
               <p>{message.body}</p>
+              {message.message ? <p><hr/>{message.message.body}</p> : null /* FIXME handle recursive message thread */}
             </mui.CardText>
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
@@ -38,9 +35,10 @@ export default class Messages extends React.Component {
             </mui.CardActions>
 
             { message.showReply ?
-              <mui.Card>
+              <mui.Card style={{margin:20}}>
                 <mui.CardText>
                   <mui.TextField
+                    ref="response"
                     hintText="Reply to sender"
                     multiLine={true}
                     rows={2}
@@ -63,19 +61,20 @@ export default class Messages extends React.Component {
   toggleReply = (message) => {
     message.showReply = !message.showReply;
     this.setState({});
-  }
+  };
 
   getMessages = () => {
-    _fetch('messages').then(messages => this.setState({messages}));
-  }
+    _fetch('messages').then(messages => {console.log(messages[0]);this.setState({messages})});
+  };
 
   remove = (message) => {
     //_.pull(this.state.messages, message);
     //this.setState({});
-    _fetch('messages/'+message.id, {method: "DELETE"})
+    _fetch(`messages/${message.id}`, {method: "DELETE"}).then(this.getMessages);
   };
 
-  send = (response) => {
-    _fetch('messages', {method: "POST", body: response})
+  send = (message) => {
+    let body = {body: this.refs.response.getValue()};
+    _fetch(`messages/reply/${message.id}`, {method: "POST", body}).then(this.getMessages);
   };
 }

@@ -30,11 +30,12 @@ export default class Contact extends React.Component {
       >
         <mui.ClearFix>
           <Formsy.Form
+          ref="form"
           onValid={() => this.setState({canSubmit: true})}
           onInvalid={() => this.setState({canSubmit: false})}
           onValidSubmit={this.submitForm}>
-            <mui.TextField hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
-            <mui.TextField hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
+            <fui.FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
+            <fui.FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
           </Formsy.Form>
         </mui.ClearFix>
       </mui.Dialog>
@@ -43,7 +44,9 @@ export default class Contact extends React.Component {
 
   handleOpen = () => this.setState({open: true});
   handleClose = () => this.setState({open: false});
-  submitForm = (form) => {
-    debugger;
+  submitForm = (body) => {
+    _fetch(`messages/contact/${this.props.prospect.id}`, {method:"POST", body}).then(() => {
+      this.handleClose();
+    }).catch(console.error)
   }
 }
