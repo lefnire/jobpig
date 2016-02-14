@@ -116,7 +116,7 @@ describe('Jobpig', function() {
       expect(vals[0].body.length).to.be(1);
       expect(vals[1].body.length).to.be(1);
       expect(vals[0].body[0].replies.length).to.be(3); // replies
-      expect(vals[0].body[0].users[users.good.id]).to.be.ok(); // messages should have populated users for UI
+      expect(_.map(vals[0].body[0].users,'id')).to.eql([users.employer.id, users.good.id]);
 
       // Then delete
       return agent.delete(`/messages/${vals[0].body[0].id}`).set('x-access-token', jwts.good).expect(200);

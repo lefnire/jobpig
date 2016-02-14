@@ -44,6 +44,15 @@ export function _fetch(url, opts={}) {
     })
 }
 
+let user;
+export function me() {
+  if (user) return Promise.resolve(user);
+  return _fetch('user').then(user => {
+    user = user;
+    return Promise.resolve(user);
+  });
+}
+
 let tags;
 export function getTags() {
   return new Promise((resolve, reject) => {

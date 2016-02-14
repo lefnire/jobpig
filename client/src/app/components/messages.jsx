@@ -8,9 +8,7 @@ import {_fetch} from '../helpers';
 export default class Messages extends React.Component {
   constructor() {
     super();
-    this.state = {
-      messages: []
-    };
+    this.state = {messages: []};
     this.getMessages();
   }
 
@@ -20,20 +18,30 @@ export default class Messages extends React.Component {
     return true;
   }
 
+  renderReply = (users, reply) => {
+    if (!reply) return null;
+    let user = _.find(users, {id: reply.user_id});
+    return (
+      <div key={reply.id}>
+        <hr/>
+        {user.email} says {reply.body}
+      </div>
+    );
+  }
+
   render () {
     return (
       <div>
         {this.state.messages.map(message => (
           <mui.Card style={{margin:40}}>
+            <mui.CardTitle title={message.subject} />
             <mui.CardHeader
-              title={message.employer || 'Anonymous Employer'}
-              subtitle={message.company || 'Anonymous Company'}
+              title={_.find(message.users, {id: message.user_id}).email}
               avatar="http://lorempixel.com/100/100/nature/"
             />
-            <mui.CardTitle title={message.subject} />
             <mui.CardText>
               <div>{message.body}</div>
-              {message.replies.map(r => r ? <div><hr/>{r.body}</div> : null)}
+              {message.replies.map(reply => this.renderReply(message.users, reply))}
             </mui.CardText>
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
@@ -70,12 +78,10 @@ export default class Messages extends React.Component {
   };
 
   getMessages = () => {
-    _fetch('messages').then(messages => {console.log(messages);this.setState({messages})});
+    _fetch('messages').then(messages=> this.setState({messages}));
   };
 
   remove = (message) => {
-    //_.pull(this.state.messages, message);
-    //this.setState({});
     _fetch(`messages/${message.id}`, {method: "DELETE"}).then(this.getMessages);
   };
 

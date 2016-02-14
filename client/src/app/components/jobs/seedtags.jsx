@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch, getTags} from '../../helpers';
+import {_fetch, getTags, me} from '../../helpers';
 import Select from 'react-select';
 
 export default class SeedTags extends React.Component {
@@ -51,7 +51,7 @@ export default class SeedTags extends React.Component {
   handleClose = () => this.setState({open: false});
 
   _shouldSeedTags = () => {
-    _fetch('user').then(user => {
+    me().then(user => {
       if (_.isEmpty(user.tags) && !this._seedSkipped)
         this.handleOpen();
     });

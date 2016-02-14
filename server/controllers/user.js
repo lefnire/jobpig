@@ -5,6 +5,7 @@ const _ = require('lodash');
 exports.get = function(req, res, next){
   db.User.findOne({
     where:{id:req.user.id},
+    attributes: {exclude: 'activationKey hash resetPasswordKey salt'},
     include:[
       {model:db.Tag, order:[['key', 'ASC']]},
       {model:db.UserCompany, order:[['title', 'ASC']]}
