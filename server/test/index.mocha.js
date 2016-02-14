@@ -10,20 +10,43 @@ const nconf = require('nconf');
 const jobsController = require('../controllers/jobs');
 let db;
 
-const acct = email => _.defaults({password:'1234',confirmPassword:'1234'},{email});
 let oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return m}, {});
 let revertSepia = ()=>
   ['http','https'].forEach(protocol=> require(protocol).request=oldReqs[protocol]);
 
 describe('Jobpig', function() {
   this.timeout(0);
+  let users = {good: null, bad: null, employer: null},
+    jwts = {},
+    agent,
+    jobPost;
+
   before(function(done){
     db = require('../models/models');
-    db.syncPromise.then(()=>done());
+    db.syncPromise.then(() => {
+      // register 2 users, 1 employer
+      agent = request(app);
+      return Promise.all(
+        _.keys(users).map(k =>
+        agent.post('/register').send({email: `${k}@x.com`, password:'1234',confirmPassword:'1234'})
+        .expect(200).then(res => {
+          jwts[k] = res.body.token;
+          return Promise.resolve();
+        }))
+      ).then(() => db.User.findAll())
+      .then(_users => {
+        //store users in closure {good:[Object], bad:[Object], employer:[Object]}
+        users = _.reduce(_.keys(users), (m, k) => {
+          m[k] = _.find(_users, {email: `${k}@x.com`});
+          return m;
+        }, {});
+        done();
+      })
+    })
   })
 
   //after(app.close)
-  it('runs cron', function(done) {
+  it.skip('runs cron', function(done) {
     //process.env.VCR_MODE = 'playback';
     //let sepia = require('sepia');
     db.Meta.needsCron()
@@ -38,52 +61,17 @@ describe('Jobpig', function() {
     })
   })
 
-  it.skip('can register', function(done){
-    let agent = request(app),
-      jwt;
-    agent.post('/register').send(acct('x@x.com')).expect(200)
-    .then(res => {
-        jwt = res.body.token;
-        return agent.get('/jobs').set('x-access-token', jwt).expect(200);
-      })
-    .then(res => {
-      expect(_.size(res.body)).to.be.greaterThan(0);
-      done();
-    }).catch(done);
-  });
-
   it('lists my job postings', function(done){
-    let users, jobPost, jwt;
-
-    // register 2 users, 1 employer
-    let agent = request(app);
-    Promise.all([
-      agent.post('/register').send(acct('good@x.com')).expect(200).then(res => {
-        jwt = res.body.token;
-        return Promise.resolve();
-      }),
-      agent.post('/register').send(acct('bad@x.com')).expect(200),
-      agent.post('/register').send(acct('employer@y.com')).expect(200)
-    ])
-    .then(() => db.User.findAll())
-    .then(_users => {
-      //store users in closure {good:[Object], bad:[Object], employer:[Object]}
-      users = _.reduce(['good','bad','employer'],(m,v,k) => {
-        m[v] = _.find(_users, {email: v+'@x.com'});
-        return m;
-      }, {});
-
-      // Create custom job post
-      return agent.post('/jobs')
-        .set('x-access-token', jwt)
-        .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
-        .expect(200)
-        // and create another, to check duplication errors
-        .then(() => agent.post('/jobs')
-          .set('x-access-token', jwt)
-          .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
-          .expect(200));
-    })
+    // Create custom job post
+    agent.post('/jobs')
+      .set('x-access-token', jwts.employer)
+      .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
+      .expect(200)
+    // and create another, to check duplication errors
+    .then(() => agent.post('/jobs')
+      .set('x-access-token', jwts.employer)
+      .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
+      .expect(200))
     .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
 
     // users upvote / downvote the posting
@@ -97,7 +85,7 @@ describe('Jobpig', function() {
     })
 
     // Get the employer's results
-    .then(() => agent.get('/jobs/mine').set('x-access-token', jwt).expect(200))
+    .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
     .then(res => {
       let jobs = res.body;
       expect(jobs[0].users.length).to.be(1);
@@ -106,4 +94,42 @@ describe('Jobpig', function() {
       done();
     }).catch(done);
   })
+
+  it('messages', function(done){
+    const reply = (mid, jwt, body) => agent.post(`/messages/reply/${mid}`)
+      .set('x-access-token', jwt).send({body}).expect(200);
+    // Initial contact
+    agent.post(`/messages/contact/${users.good.id}`)
+      .set('x-access-token', jwts.employer)
+      .send({subject:"Hello", body: "I have a job for you"})
+      .expect(200)
+    // 3 replies
+    .then(res => reply(res.body.id, jwts.good, "I'd like to hear more"))
+    .then(res => reply(res.body.message_id, jwts.employer, "Contact me at employer@x.com"))
+    .then(res => reply(res.body.message_id, jwts.good, "Will do!"))
+     // They all went through
+    .then(() => Promise.all([
+      agent.get(`/messages`).set('x-access-token', jwts.good).expect(200),
+      agent.get(`/messages`).set('x-access-token', jwts.employer).expect(200)
+    ]))
+    .then(vals => {
+      expect(vals[0].body.length).to.be(1);
+      expect(vals[1].body.length).to.be(1);
+      expect(vals[0].body[0].replies.length).to.be(3); // replies
+      expect(vals[0].body[0].users[users.good.id]).to.be.ok(); // messages should have populated users for UI
+
+      // Then delete
+      return agent.delete(`/messages/${vals[0].body[0].id}`).set('x-access-token', jwts.good).expect(200);
+    }).then(() => Promise.all([
+      agent.get(`/messages`).set('x-access-token', jwts.good).expect(200),
+      agent.get(`/messages`).set('x-access-token', jwts.employer).expect(200)
+    ]))
+    .then(vals => {
+      expect(vals[0].body.length).to.be(0); // deleted message for recipient
+      expect(vals[1].body.length).to.be(1); // but not for employer
+      return Promise.resolve();
+    })
+    .then(done).catch(done);
+  })
+
 })

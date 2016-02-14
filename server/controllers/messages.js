@@ -3,13 +3,7 @@ const db = require('../models/models');
 const _ = require('lodash');
 
 exports.inbox = (req, res, next) => {
-  db.Message.findAll({
-    where: {to: req.user.id},
-    include: [
-      db.User,
-      {model: db.Message, include: [db.Message]}
-    ]
-  }).then(messages => res.send(messages)).catch(next);
+  db.Message.hydrateMessages(req.user.id).then(messages => res.send(messages)).catch(next);
 };
 
 exports.sent = (req, res, next) => {
@@ -17,7 +11,7 @@ exports.sent = (req, res, next) => {
 };
 
 exports.contact = (req, res, next) => {
-  db.Message.create({
+  return db.Message.create({
     to: req.params.uid,
     subject: req.body.subject,
     body: req.body.body,
@@ -34,5 +28,6 @@ exports.reply = (req, res, next) => {
 };
 
 exports.remove = (req, res, next) =>  {
-  db.Message.destroy({where:{id: req.params.mid}}).then(()=> res.send({})).catch(next);
+  // delete then return new (pruned) inbox
+  return db.Message.destroy({where:{id: req.params.mid}}).then(() => exports.inbox(req, res, next));
 };

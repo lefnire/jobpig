@@ -101,7 +101,7 @@ LEFT JOIN LATERAL (
     INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
     INNER JOIN tags ON user_tags.tag_id=tags.id
     GROUP BY users.id
-    HAVING COALESCE(SUM(user_tags.score),0)>10
+    HAVING COALESCE(SUM(user_tags.score),0)>10 AND users.id <> :user_id
     ORDER BY score DESC
     -- TODO calculate other attributes
   ) _
@@ -241,6 +241,25 @@ let Message = sequelize.define('messages', {
   },
   subject: Sequelize.STRING,
   body: {type: Sequelize.TEXT, allowNull: false},
+}, {
+  classMethods: {
+    hydrateMessages(to) {
+      ////FIXME does Sequelize not support self-referencing associations?? The following doesn't work:
+      //db.Message.findAll({where: {to}, include: [
+      //  {model: db.User, attributes: ['id', 'fullname', 'company', 'email']},
+      //  {model: db.Message, order:  [['created_at', 'DESC']]}
+      //]})
+      return sequelize.query(`
+SELECT messages.*, to_json(users) users, to_json(array_agg(replies)) replies
+FROM messages
+LEFT JOIN (SELECT id, fullname, email, company FROM users) users ON users.id = messages.user_id
+LEFT JOIN (SELECT * FROM messages ORDER BY created_at) replies ON replies.message_id = messages.id
+WHERE messages.to = :to OR (messages.to IS NOT NULL AND messages.user_id = :to) -- FIXME showing sent in employers's inbox for now
+GROUP BY messages.id, users.*
+`,
+      { replacements: {to}, type: sequelize.QueryTypes.SELECT})
+    }
+  }
 });
 
 
@@ -285,11 +304,10 @@ User.hasMany(UserCompany);
 User.hasMany(Job);
 Job.belongsTo(User);
 
-User.hasMany(Message); // sent
+User.hasMany(Message); // sent (Message.to for received)
 Message.belongsTo(User); // sent
+Message.hasMany(Message, { onDelete: 'cascade' })
 Message.belongsTo(Message); // Response thread
-Message.hasOne(Message)
-// Message.to for received
 
 // If new setup, init db.
 let syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)

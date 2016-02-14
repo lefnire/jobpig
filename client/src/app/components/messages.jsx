@@ -14,6 +14,12 @@ export default class Messages extends React.Component {
     this.getMessages();
   }
 
+  shouldComponentUpdate(nextProps, nextState){
+    //FIXME nextState has message updated with responses, but since they're nested in an array React isn't catching
+    // and object diff. This is bad performance; possibly break replies out to separate component?
+    return true;
+  }
+
   render () {
     return (
       <div>
@@ -26,8 +32,8 @@ export default class Messages extends React.Component {
             />
             <mui.CardTitle title={message.subject} />
             <mui.CardText>
-              <p>{message.body}</p>
-              {message.message ? <p><hr/>{message.message.body}</p> : null /* FIXME handle recursive message thread */}
+              <div>{message.body}</div>
+              {message.replies.map(r => r ? <div><hr/>{r.body}</div> : null)}
             </mui.CardText>
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
@@ -64,7 +70,7 @@ export default class Messages extends React.Component {
   };
 
   getMessages = () => {
-    _fetch('messages').then(messages => {console.log(messages[0]);this.setState({messages})});
+    _fetch('messages').then(messages => {console.log(messages);this.setState({messages})});
   };
 
   remove = (message) => {
