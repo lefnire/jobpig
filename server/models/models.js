@@ -250,14 +250,27 @@ let Message = sequelize.define('messages', {
       //  {model: db.Message, order:  [['created_at', 'DESC']]}
       //]})
       return sequelize.query(`
-SELECT messages.*, to_json(array_agg(DISTINCT(users))) users, to_json(array_agg(replies)) replies
-FROM messages
-LEFT JOIN (SELECT id, fullname, email, company FROM users) users ON users.id = messages.user_id OR users.id = messages.to
-LEFT JOIN (SELECT * FROM messages ORDER BY created_at) replies ON replies.message_id = messages.id
-WHERE messages.to = :to OR (messages.to IS NOT NULL AND messages.user_id = :to)
-GROUP BY messages.id
-`,
-      { replacements: {to}, type: sequelize.QueryTypes.SELECT})
+        SELECT m.*, u.users, r.replies
+        FROM messages m
+        LEFT JOIN LATERAL (
+          SELECT json_agg(u) AS users
+          FROM (
+            SELECT id, fullname, email, company
+            FROM users
+            WHERE id IN (m.user_id, m.to)
+          ) u
+        ) u ON TRUE
+        LEFT JOIN LATERAL (
+          SELECT json_agg(r) AS replies
+          FROM (
+            SELECT *
+            FROM   messages
+            WHERE  message_id = m.id
+            ORDER  BY created_at
+          ) r
+        ) r ON TRUE
+        WHERE :to IN (m.user_id, m.to) AND m.to IS NOT NULL
+        `, { replacements: {to}, type: sequelize.QueryTypes.SELECT});
     }
   }
 });
