@@ -255,7 +255,7 @@ let Message = sequelize.define('messages', {
         LEFT JOIN LATERAL (
           SELECT json_agg(u) AS users
           FROM (
-            SELECT id, fullname, email, company
+            SELECT id, fullname, email, company, pic
             FROM users
             WHERE id IN (m.user_id, m.to)
           ) u

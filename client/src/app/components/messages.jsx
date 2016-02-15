@@ -3,46 +3,50 @@ import mui from 'material-ui';
 import _ from 'lodash';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
-import {_fetch} from '../helpers';
+import {_fetch, me} from '../helpers';
+
+class Reply extends React.Component {
+  render() {
+    let {sender, reply} = this.props;
+    if (!reply) return null;
+    return (
+      <mui.CardHeader
+        title={sender.email}
+        subtitle={reply.body}
+        avatar={sender.pic} />
+    );
+  }
+}
 
 export default class Messages extends React.Component {
   constructor() {
     super();
-    this.state = {messages: []};
+    this.state = {
+      messages: [],
+      user: {}
+    };
+    me().then(user => this.setState({user}));
     this.getMessages();
-  }
-
-  shouldComponentUpdate(nextProps, nextState){
-    //FIXME nextState has message updated with responses, but since they're nested in an array React isn't catching
-    // and object diff. This is bad performance; possibly break replies out to separate component?
-    return true;
-  }
-
-  renderReply = (users, reply) => {
-    if (!reply) return null;
-    let user = _.find(users, {id: reply.user_id});
-    return (
-      <div key={reply.id}>
-        <hr/>
-        {user.email} says {reply.body}
-      </div>
-    );
   }
 
   render () {
     return (
       <div>
         {this.state.messages.map(message => (
-          <mui.Card style={{margin:40}}>
-            <mui.CardTitle title={message.subject} />
+          <mui.Card key={message.id} style={{margin:40}}>
+            <mui.CardTitle title={
+              <span>
+                {message.subject}
+                {message.user_id !== this.state.user.id ? null :
+                <mui.IconButton iconClassName="material-icons" tooltip="You sent this">forward</mui.IconButton>}
+              </span>
+            }/>
             <mui.CardHeader
-              title={_.find(message.users, {id: message.user_id}).email}
-              avatar="http://lorempixel.com/100/100/nature/"
+              title={message.users[message.user_id].email}
+              subtitle={message.body}
+              avatar={message.users[message.user_id].pic}
             />
-            <mui.CardText>
-              <div>{message.body}</div>
-              {message.replies.map(reply => this.renderReply(message.users, reply))}
-            </mui.CardText>
+            { message.replies.map(reply => <Reply key={reply.id} sender={message.users[reply.user_id]} reply={reply} />) }
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
               <mui.FlatButton label="Delete" onTouchTap={() => this.remove(message)} />
@@ -78,7 +82,11 @@ export default class Messages extends React.Component {
   };
 
   getMessages = () => {
-    _fetch('messages').then(messages=> this.setState({messages}));
+    _fetch('messages').then(messages=> {
+      // Map [{id, email, fullname}] => {id: {id, email, fullname}}
+      messages.forEach(msg => msg.users = _.zipObject(_.map(msg.users, 'id'), msg.users));
+      this.setState({messages})
+    });
   };
 
   remove = (message) => {
