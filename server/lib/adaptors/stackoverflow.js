@@ -15,7 +15,7 @@ module.exports = class StackOverflow extends Adaptor {
           company: item["a10:author"][0]["a10:name"][0],
           url: item.link[0],
           description: item.description[0],
-          location: item.location && item.location[0],
+          location: _.get(item, 'location[0]._'),
           money: null,
           remote: /allows remote/gi.test(item.title[0]),
           tags: item.category

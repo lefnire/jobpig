@@ -64,9 +64,9 @@ let adaptors = [
   //'remoteok',
 
   // Process those which seed tags first
-  //'stackoverflow',  //FIXME temporary issues
+  'stackoverflow',
   //'remoteworkhunt',
-  'offsite_careers',
+  //'offsite_careers',
 
   // Then the rest
   'github',
@@ -77,16 +77,26 @@ let adaptors = [
   'frontenddevjob',
   'virtualvocations',
   'hasjob',
-  //'landing_jobs', //FIXME temporary issues
+  'landing_jobs',
   'jobmote',
   'remotecoder',
 
   // And the really slow adaptors last
   'workingnomads',
-].map( a=> new (require('./'+a))() );
+].map( a => new (require('./'+a))() );
 
 exports.adaptors = adaptors;
 
 // Process adaptors.refresh() serially, as loading them all into memory crashes heroku. Slow, I know, but whatevs
-exports.refresh = () =>
-  Bluebird.each(adaptors, a=>a._refresh())
+exports.refresh = () => {
+  Bluebird.each(adaptors, a => new Promise((resolve, reject) => {
+    try {
+      a._refresh().then(resolve).catch(resolve);
+    } catch(e) {
+      // Often these feeds change their urls, RSS structure, whatever. Don't crash, just console (TODO email error)
+      // TODO this try/catch may be unecessary, seems _refresh().catch() above handles all?
+      console.error(e);
+      resolve();
+    }
+  }));
+};

@@ -54,77 +54,84 @@ let Job = sequelize.define('jobs', {
     filterJobs(user, status) {
       status = status || 'inbox';
       return sequelize.query(`
-SELECT
-j.*
-,COALESCE(uj.status,'inbox') status
-,uj.note
-,to_json(array_agg(tags)) tags
-,COALESCE(SUM(ut.score),0)+COALESCE(uc.score,0) score
+        SELECT
+        j.*
+        ,COALESCE(uj.status,'inbox') status
+        ,uj.note
+        ,json_agg(tags) tags
+        ,COALESCE(SUM(ut.score),0) score
 
-FROM jobs j
+        FROM jobs j
 
-LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
-LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id
-LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
-LEFT JOIN user_companies uc ON uc.user_id=:user_id AND uc.title=j.company
+        LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+        LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id
+        LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
 
-${user.remote_only ? "WHERE j.remote=true" : ""}
+        GROUP BY j.id, uj.note, uj.status
 
-GROUP BY j.id, uj.note, uj.status, uc.score
+        HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
 
-HAVING COALESCE(uj.status,'inbox')=:status AND COALESCE(SUM(ut.score),0)+COALESCE(uc.score,0)>-75
+        ORDER BY score DESC, j.created_at DESC
 
-ORDER BY score DESC, j.created_at DESC
-
-LIMIT :limit;
-`, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
+        LIMIT :limit;
+      `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
     },
     findMine(user){
       return sequelize.query(`
--- @see http://stackoverflow.com/a/27626358/362790
-SELECT u.users, jt.tags, jobs.*
-FROM jobs
+        -- @see http://stackoverflow.com/a/27626358/362790
+        SELECT u.users, jt.tags, jobs.*
+        FROM jobs
 
-LEFT JOIN (
-  SELECT job_id, to_json(array_agg(tags)) tags
-  FROM job_tags
-  INNER JOIN tags ON tags.id=job_tags.tag_id
-  GROUP BY 1
-) jt ON jobs.id=jt.job_id
+        LEFT JOIN (
+          SELECT job_id, json_agg(tags) tags
+          FROM job_tags
+          INNER JOIN tags ON tags.id=job_tags.tag_id
+          GROUP BY 1
+        ) jt ON jobs.id=jt.job_id
 
--- users whos sum > 10
-LEFT JOIN LATERAL (
-  SELECT to_json(array_agg(_)) users FROM (
-    SELECT COALESCE(SUM(user_tags.score),0) score, users.*, tags
-    FROM users
-    INNER JOIN user_tags ON user_tags.user_id=users.id
-    INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
-    INNER JOIN tags ON user_tags.tag_id=tags.id
-    GROUP BY users.id
-    HAVING COALESCE(SUM(user_tags.score),0)>10 AND users.id <> :user_id
-    ORDER BY score DESC
-    -- TODO calculate other attributes
-  ) _
-) u ON TRUE
+        -- users whos sum > 10
+        LEFT JOIN LATERAL (
+          SELECT json_agg(_) users FROM (
+            SELECT COALESCE(SUM(user_tags.score),0) score, users.*, tags
+            FROM users
+            INNER JOIN user_tags ON user_tags.user_id=users.id
+            INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
+            INNER JOIN tags ON user_tags.tag_id=tags.id
+            GROUP BY users.id
+            HAVING COALESCE(SUM(user_tags.score),0)>10 AND users.id <> :user_id
+            ORDER BY score DESC
+            -- TODO calculate other attributes
+          ) _
+        ) u ON TRUE
 
-WHERE jobs.user_id=:user_id
-ORDER BY jobs.id
-`, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
+        WHERE jobs.user_id=:user_id
+        ORDER BY jobs.id
+      `, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
     },
 
     // Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate while ignoring constraint
-    // errors (duplicates) for Postgres. So we're doing some custom joojoo here
+    // errors (duplicates) for Postgres. So we're doing some custom juju here
     bulkCreateWithTags(jobs) {
-      // clean up job tags (Angular JS, AngularJS => 'angularjs')
+      // normalize tags (lowercase, remove spaces, TODO what else?)
+      // Angular JS, Angular.JS => 'angular_js'
       jobs.forEach(job => {
-        job.tags = _.map(job.tags, tag => tag.toLowerCase().replace(/\s/g, ''));
+        job.tags = _(job.tags.concat([job.company, job.location, job.source, job.remote ? 'remote' : null]))
+          .compact() // remove empty vals
+          .map(tag => tag.trim().toLowerCase() // sanitize
+            .replace(/[_\. ](?=js)/g, '') // node.js, node_js, node js => nodejs
+            .replace(/\.(?!net)/g, '') // replace all periods, except .net, asp.net, etc
+            .replace(/(\s+|\-)/g, '_') // space/- => _
+            .replace(/[^a-zA-Z0-9#\+\._]/g, '') // remove punctuation, except language chars (c++, c#, TODO what else?)
+            //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
+          ).value();
       });
 
       // full list of (unique) tags
-      let tags = _(jobs).map('tags').flatten().uniq().map(key => {return {key}}).value();
+      let tags = _(jobs).map('tags').flatten().uniq().map(key => ({key})).value();
 
       // Find existing jobs & tags so we don't have a validation error
       let attributes = ['id', 'key'];
+
       return Promise.all([
         Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes}),
         Tag.findAll({where: {key: {$in: _.map(tags, 'key')}}, attributes})
@@ -143,12 +150,10 @@ ORDER BY jobs.id
         tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
 
         newJobs.forEach(j => {
-          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(key => {
-            return {
-              job_id: j.id,
-              tag_id: _.find(tags, {key}).id
-            };
-          }));
+          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(key => ({
+            job_id: j.id,
+            tag_id: _.find(tags, {key}).id
+          })));
         })
         return sequelize.model('job_tags').bulkCreate(joins);
       });
@@ -161,7 +166,7 @@ ORDER BY jobs.id
         url: 'http://127.0.0.1:3000',
         user_id: user.id
       });
-      job.tags = job.tags.split(',').map(t=>t.trim());
+      job.tags = job.tags.split(',').map(_.trim);
       return this.bulkCreateWithTags([job]);
     },
     score(user_id, job_id, status){
@@ -171,21 +176,13 @@ ORDER BY jobs.id
 
       // Then score attributes, unless setting to 'inbox' or 'hidden'
       // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
-      let score = ~['inbox','hidden'].indexOf(status) ? 0 : status=='disliked' ? -1 : +1;
+      let score = ~['inbox','hidden'].indexOf(status) ? 0 : status === 'disliked' ? -1 : +1;
       if (!score)
         return setStatus;
 
       return Promise.all([
         // Status
         setStatus,
-
-        // Company
-        this.findOne({where:{id:job_id}, attributes:['company']}).then(job=>
-          UserCompany.upsert({title:job.company,user_id}).then(()=>
-            sequelize.query(`UPDATE user_companies SET score=score+:score WHERE title=:title AND user_id=:user_id AND locked<>TRUE`,
-              {replacements: {user_id, title:job.company, score}})
-          )
-        ),
 
         // Tags
         sequelize.query(`
@@ -219,16 +216,6 @@ let UserJob = sequelize.define('user_jobs', {
   note: Sequelize.TEXT
 });
 
-let UserCompany = sequelize.define('user_companies', {
-  title: Sequelize.TEXT,
-  score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
-  locked: {type:Sequelize.BOOLEAN, defaultValue:false}
-}, {
-  indexes: [
-    {unique:true, fields:['title','user_id']}
-  ]
-});
-
 let UserTag = sequelize.define('user_tags', {
   score: {type:Sequelize.INTEGER, defaultValue:0, allowNull:false},
   locked: {type:Sequelize.BOOLEAN, defaultValue:false},
@@ -244,11 +231,7 @@ let Message = sequelize.define('messages', {
 }, {
   classMethods: {
     hydrateMessages(to) {
-      ////FIXME does Sequelize not support self-referencing associations?? The following doesn't work:
-      //db.Message.findAll({where: {to}, include: [
-      //  {model: db.User, attributes: ['id', 'fullname', 'company', 'email']},
-      //  {model: db.Message, order:  [['created_at', 'DESC']]}
-      //]})
+      // see http://dba.stackexchange.com/questions/129263/multiple-to-jsonarray-agg-separate-joins
       return sequelize.query(`
         SELECT m.*, u.users, r.replies
         FROM messages m
@@ -264,9 +247,9 @@ let Message = sequelize.define('messages', {
           SELECT json_agg(r) AS replies
           FROM (
             SELECT *
-            FROM   messages
-            WHERE  message_id = m.id
-            ORDER  BY created_at
+            FROM messages
+            WHERE message_id = m.id
+            ORDER BY created_at
           ) r
         ) r ON TRUE
         WHERE :to IN (m.user_id, m.to) AND m.to IS NOT NULL
@@ -274,7 +257,6 @@ let Message = sequelize.define('messages', {
     }
   }
 });
-
 
 let Meta = sequelize.define('meta', {
   key: {type:Sequelize.STRING, primaryKey:true},
@@ -302,21 +284,23 @@ let Meta = sequelize.define('meta', {
   }
 })
 
+// Jobs have tags
 Tag.belongsToMany(Job, {through: 'job_tags'});
 Job.belongsToMany(Tag, {through: 'job_tags'});
 
+// User sets job status [inbox|applied|liked|disliked]
 User.belongsToMany(Job, {through: UserJob});
 Job.belongsToMany(User, {through: UserJob});
 
+// User scores tags
 User.belongsToMany(Tag, {through: UserTag});
 Tag.belongsToMany(User, {through: UserTag});
 
-User.hasMany(UserCompany);
-
-// For employers creating jobs
+// Employers create jobs
 User.hasMany(Job);
 Job.belongsTo(User);
 
+// Users send messages to each other
 User.hasMany(Message); // sent (Message.to for received)
 Message.belongsTo(User); // sent
 Message.hasMany(Message, { onDelete: 'cascade' })
@@ -337,7 +321,6 @@ module.exports = {
   Tag,
   UserJob,
   UserTag,
-  UserCompany,
   Message,
   Meta,
   syncPromise
