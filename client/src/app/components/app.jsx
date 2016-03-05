@@ -16,8 +16,9 @@ import mui, {
   ToolbarSeparator,
   RaisedButton,
   IconButton,
-  FlatButton,
+  FlatButton
 } from 'material-ui';
+import {Colors} from 'material-ui/lib/styles'
 import _ from 'lodash';
 import Footer from './footer';
 
@@ -37,9 +38,13 @@ export default class App extends React.Component {
       'profile': 'Profile',
       'logout': "Logout"
     }[this.props.location.pathname.replace(/^\//,'')] || 'Jobpig';
+    let styles = {
+      //FIXME how to pull primary/secondary/whatever color automatically from curren theme? And also automatically make the icons/text white?
+      //toolbar: {backgroundColor: Colors.blueGrey500}
+    };
     return (
       <div>
-        <Toolbar>
+        <Toolbar style={styles.toolbar}>
           <ToolbarTitle text={title} />
           <ToolbarGroup float="right">
             <DropDownMenu value='inbox' onChange={(evt, idx, val) => this._goto('jobs/' + val)}>
@@ -59,11 +64,11 @@ export default class App extends React.Component {
               <MenuItem primaryText="Profile" onTouchTap={() => this._goto('profile')} />
               <MenuItem primaryText="Logout" onTouchTap={() => this._goto('logout')} />
             </IconMenu>
-
           </ToolbarGroup>
         </Toolbar>
 
         {this.props.children}
+
         <Footer />
       </div>
     );
