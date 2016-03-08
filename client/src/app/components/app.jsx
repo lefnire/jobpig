@@ -18,7 +18,7 @@ import mui, {
   IconButton,
   FlatButton
 } from 'material-ui';
-import {Colors} from 'material-ui/lib/styles'
+import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
 import Footer from './footer';
 
@@ -28,31 +28,37 @@ export default class App extends React.Component {
     this.state = {open: false};
   }
 
-  render(){
+  render() {
     let title = { //FIXME this is dirty. Use state instead?
-      'jobs/inbox': 'Inbox',
-      'jobs/applied': 'Applied',
-      'jobs/liked': 'Liked',
-      'employer': 'Employer',
-      'messages': 'Messages',
-      'profile': 'Profile',
-      'logout': "Logout"
-    }[this.props.location.pathname.replace(/^\//,'')] || 'Jobpig';
+        'jobs/inbox': 'Inbox',
+        'jobs/applied': 'Applied',
+        'jobs/liked': 'Liked',
+        'employer': 'Employer',
+        'messages': 'Messages',
+        'profile': 'Profile',
+        'logout': "Logout"
+      }[this.props.location.pathname.replace(/^\//, '')] || 'Jobpig';
     let styles = {
-      //FIXME how to pull primary/secondary/whatever color automatically from curren theme? And also automatically make the icons/text white?
-      //toolbar: {backgroundColor: Colors.blueGrey500}
-    };
+      toolbar: {
+        backgroundColor: Colors.blueGrey500,
+        //color: Colors.grey50
+      },
+      //light: {
+      //  color: 'white',
+      //}
+    }
+
     return (
       <div>
         <Toolbar style={styles.toolbar}>
           <ToolbarTitle text={title} />
-          <ToolbarGroup float="right">
+          <ToolbarGroup float="right" className="tyler-test">
             <DropDownMenu value='inbox' onChange={(evt, idx, val) => this._goto('jobs/' + val)}>
               <MenuItem value='inbox' primaryText="Inbox"/>
-              <MenuItem value='applied' primaryText="Applied" />
-              <MenuItem value='liked' primaryText="Liked" />
+              <MenuItem value='applied' primaryText="Applied"/>
+              <MenuItem value='liked' primaryText="Liked"/>
             </DropDownMenu>
-            <IconButton touch={true} tooltip='Employer' onTouchTap={() => this._goto('employer')}>
+            <IconButton touch={true} tooltip='Employer' onTouchTap={() => this._goto('employer')} >
               <PlacesBusinessCenter />
             </IconButton>
             <IconButton touch={true} tooltip='Messages' onTouchTap={() => this._goto('messages')}>
@@ -60,9 +66,9 @@ export default class App extends React.Component {
             </IconButton>
             <IconMenu
               tooltip="Profile"
-              iconButtonElement={<IconButton touch={true}><SocialPerson /></IconButton>} >
-              <MenuItem primaryText="Profile" onTouchTap={() => this._goto('profile')} />
-              <MenuItem primaryText="Logout" onTouchTap={() => this._goto('logout')} />
+              iconButtonElement={<IconButton touch={true}><SocialPerson /></IconButton>}>
+              <MenuItem primaryText="Profile" onTouchTap={() => this._goto('profile')}/>
+              <MenuItem primaryText="Logout" onTouchTap={() => this._goto('logout')}/>
             </IconMenu>
           </ToolbarGroup>
         </Toolbar>

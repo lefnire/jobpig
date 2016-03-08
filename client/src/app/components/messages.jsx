@@ -4,6 +4,8 @@ import _ from 'lodash';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import {_fetch, me} from '../helpers';
+import Footer from './footer';
+import { Colors } from 'material-ui/lib/styles';
 
 class Reply extends React.Component {
   render() {
@@ -15,6 +17,14 @@ class Reply extends React.Component {
         subtitle={reply.body}
         avatar={sender.pic} />
     );
+  }
+}
+let styles = {
+  footer: {
+    backgroundColor: Colors.blueGrey500,
+    textAlign: 'center',
+    color: Colors.grey50,
+    marginTop: 200
   }
 }
 
@@ -29,7 +39,21 @@ export default class Messages extends React.Component {
     this.getMessages();
   }
 
-  render () {
+  renderEmpty(){
+    return (
+      <mui.Card style={{margin:40}}>
+        <mui.CardText>
+          <h1 style={{paddingBottom:10, borderBottom: '1px solid #eee'}}>Messages</h1>
+          <ul style={{padding:20, margin: 40, fontSize:"1.2em"}}>
+            <li>If you are searching for a job you can contact sponsored employers here.</li>
+            <li>If you are an employer you can contact potential employees here.</li>
+            </ul>
+        </mui.CardText>
+      </mui.Card>
+    );
+  }
+
+  renderMessages(){
     return (
       <div>
         {this.state.messages.map(message => (
@@ -74,6 +98,11 @@ export default class Messages extends React.Component {
         ))}
       </div>
     );
+  }
+
+  render () {
+    let isEmpty = this.state.messages.length === 0;
+    return isEmpty ? this.renderEmpty() : this.renderMessages();
   }
 
   toggleReply = (message) => {
