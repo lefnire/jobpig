@@ -88,15 +88,4 @@ let adaptors = [
 exports.adaptors = adaptors;
 
 // Process adaptors.refresh() serially, as loading them all into memory crashes heroku. Slow, I know, but whatevs
-exports.refresh = () => {
-  Bluebird.each(adaptors, a => new Promise((resolve, reject) => {
-    try {
-      a._refresh().then(resolve).catch(resolve);
-    } catch(e) {
-      // Often these feeds change their urls, RSS structure, whatever. Don't crash, just console (TODO email error)
-      // TODO this try/catch may be unecessary, seems _refresh().catch() above handles all?
-      console.error(e);
-      resolve();
-    }
-  }));
-};
+exports.refresh = () => Bluebird.each(adaptors, a => a._refresh());

@@ -154,7 +154,8 @@ let Job = sequelize.define('jobs', {
             job_id: j.id,
             tag_id: _.find(tags, {key}).id
           })));
-        })
+        });
+        joins = _.uniqBy(joins, j => j.job_id+'-'+j.tag_id); // remove duplicates FIXME this shouldn't be happening
         return sequelize.model('job_tags').bulkCreate(joins);
       });
     },
@@ -265,9 +266,7 @@ let Meta = sequelize.define('meta', {
   classMethods:{
     needsCron(){
       return sequelize.query(`SELECT EXTRACT(DOY FROM meta.val::TIMESTAMP WITH TIME ZONE)!=EXTRACT(DOY FROM CURRENT_TIMESTAMP) val FROM meta WHERE key='cron'`,
-        {type:sequelize.QueryTypes.SELECT}).then( res=> {
-          return Promise.resolve((res[0].val));
-        } );
+        {type:sequelize.QueryTypes.SELECT}).then(res => Promise.resolve((res[0].val)));
     },
     runCronIfNecessary(){
       return this.needsCron().then(val => {
@@ -276,9 +275,13 @@ let Meta = sequelize.define('meta', {
         console.log('Refreshing jobs....');
         // Update cron, delete stale jobs
         return sequelize.query(`
+          -- Update cron
           UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron';
-          DELETE from jobs where created_at < CURRENT_TIMESTAMP - INTERVAL '10 days';
-        `).then(()=>require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
+          -- And prune old listings (10d for scraped, 30d for sponsored)
+          DELETE FROM jobs WHERE
+            (user_id IS NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '10 days') OR
+            (user_id IS NOT NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '30 days');
+        `).then(() => require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
       });
     }
   }

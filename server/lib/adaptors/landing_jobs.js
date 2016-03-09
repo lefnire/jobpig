@@ -10,7 +10,7 @@ module.exports = class LandingJobs extends Adaptor {
       let jobs = _.map(feed.slice(0,100), j => ({
         key: j.id[0],
         source: 'landing_jobs',
-        title: j.title[0]._,
+        title: j.title[0],
         company: j.author[0].name[0],
         url: j.link[0].$.href,
         description: j.content[0]._,

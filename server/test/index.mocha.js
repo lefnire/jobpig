@@ -46,16 +46,27 @@ describe('Jobpig', function() {
   })
 
   //after(app.close)
-  it.skip('runs cron', function(done) {
+  it.only('runs cron', done => {
     //process.env.VCR_MODE = 'playback';
     //let sepia = require('sepia');
+
+    let numJobs;
     db.Meta.needsCron()
-    .then(val=>{
+    .then(val => {
       expect(val).to.be(true);
       return db.Meta.runCronIfNecessary();
-    }).then(()=>db.Job.count())
-    .then(ct=>{
-      expect(ct).to.be.greaterThan(0);
+    })
+    .then(() => db.Job.count())
+    .then(_numJobs => {
+      numJobs = _numJobs;
+      expect(numJobs).to.be.greaterThan(0);
+    })
+    .then(() =>
+      // Make sure they all got tags (they should at least have jobboard source, and maybe remote)
+      sequelize.query('SELECT COUNT(DISTINCT id) FROM jobs INNER JOIN job_tags ON job_tags.job_id = jobs.id', { type: sequelize.QueryTypes.SELECT})
+    )
+    .then(_numJobs => {
+      expect(numJobs).to.be(_numJobs[0].count);
       //revertSepia();
       done();
     })
