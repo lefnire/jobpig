@@ -65,10 +65,11 @@ let adaptors = [
 
   // Process those which seed tags first
   'stackoverflow',
-  //'remoteworkhunt',
-  //'offsite_careers',
+  //'remoteworkhunt', // dead
+  //'offsite_careers', // dead
 
   // Then the rest
+  'indeed',
   'github',
   'authenticjobs',
   'weworkremotely',

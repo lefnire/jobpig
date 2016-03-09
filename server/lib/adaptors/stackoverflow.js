@@ -7,7 +7,7 @@ module.exports = class StackOverflow extends Adaptor {
   refresh() {
     return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=> {
       let feed = results.rss.channel[0].item;
-      let jobs = _.map(feed.slice(0,100), item=> {
+      let jobs = _.map(feed.slice(0,500), item=> {
         return {
           key: item.guid[0]._,
           source: 'stackoverflow',
