@@ -222,6 +222,10 @@ let UserTag = sequelize.define('user_tags', {
   locked: {type:Sequelize.BOOLEAN, defaultValue:false},
 });
 
+let Payment = sequelize.define('payments', {
+  txn_id: {type: Sequelize.STRING,allowNull: false}
+});
+
 let Message = sequelize.define('messages', {
   to: {
     type: Sequelize.INTEGER,
@@ -303,6 +307,10 @@ Tag.belongsToMany(User, {through: UserTag});
 User.hasMany(Job);
 Job.belongsTo(User);
 
+// Post sponsored job
+User.hasMany(Payment);
+Payment.belongsTo(User);
+
 // Users send messages to each other
 User.hasMany(Message); // sent (Message.to for received)
 Message.belongsTo(User); // sent
@@ -326,5 +334,6 @@ module.exports = {
   UserTag,
   Message,
   Meta,
+  Payment,
   syncPromise
 };

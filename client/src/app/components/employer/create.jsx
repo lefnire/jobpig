@@ -29,7 +29,7 @@ export default class CreateJob extends React.Component {
             token={this.onToken}
             stripeKey="<nconf:stripe:public>"
             amount={10000}>
-            <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
+            <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} />
           </StripeCheckout>
         ]} >
 
@@ -72,6 +72,8 @@ export default class CreateJob extends React.Component {
 
   onToken = (token) => {
     // POST server/payments {token: token}
-    _fetch('payments', {method: "POST", body:{token}}).then(function() {debugger});
+    _fetch('payments', {method: "POST", body:{token}})
+    .then(()  => this.refs.form.submit())
+    .catch(err => alert(err));
   };
 }
