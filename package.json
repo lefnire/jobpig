@@ -34,6 +34,7 @@
     "nconf": "^0.7.1",
     "nightmare": "^1.8.2",
     "node-uuid": "^1.4.3",
+    "nodemailer": "^2.3.0",
     "passport": "^0.2.2",
     "passport-local-sequelize": "^0.6.0",
     "pg": "^4.4.0",
