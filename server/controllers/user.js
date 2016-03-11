@@ -67,7 +67,7 @@ exports.forgotPassword = (req, res, next) => {
         subject: "Reset Password",
         text: `Click this link to reset your password: ${link}`,
         html: `Click this link to reset your password: <a href="${link}">${link}</a>`
-      }, _.noop);
+      });
       res.send({}); // success
     });
   }).catch(next);
@@ -90,4 +90,4 @@ exports.resetPassword = (req, res, next) => {
     if (err) return next(err);
     res.redirect(nconfUrl('client'));
   });
-}
+};

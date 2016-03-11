@@ -47,6 +47,8 @@ export default class Contact extends React.Component {
   submitForm = (body) => {
     _fetch(`messages/contact/${this.props.prospect.id}`, {method:"POST", body}).then(() => {
       this.handleClose();
-    }).catch(console.error)
+    }).catch((json) => {
+      alert(json.json.message);
+    })
   }
 }

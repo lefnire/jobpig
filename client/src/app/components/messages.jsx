@@ -70,7 +70,7 @@ export default class Messages extends React.Component {
               subtitle={message.body}
               avatar={message.users[message.user_id].pic}
             />
-            { message.replies.map(reply => <Reply key={reply.id} sender={message.users[reply.user_id]} reply={reply} />) }
+            { message.replies && message.replies.map(reply => <Reply key={reply.id} sender={message.users[reply.user_id]} reply={reply} />) }
             <mui.CardActions>
               <mui.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
               <mui.FlatButton label="Delete" onTouchTap={() => this.remove(message)} />

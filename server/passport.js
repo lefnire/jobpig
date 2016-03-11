@@ -37,7 +37,7 @@ exports.setup = function (app) {
         subject: "Verify Jobpig email",
         text: `Verify your Jobpig account by clicking this link: ${link}`,
         html: `Verify your Jobpig account by clicking this link: <a href="${link}">${link}</a>`
-      }, ()=>{});
+      });
     });
   });
 
@@ -49,7 +49,7 @@ exports.setup = function (app) {
 }
 
 var sign = function(user) {
-  var u = _.pick(user, ['id','email', 'remote_only'])// TODO do we need more variation? concerned about using _.omit & accidentally including too many sensitive attrs (see passport-local-sequelize)
+  var u = _.omit(user, ['hash', 'salt']);
   return jwt.sign(u, nconf.get('secret'), {
     expiresInMinutes: 1440 // expires in 24 hours
   });

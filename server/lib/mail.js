@@ -4,9 +4,12 @@ const nconf = require('nconf');
 const transporter = nodemailer.createTransport(nconf.get("mail")); //config.json#mail needs a full config object
 const _ = require('lodash');
 
-exports.send = (data, cb) => {
-  if (!(data.to && data.subject && data.text))
-    return cb(new Error('Email error: Recipient, subject, and body required'));
+exports.send = data => new Promise((resolve, reject) => {
+  if (!(data.to && data.subject && data.text)) {
+    let err = new Error('Email error: Recipient, subject, and body required')
+    console.error(err)
+    return reject(err);
+  }
 
   let email = _.pick(data, ['to', 'subject', 'text', 'html']);
   _.defaults(email, {
@@ -14,7 +17,12 @@ exports.send = (data, cb) => {
     html: email.text
   });
 
-  transporter.sendMail(email, (err, info) =>
-    err ? console.log(error) : console.log('Message sent: ' + info.response)
-  );
-};
+  transporter.sendMail(email, (err, info) => {
+    if (err) {
+      console.error(err);
+      return reject(err);
+    };
+    console.log('Message sent: ' + info.response);
+    resolve(info);
+  });
+});
