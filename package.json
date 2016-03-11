@@ -36,7 +36,7 @@
     "node-uuid": "^1.4.3",
     "nodemailer": "^2.3.0",
     "passport": "^0.2.2",
-    "passport-local-sequelize": "^0.6.0",
+    "passport-local-sequelize": "lefnire/passport-local-sequelize#master",
     "pg": "^4.4.0",
     "pg-hstore": "^2.3.2",
     "react": "^0.14.7",

@@ -37,6 +37,7 @@ let User = sequelize.define('users', _.defaults({
 passportLocalSequelize.attachToUser(User, {
   usernameField: 'email',
   usernameLowerCase: true,
+  activationRequired: true
 });
 
 let Job = sequelize.define('jobs', {

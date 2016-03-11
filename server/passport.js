@@ -5,7 +5,8 @@ const passport = require('passport'),
   User = require('./models/models').User,
   _ = require('lodash'),
   jwt = require('jsonwebtoken'),
-  crypto = require('crypto');
+  crypto = require('crypto'),
+  mail = require('./lib/mail');
 
 exports.setup = function (app) {
   app.use(passport.initialize());
@@ -15,17 +16,28 @@ exports.setup = function (app) {
   app.post('/register', function (req, res, next) {
     if (req.body.password != req.body.confirmPassword)
       return next({status:403, message:'Password does not match Confirm Password'});
+
     if (req.body.password.length < 3)
       return next({status:403, message:'Password should be greater than 3 characters.'});
-    User.register(User.build({
+
+    User.register({
       email: req.body.email,
       pic: 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(req.body.email).digest("hex")
-    }), req.body.password, function (err, _user) {
+    }, req.body.password, function (err, _user) {
       if (err) return next(err);
-      //return res.sendStatus(200);
-      passport.authenticate('local', localOpts)(req, res, ()=>{
+      passport.authenticate('local', localOpts)(req, res, () => {
         res.json({token: sign(_user)});
       });
+
+      // Send acct activation email
+      let link = nconf.get('urls:' + nconf.get('NODE_ENV') + ':server') +
+        `/user/activate?email=${_user.email}&key=${_user.activationKey}`;
+      mail.send({
+        to: _user.email,
+        subject: "Verify Jobpig email",
+        text: `Verify your Jobpig account by clicking this link: ${link}`,
+        html: `Verify your Jobpig account by clicking this link: <a href="${link}">${link}</a>`
+      }, ()=>{});
     });
   });
 
