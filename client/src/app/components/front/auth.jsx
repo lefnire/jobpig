@@ -24,29 +24,47 @@ class Login extends React.Component {
 
   render(){
     return (
-      <Formsy.Form
-        ref="form"
-        onValid={() => this.setState({canSubmit: true})}
-        onInvalid={() => this.setState({canSubmit: false})}
-        onValidSubmit={this.submitForm}>
-        <Error error={this.state.error} />
-        <fui.FormsyText
-          name='email'
-          required
-          hintText="Email Address"
-          fullWidth={true}
-          validations="isEmail"
-          validationError="Please enter a valid email address"
-          type="email"/>
-        <fui.FormsyText
-          name="password"
-          required
-          hintText="Password"
-          fullWidth={true}
-          type="password"/>
-        <mui.RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
-      </Formsy.Form>
+      <div>
+        <Formsy.Form
+          ref="form"
+          onValid={() => this.setState({canSubmit: true})}
+          onInvalid={() => this.setState({canSubmit: false})}
+          onValidSubmit={this.submitForm}>
+          <Error error={this.state.error} />
+          <fui.FormsyText
+            name='email'
+            required
+            hintText="Email Address"
+            fullWidth={true}
+            validations="isEmail"
+            validationError="Please enter a valid email address"
+            type="email"/>
+          <fui.FormsyText
+            name="password"
+            required
+            hintText="Password"
+            fullWidth={true}
+            type="password"/>
+          <mui.RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
+        </Formsy.Form>
+        <div style={{marginTop: 10}}>
+          <a onClick={() => this.setState({forgotPass: !this.state.forgotPass})} style={{cursor: 'pointer'}}>Forgot Password</a>
+          { !this.state.forgotPass ? null :
+            <form onSubmit={this.forgotPassword}>
+              <input value={this.state.forgotEmail} onChange={e => this.setState({forgotEmail: e.target.value})} placeholder="Enter email address" />
+              <input type="submit" value="Send" />
+            </form>
+          }
+        </div>
+      </div>
     );
+  }
+
+  forgotPassword = e => {
+    e.preventDefault();
+    _fetch('user/forgot-password', {method: "POST", body: {email: this.state.forgotEmail}})
+      .then(json => alert("Email sent"))
+      .catch(json => alert(json.json.message));
   }
 
   submitForm = (body) => {

@@ -2,6 +2,9 @@
 const db = require('../models/models');
 const _ = require('lodash');
 const nconf = require('nconf');
+const mail = require('../lib/mail');
+
+const nconfUrl = clientOrServer => nconf.get('urls:' + nconf.get('NODE_ENV') + ':' + clientOrServer);
 
 exports.get = (req, res, next) => {
   db.User.findOne({
@@ -44,11 +47,47 @@ exports.activate = (req, res, next) => {
     key = req.query.key;
   db.User.activate(email, key, (err, user) => {
     if (err) return next(err);
-    let client = nconf.get('urls:' + nconf.get('NODE_ENV') + ':client');
     res.send(`
       <h1>Activation successful</h1>
-      <p>User ${user.email} has successfully been activated. <a href="${client}">Back to site</a></p>
+      <p>User ${user.email} has successfully been activated. <a href="${nconfUrl('client')}">Back to site</a></p>
     `);
   })
-  //req.user.activate
 };
+
+exports.forgotPassword = (req, res, next) => {
+  let email = req.body.email;
+  db.User.findOne({where: {email, verified: true}}).then(user => {
+    if (!user) return next("User not found or not verified");
+    db.User.setResetPasswordKey(email, (err, user) => {
+      if (err) return next(err);
+
+      let link = `${nconfUrl('server')}/user/reset-password?email=${req.body.email}&key=${user.resetPasswordKey}`;
+      mail.send({
+        to: email,
+        subject: "Reset Password",
+        text: `Click this link to reset your password: ${link}`,
+        html: `Click this link to reset your password: <a href="${link}">${link}</a>`
+      }, _.noop);
+      res.send({}); // success
+    });
+  }).catch(next);
+};
+
+exports.resetPasswordPage = (req, res, next) => {
+  res.send(`
+    <h1>Reset Password for ${req.query.email}</h1>
+    <form action="/user/reset-password" method="POST">
+      <input name="password" placeholder="New Password" />
+      <input type="hidden" name="resetPasswordKey" value=${req.query.key} />
+      <input type="hidden" name="username" value=${req.query.email} />
+      <input type="submit" value="Submit" />
+    </form>
+  `)
+};
+
+exports.resetPassword = (req, res, next) => {
+  db.User.resetPassword(req.body.username, req.body.password, req.body.resetPasswordKey, (err, user) => {
+    if (err) return next(err);
+    res.redirect(nconfUrl('client'));
+  });
+}

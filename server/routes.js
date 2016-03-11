@@ -19,6 +19,9 @@ router.delete('/user/:table/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 router.get('/user/activate', user.activate);
+router.post('/user/forgot-password', user.forgotPassword);
+router.get('/user/reset-password', user.resetPasswordPage);
+router.post('/user/reset-password', user.resetPassword);
 
 router.get('/messages', ensureAuth, messages.inbox);
 router.get('/messages/sent', ensureAuth, messages.sent);
