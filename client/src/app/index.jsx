@@ -18,6 +18,7 @@ import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
 import App from './components/app.jsx';
 import Front from './components/front/front.jsx';
+import ResetPassword from './components/front/reset-password.jsx';
 import Jobs from './components/jobs/jobs.jsx';
 import Employer from './components/employer/employer.jsx';
 import Messages from './components/messages.jsx'
@@ -52,6 +53,7 @@ class Main extends Component {
       <Router history={hashHistory}>
         <Route>
           <Route path="/" component={Front} />
+          <Route path="/reset-password" component={ResetPassword} />
           <Route path="logout" onEnter={logout} />
           <Redirect path="*" to="/" />
         </Route>

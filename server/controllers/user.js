@@ -61,7 +61,7 @@ exports.forgotPassword = (req, res, next) => {
     db.User.setResetPasswordKey(email, (err, user) => {
       if (err) return next(err);
 
-      let link = `${nconfUrl('server')}/user/reset-password?email=${req.body.email}&key=${user.resetPasswordKey}`;
+      let link = `${nconfUrl('client')}/#/reset-password?email=${req.body.email}&key=${user.resetPasswordKey}`;
       mail.send({
         to: email,
         subject: "Reset Password",
@@ -72,22 +72,9 @@ exports.forgotPassword = (req, res, next) => {
     });
   }).catch(next);
 };
-
-exports.resetPasswordPage = (req, res, next) => {
-  res.send(`
-    <h1>Reset Password for ${req.query.email}</h1>
-    <form action="/user/reset-password" method="POST">
-      <input name="password" placeholder="New Password" />
-      <input type="hidden" name="resetPasswordKey" value=${req.query.key} />
-      <input type="hidden" name="username" value=${req.query.email} />
-      <input type="submit" value="Submit" />
-    </form>
-  `)
-};
-
 exports.resetPassword = (req, res, next) => {
   db.User.resetPassword(req.body.username, req.body.password, req.body.resetPasswordKey, (err, user) => {
     if (err) return next(err);
-    res.redirect(nconfUrl('client'));
+    res.send({});
   });
 };
