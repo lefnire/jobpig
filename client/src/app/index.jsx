@@ -1,6 +1,8 @@
 // Custom
 import {API_URL} from './helpers';
 import fetch from 'isomorphic-fetch';
+import Alerts from './components/alerts';
+import url from 'url';
 
 // React
 import React, {Component} from 'react';
@@ -35,31 +37,44 @@ const myTheme = {
 @ThemeDecorator(ThemeManager.getMuiTheme(myTheme))
 class Main extends Component {
   render() {
-    return loggedIn() ? (
-      <Router history={hashHistory}>
-        <Route path="/"
-             component={App}
-             onUpdate={() => window.scrollTo(0, 0)}>
-          <Route path="jobs/:filter" component={Jobs} />
-          <Route path="employer" component={Employer} />
-          <Route path="profile" component={Profile} />
-          <Route path="logout" onEnter={logout} />
-          <Route path="messages" component={Messages} />
-          <IndexRedirect to="jobs/inbox" />
-          <Redirect path="*" to="jobs/inbox"/>
-        </Route>
-      </Router>
-      ) : (
-      <Router history={hashHistory}>
-        <Route>
-          <Route path="/" component={Front} />
-          <Route path="/reset-password" component={ResetPassword} />
-          <Route path="logout" onEnter={logout} />
-          <Redirect path="*" to="/" />
-        </Route>
-      </Router>
+    return (
+      <div>
+        <Alerts ref={c => global._alerts = c} />
+        <Router history={hashHistory} onUpdate={this.onUpdate}>
+          {loggedIn() ? (
+            <Route path="/"
+              component={App}
+              onUpdate={() => window.scrollTo(0, 0)}
+            >
+              <Route path="jobs/:filter" component={Jobs} />
+              <Route path="employer" component={Employer} />
+              <Route path="profile" component={Profile} />
+              <Route path="logout" onEnter={logout} />
+              <Route path="messages" component={Messages} />
+              <IndexRedirect to="jobs/inbox" />
+              <Redirect path="*" to="jobs/inbox"/>
+            </Route>
+          ) : (
+            <Route onEnter={this.onEnter}>
+              <Route path="/" component={Front} />
+              <Route path="/reset-password" component={ResetPassword} />
+              <Route path="logout" />
+              <Redirect path="*" to="/" />
+            </Route>
+          )}
+        </Router>
+      </div>
     );
   }
+
+  onUpdate = () => {
+    // FIXME this.state is always null at this point, what's going on?
+    // this.refs.flash.onRoute(this.state.location)
+    let query = window.location.href.match(/(\?)(.*$)/)
+      [2].split('&').map(i => i.split('='))
+      .reduce((m,v) => {m[v[0]]=v[1];return m}, {});
+    global._alerts.flash({query});
+  };
 };
 
 ReactDOM.render(<Main/>, document.getElementById('app'));

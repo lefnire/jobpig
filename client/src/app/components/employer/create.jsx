@@ -73,7 +73,10 @@ export default class CreateJob extends React.Component {
   onToken = (token) => {
     // POST server/payments {token: token}
     _fetch('payments', {method: "POST", body:{token}})
-    .then(()  => this.refs.form.submit())
-    .catch(err => alert(err));
+    .then(()  => {
+      global._alerts.alert('Payment success, posting job now.');
+      this.refs.form.submit();
+    })
+    .catch(err => global._alerts.alert(err));
   };
 }

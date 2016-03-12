@@ -66,7 +66,7 @@ export default class ResetPassword extends React.Component {
       resetPasswordKey: query.key,
       username: query.email
     }})
-    .then(() => window.location = '/')
+    .then(() => window.location = '/#/?flash=PASSWORD_RESET')
     .catch(error => this.setState({error}));
   };
 }

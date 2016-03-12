@@ -63,8 +63,11 @@ class Login extends React.Component {
   forgotPassword = e => {
     e.preventDefault();
     _fetch('user/forgot-password', {method: "POST", body: {email: this.state.forgotEmail}})
-      .then(json => alert("Email sent"))
-      .catch(json => alert(json.json.message));
+      .then(json => {
+        global._alerts.alert("Email sent.");
+        this.setState({forgotEmail: ''});
+      })
+      .catch(json => global._alerts.alert(json.json.message));
   }
 
   submitForm = (body) => {
