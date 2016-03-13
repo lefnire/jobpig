@@ -91,6 +91,7 @@ export default class Profile extends React.Component{
               onValidSubmit={this.submitForm}>
 
               <fui.FormsyText name='fullname' required hintText="Full Name" value={profile.fullname} fullWidth={true}/>
+              <fui.FormsyText name='pic' hintText="Photo URL" value={profile.pic} fullWidth={true} validations="isUrl" validationError={isUrl} />
               <fui.FormsyText name='linkedin_url' hintText="LinkedIn URL" value={profile.linkedin_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
               <fui.FormsyText name='github_url' hintText="Github URL" value={profile.github_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
               <fui.FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
@@ -102,16 +103,7 @@ export default class Profile extends React.Component{
           </mui.CardText>
         </mui.Card>
 
-        <mui.List subheader="Search Preferences">
-          <mui.ListItem
-            primaryText="Remote Only"
-            leftCheckbox={
-              <mui.Checkbox onCheck={this._setPref.bind(this, 'remote_only')} defaultChecked={this.state.profile.remote_only} />
-            }
-            />
-        </mui.List>
-
-        <mui.Card>
+        {/*<mui.Card>
           <mui.CardTitle title='Scores' subtitle={lockText}/>
           <mui.CardText>
             <mui.Tabs>
@@ -133,7 +125,7 @@ export default class Profile extends React.Component{
 
             </mui.Tabs>
           </mui.CardText>
-        </mui.Card>
+        </mui.Card>*/}
       </mui.ClearFix>
     )
   }
@@ -147,6 +139,8 @@ export default class Profile extends React.Component{
   _refresh = () => _fetch('user').then(profile => this.setState({profile}));
 
   submitForm = (body) => {
-    _fetch(`user/preferences`, {method: "PUT", body});
+    _fetch(`user/preferences`, {method: "PUT", body})
+      .then(() => global._alerts.alert("Profile saved."))
+      .catch(json => global._alerts.alert(json.json.message));
   };
 }

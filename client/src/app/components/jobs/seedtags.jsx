@@ -29,14 +29,15 @@ export default class SeedTags extends React.Component {
       />,
     ];
 
+    // Select.Async#menuContainerStyle={{zIndex:1600}} may be necessary (Mui.Dialog's is 1500)
     return (
       <mui.Dialog title="Seed Tags"
+        bodyStyle={{overflow: 'visible'}}
         actions={actions}
         modal={false}
         open={this.state.open}
         onRequestClose={this.handleClose}>
         <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
-
         <Select.Async
           multi={true}
           value={this.state.selected}

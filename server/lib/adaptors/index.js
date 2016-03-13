@@ -6,7 +6,7 @@ let xml2js = require('xml2js');
 let parser = new xml2js.Parser();
 let request = require('request');
 let db = require('../../models/models');
-let Bluebird = require('sequelize/node_modules/bluebird');
+let Bluebird = require('bluebird');
 
 exports.Adaptor = class Adaptor {
   constructor() {
