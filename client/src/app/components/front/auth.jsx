@@ -124,7 +124,7 @@ class Register extends React.Component{
 
   submitForm = (body) => {
     _fetch('register', {method:"POST", body})
-      .then(json => login(json.token))
+      .then(json => login(json.token, true))
       .catch(error => this.setState({error}))
   }
 }

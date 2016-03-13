@@ -2,14 +2,12 @@ import fetch from 'isomorphic-fetch';
 
 export const API_URL = "<nconf:urls:server>";
 
-export function login(token) {
+export function login(token, register) {
   window.localStorage.setItem('jwt', token);
   let d = new Date();
   window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
-
-  // if this was registration, or no profile-data
-  // then window.location = '/#/profile';
-  window.location = '/';
+  if (!register) return window.location = '/';
+  window.location = '/?flash=FILL_PROFILE&redirect=/#/profile';
 }
 
 export function logout() {

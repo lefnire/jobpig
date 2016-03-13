@@ -66,7 +66,7 @@ describe('Jobpig', function() {
       sequelize.query('SELECT COUNT(DISTINCT id) FROM jobs INNER JOIN job_tags ON job_tags.job_id = jobs.id', { type: sequelize.QueryTypes.SELECT})
     )
     .then(_numJobs => {
-      expect(numJobs).to.be(_numJobs[0].count);
+      expect(numJobs).to.be(+_numJobs[0].count);
       //revertSepia();
       done();
     })
