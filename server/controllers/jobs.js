@@ -2,6 +2,7 @@
 const db = require('../models/models');
 const _ = require('lodash');
 const adaptors = require('../lib/adaptors');
+const TAG_TYPES = require('../lib/constants').TAG_TYPES;
 
 
 exports.mine = function(req, res, next){
@@ -42,4 +43,4 @@ exports.poormanscron = function(req, res, next) {
 }
 
 exports.getTags = (req, res, next) =>
-  db.Tag.findAll().then(tags => res.send(tags)).catch(next);
+  db.Tag.findAll({where:{type: TAG_TYPES.TAG}}).then(tags => res.send(tags)).catch(next);

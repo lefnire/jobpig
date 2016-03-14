@@ -2,7 +2,14 @@ import React, {Component} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
 import Prospect from '../employer/prospect.jsx';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import {
+  NavigationMoreVert,
+  ActionFindInPage,
+  ActionSupervisorAccount,
+  ActionRoom,
+  ActionThumbUp,
+  ActionLabel
+} from 'material-ui/lib/svg-icons';
 import {_fetch} from '../../helpers';
 
 export default class Job extends Component {
@@ -76,20 +83,23 @@ export default class Job extends Component {
   }
 
   _meta = job => {
-    let score = job.score > 0 ? `+${job.score}` : job.score < 0 ? job.score : false;
-    let meta = _.filter([
-      {name:"Source", text:job.source, icon:'find_in_page'},
-      {name:"Company", text:job.company, icon:'supervisor_account'},
-      {name:"Location", text:job.location, icon:'room'},
-      {name:"Budget", text:job.budget, icon:'attach_money'},
-      {name:"Score", text:score, icon:'thumb_up'},
-      {name:"Tags", icon:'label', style:{color:'rgb(0, 188, 212)', textTransform:'uppercase', fontWeight:500}, text: _.map(job.tags, 'key').join(', ') }
+    let score = job.score && (job.score > 0 ? '+' : '') + job.score;
+    let _getFeat = type => _.get(_.find(job.tags, {type}), 'text');
+    let items = _.filter([
+      {text: _getFeat(2), icon: <ActionSupervisorAccount tooltip="Company" />},
+      {text: _getFeat(3), icon: <ActionRoom tooltip="Location" />},
+      {
+        text: (score ? `(${score}) ` : '') + _(job.tags).filter({type: 1}).map('text').join(', '),
+        icon: <ActionLabel tooltip="Tags"/>
+      }
     ], 'text');
-    return <span>
-      {meta.map(m => <mui.ListItem key={m.name} primaryText={m.text} style={m.style} leftIcon={
-        <mui.IconButton iconClassName="material-icons" tooltip={m.name}>{m.icon}</mui.IconButton>
-      } /> )}
-    </span>;
+    return (
+      <span>
+        {items.map((item, i) => (
+          <mui.ListItem key={i} primaryText={item.text} leftIcon={item.icon} />
+        ))}
+      </span>
+    );
   }
 
   _setStatus = status => {

@@ -29,6 +29,7 @@ exports.setup = function (app) {
         res.json({token: sign(_user)});
       });
 
+      if (nconf.get('NODE_ENV') === 'test') return;
       // Send acct activation email
       let link = nconf.get('urls:' + nconf.get('NODE_ENV') + ':server') +
         `/user/activate?email=${_user.email}&key=${_user.activationKey}`;

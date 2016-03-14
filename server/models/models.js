@@ -7,7 +7,8 @@ const Sequelize = require('sequelize'),
   _ = require('lodash'),
   db = nconf.get(nconf.get("NODE_ENV")),
   uuid = require('node-uuid'),
-  passportLocalSequelize = require('passport-local-sequelize');
+  passportLocalSequelize = require('passport-local-sequelize'),
+  TAG_TYPES = require('../lib/constants').TAG_TYPES;
 
 global.sequelize = new Sequelize(db.database, db.username, db.password, {
   host: db.host,
@@ -39,15 +40,11 @@ passportLocalSequelize.attachToUser(User, {
 });
 
 let Job = sequelize.define('jobs', {
-  money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary)
-  company: Sequelize.STRING,
+  money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary) // FIXME store as nominal partitions for ML
   description: Sequelize.TEXT,
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
-  location: Sequelize.STRING,
-  source: {type:Sequelize.STRING, allowNull:false},
   title: {type:Sequelize.STRING, allowNull:false},
   url: {type:Sequelize.STRING, allowNull:false},
-  remote: Sequelize.BOOLEAN
 }, {
   classMethods: {
     filterJobs(user, status) {
@@ -111,22 +108,32 @@ let Job = sequelize.define('jobs', {
     // Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate while ignoring constraint
     // errors (duplicates) for Postgres. So we're doing some custom juju here
     bulkCreateWithTags(jobs) {
-      // normalize tags (lowercase, remove spaces, TODO what else?)
-      // Angular JS, Angular.JS => 'angular_js'
+
+      // normalize tags
       jobs.forEach(job => {
-        job.tags = _(job.tags.concat([job.company, job.location, job.source, job.remote ? 'remote' : null]))
-          .compact() // remove empty vals
-          .map(tag => tag.trim().toLowerCase() // sanitize
+        job.tags = _(job.tags)
+        .map(text => ({text, key: text, type: TAG_TYPES.TAG})) // turn into tag objects
+        .concat([ // add other job meta
+          job.company ? {key: job.company, text: job.company, type: TAG_TYPES.COMPANY} : null,
+          job.location ? {key: job.location, text: job.location, type: TAG_TYPES.LOCATION} : null,
+          job.source ? {key: job.source, text: job.source, type: TAG_TYPES.SOURCE} : null,
+          job.remote ? {key: 'remote', text: 'Remote', type: TAG_TYPES.TAG} : null // tag so they can use in seeding
+        ])
+        .compact() // remove empty vals
+        .map(tag => { // normalize tag keys, for uniqueness
+          tag.key = tag.key
+            .trim().toLowerCase() // sanitize
             .replace(/[_\. ](?=js)/g, '') // node.js, node_js, node js => nodejs
             .replace(/\.(?!net)/g, '') // replace all periods, except .net, asp.net, etc
             .replace(/(\s+|\-)/g, '_') // space/- => _
             .replace(/[^a-zA-Z0-9#\+\._]/g, '') // remove punctuation, except language chars (c++, c#, TODO what else?)
-            //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
-          ).value();
+          //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
+          return tag;
+        }).value();
       });
 
       // full list of (unique) tags
-      let tags = _(jobs).map('tags').flatten().uniq().map(key => ({key})).value();
+      let tags = _(jobs).map('tags').flatten().uniqBy('key').value();
 
       // Find existing jobs & tags so we don't have a validation error
       let attributes = ['id', 'key'];
@@ -149,9 +156,9 @@ let Job = sequelize.define('jobs', {
         tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
 
         newJobs.forEach(j => {
-          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(key => ({
+          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(t => ({
             job_id: j.id,
-            tag_id: _.find(tags, {key}).id
+            tag_id: _.find(tags, {key: t.key}).id
           })));
         });
         joins = _.uniqBy(joins, j => j.job_id+'-'+j.tag_id); // remove duplicates FIXME this shouldn't be happening
@@ -163,9 +170,9 @@ let Job = sequelize.define('jobs', {
       _.defaults(job, {
         key: job.url || uuid.v4(), // todo do we really need job.key for anything?
         source: 'jobpig',
-        url: 'http://127.0.0.1:3000',
         user_id: user.id
       });
+      _.defaults(job, {url: 'http://jobpigapp.com/' + job.key}); // FIXME
       job.tags = job.tags.split(',').map(_.trim);
       return this.bulkCreateWithTags([job]);
     },
@@ -204,10 +211,11 @@ let Job = sequelize.define('jobs', {
 
 let Tag = sequelize.define('tags', {
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
-  //text: Sequelize.STRING
+  text: Sequelize.STRING,
+  type: {type: Sequelize.INTEGER /*ENUM(_.values(TAG_TYPES))*/, defaultValue: TAG_TYPES.TAG}
 }, {
   indexes: [
-    {unique:true, fields:['key']}
+    {unique:true, fields:['key', 'type']}
   ]
 });
 
