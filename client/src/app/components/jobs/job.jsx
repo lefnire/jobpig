@@ -29,6 +29,9 @@ export default class Job extends Component {
       if (editing) return this.refs.noteRef.focus();
     });
 
+    // Test tag issues: jobs have multiple companies, locations, etc. Remove after a while
+    //if (_.reduce([2,3,4], (m,type) => m && _.filter(job.tags, {type}).length>1, true)) debugger;
+
     return <div className='padded'>
       <mui.Card>
         <mui.CardTitle

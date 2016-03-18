@@ -63,10 +63,20 @@ describe('Jobpig', function() {
     })
     .then(() =>
       // Make sure they all got tags (they should at least have jobboard source, and maybe remote)
-      sequelize.query('SELECT COUNT(DISTINCT id) FROM jobs INNER JOIN job_tags ON job_tags.job_id = jobs.id', { type: sequelize.QueryTypes.SELECT})
+      sequelize.query(`
+        SELECT j.*, json_agg(tags) tags
+        FROM jobs j
+        LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+        GROUP BY j.id
+      `, {type: sequelize.QueryTypes.SELECT })
+      //sequelize.query('SELECT COUNT(DISTINCT id) FROM jobs INNER JOIN job_tags ON job_tags.job_id = jobs.id', { type: sequelize.QueryTypes.SELECT})
     )
-    .then(_numJobs => {
-      expect(numJobs).to.be(+_numJobs[0].count);
+    .then(jobs => {
+
+      let hasTags = j => j.tags.length >= 1;
+      let onlyOneNonTagAttr = j => _.reduce([2,3,4], (m,type) => m && _.filter(j.tags, {type}).length<=1, true);
+      expect(numJobs).to.be(_.filter(jobs, hasTags).length);
+      expect(numJobs).to.be(_.filter(jobs, onlyOneNonTagAttr).length);
       //revertSepia();
       done();
     })
@@ -106,7 +116,7 @@ describe('Jobpig', function() {
     }).catch(done);
   })
 
-  it('messages', function(done){
+  it.skip('messages', function(done){
     const reply = (mid, jwt, body) => agent.post(`/messages/reply/${mid}`)
       .set('x-access-token', jwt).send({body}).expect(200);
     // Initial contact

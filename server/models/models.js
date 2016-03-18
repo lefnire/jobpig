@@ -108,59 +108,59 @@ let Job = sequelize.define('jobs', {
     // Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate while ignoring constraint
     // errors (duplicates) for Postgres. So we're doing some custom juju here
     bulkCreateWithTags(jobs) {
+      let tags;
 
-      // normalize tags
-      jobs.forEach(job => {
-        job.tags = _(job.tags)
-        .map(text => ({text, key: text, type: TAG_TYPES.TAG})) // turn into tag objects
-        .concat([ // add other job meta
-          job.company ? {key: job.company, text: job.company, type: TAG_TYPES.COMPANY} : null,
-          job.location ? {key: job.location, text: job.location, type: TAG_TYPES.LOCATION} : null,
-          job.source ? {key: job.source, text: job.source, type: TAG_TYPES.SOURCE} : null,
-          job.remote ? {key: 'remote', text: 'Remote', type: TAG_TYPES.TAG} : null // tag so they can use in seeding
-        ])
-        .compact() // remove empty vals
-        .map(tag => { // normalize tag keys, for uniqueness
-          tag.key = tag.key
-            .trim().toLowerCase() // sanitize
-            .replace(/[_\. ](?=js)/g, '') // node.js, node_js, node js => nodejs
-            .replace(/\.(?!net)/g, '') // replace all periods, except .net, asp.net, etc
-            .replace(/(\s+|\-)/g, '_') // space/- => _
-            .replace(/[^a-zA-Z0-9#\+\._]/g, '') // remove punctuation, except language chars (c++, c#, TODO what else?)
-          //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
-          return tag;
-        }).value();
-      });
+      // First, remove re-posts (next-day cron overlap / same job on separate boards)
+      return Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes: ['key']})
+      .then(existing => {
+        jobs = _.reject(jobs, j => _.find(existing, {key: j.key}));
 
-      // full list of (unique) tags
-      let tags = _(jobs).map('tags').flatten().uniqBy('key').value();
+        // normalize tags
+        jobs.forEach(job => {
+          job.tags = _(job.tags)
+            .map(text => ({text, key: text, type: TAG_TYPES.TAG})) // turn into tag objects
+            .concat([ // add other job meta
+              {key: job.company, text: job.company, type: TAG_TYPES.COMPANY},
+              {key: job.location, text: job.location, type: TAG_TYPES.LOCATION},
+              {key: job.source, text: job.source, type: TAG_TYPES.SOURCE},
+              {key: job.remote ? 'remote' : null, text: 'Remote', type: TAG_TYPES.TAG} // tag so they can use in seeding
+            ])
+            .filter('key') // remove empty vals
+            .map(feature => { // normalize tag keys, for uniqueness
+              feature.key = feature.key
+                .trim().toLowerCase() // sanitize
+                .replace(/[_\. ](?=js)/g, '') // node.js, node_js, node js => nodejs
+                .replace(/\.(?!net)/g, '') // replace all periods, except .net, asp.net, etc
+                .replace(/(\s+|\-)/g, '_') // space/- => _
+                .replace(/[^a-zA-Z0-9#\+\._]/g, '') // remove punctuation, except language chars (c++, c#, TODO what else?)
+              //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
+              return feature;
+            }).value();
+        });
 
-      // Find existing jobs & tags so we don't have a validation error
-      let attributes = ['id', 'key'];
+        // full list of (unique) tags
+        tags = _(jobs).map('tags').flatten().uniqBy(f => `${f.key}-${f.type}`).value();
 
-      return Promise.all([
-        Job.findAll({where: {key: {$in: _.map(jobs, 'key')}}, attributes}),
-        Tag.findAll({where: {key: {$in: _.map(tags, 'key')}}, attributes})
-      ]).then(vals => {
+        return Tag.findAll({where: {key: {$in: _.map(tags, 'key')}}, attributes: ['id', 'key', 'type']});
+      }).then(existing => {
+
         // Replace tag "shells" w/ the full models if available
-        tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
+        tags = tags.map(t => _.find(existing, {key: t.key, type: t.type}) || t);
 
-        // Then create any that don't already exist
+        // Only create tags that don't already exist
         return Promise.all([
-          Job.bulkCreate(_.filter(jobs, j => !_.find(vals[0], {key: j.key})), {returning: true}),
+          Job.bulkCreate(jobs, {returning: true}),
           Tag.bulkCreate(_.reject(tags, 'id'), {returning: true}),
         ]);
       }).then(vals => {
-        let newJobs = vals[0],
-          joins = [];
-        tags = tags.map(t => _.find(vals[1], {key: t.key}) || t);
+        tags = tags.map(t => _.find(vals[1], {key: t.key, type: t.type}) || t);
 
-        newJobs.forEach(j => {
-          joins = joins.concat(_.find(jobs, {key: j.key}).tags.map(t => ({
+        let joins = _.reduce(vals[0], (joins, j) => {
+          return joins.concat(_.find(jobs, {key: j.key}).tags.map(t => ({
             job_id: j.id,
-            tag_id: _.find(tags, {key: t.key}).id
+            tag_id: _.find(tags, {key: t.key, type: t.type}).id
           })));
-        });
+        }, []);
         joins = _.uniqBy(joins, j => j.job_id+'-'+j.tag_id); // remove duplicates FIXME this shouldn't be happening
         return sequelize.model('job_tags').bulkCreate(joins);
       });
@@ -210,12 +210,12 @@ let Job = sequelize.define('jobs', {
 });
 
 let Tag = sequelize.define('tags', {
-  key: {type:Sequelize.STRING, allowNull:false, unique:true},
+  key: {type: Sequelize.STRING, allowNull: false},
   text: Sequelize.STRING,
-  type: {type: Sequelize.INTEGER /*ENUM(_.values(TAG_TYPES))*/, defaultValue: TAG_TYPES.TAG}
+  type: {type: Sequelize.INTEGER /*ENUM(_.values(TAG_TYPES))*/, defaultValue: TAG_TYPES.TAG, allowNull: false}
 }, {
   indexes: [
-    {unique:true, fields:['key', 'type']}
+    {unique: true, fields: ['key', 'type']}
   ]
 });
 

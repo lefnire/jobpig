@@ -1,12 +1,13 @@
 'use strict';
 
-let _ = require('lodash');
-let nightmare = new (require('nightmare'))();
-let xml2js = require('xml2js');
-let parser = new xml2js.Parser();
-let request = require('request');
-let db = require('../../models/models');
-let Bluebird = require('bluebird');
+const _ = require('lodash');
+const nightmare = new (require('nightmare'))();
+const xml2js = require('xml2js');
+const parser = new xml2js.Parser();
+const request = require('request');
+const db = require('../../models/models');
+const Bluebird = require('bluebird');
+const nconf = require('nconf');
 
 exports.Adaptor = class Adaptor {
   constructor() {
@@ -79,7 +80,7 @@ let adaptors = [
   'virtualvocations',
   'hasjob',
   'landing_jobs',
-  'jobmote',
+  //'jobmote',
   'remotecoder',
 
   // And the really slow adaptors last
@@ -88,5 +89,8 @@ let adaptors = [
 
 exports.adaptors = adaptors;
 
-// Process adaptors.refresh() serially, as loading them all into memory crashes heroku. Slow, I know, but whatevs
-exports.refresh = () => Bluebird.each(adaptors, a => a._refresh());
+// On production, adaptors.refresh() maxes resources - so we run serially. Speed things up on dev/test
+exports.refresh = () =>
+  nconf.get('NODE_ENV') === 'production'
+    ? Bluebird.each(adaptors, a => a._refresh())
+    : Promise.all(adaptors.map(a => a._refresh()));
