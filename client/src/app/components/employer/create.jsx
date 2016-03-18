@@ -52,7 +52,6 @@ export default class CreateJob extends React.Component {
               onChange={selected => this.setState({selected})}
             />
 
-            <fui.FormsyText name='money' validations='isAlpha' validationError="Please enter numbers" hintText="Money (budget, salary, hourly-rate, etc)" fullWidth={true}/>
             <fui.FormsyText name='description' required hintText="*Description" multiline={true} rows={2} fullWidth={true}/>
           </Formsy.Form>
         </mui.ClearFix>

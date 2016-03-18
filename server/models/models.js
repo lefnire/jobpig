@@ -40,7 +40,6 @@ passportLocalSequelize.attachToUser(User, {
 });
 
 let Job = sequelize.define('jobs', {
-  money: Sequelize.STRING, // Number? (dealing with hourly-rate, gig budget, salary) // FIXME store as nominal partitions for ML
   description: Sequelize.TEXT,
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   title: {type:Sequelize.STRING, allowNull:false},
