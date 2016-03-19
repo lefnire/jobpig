@@ -4,57 +4,66 @@ import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
+import update from 'react-addons-update';
+import SeedTags from './jobs/seedtags';
 
-class Tag extends React.Component {
-  // key,score,id,table
-  render(){
-    let {label,obj,id} = this.props;
-    let {score} = obj;
-    return <div>
-      <mui.ListItem
-        key={id}
-        primaryText={
-          <div>
-            <span style={{fontWeight:'bold', color: score > 0 ? 'green' : 'red'}}>
-              {obj.locked && <mui.FontIcon className="material-icons">lock_outline</mui.FontIcon>}
-              {score > 0 ? '+' : ''}{score}
-            </span> {label}
-          </div>
-        }
-        rightIconButton={
-          <mui.IconMenu iconButtonElement={
-            <mui.IconButton><MoreVertIcon /></mui.IconButton>
-          }>
-            <mui.MenuItem onTouchTap={() => this.refs.dialog.show()}>Edit</mui.MenuItem>
-            <mui.MenuItem onTouchTap={this._remove}>Remove</mui.MenuItem>
-          </mui.IconMenu>
-        } />
-
-        <mui.Dialog title="Edit Tag" ref="dialog" actions={[
-            {text: 'Cancel'},
-            {text: 'Submit', onTouchTap:this._submit, ref: 'submit'}
-          ]} >
-          <mui.TextField ref='score' type='number' autofocus={true} fullWidth={true} defaultValue={score} floatingLabelText="Manually enter a score" />
-          <mui.Checkbox ref='lock' label="Lock tag to score (won't be effected when thumbing)." defaultChecked={obj.locked} />
-      </mui.Dialog>
-    </div>;
+export default class TagEdit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {tag: null, open: false};
   }
+
+  open = tag => this.setState({tag, open: true});
+  close = () => this.setState({tag: null, open: false});
+
+  render() {
+    let {tag} = this.state;
+    if (!tag) return null;
+    let {locked, score} = tag.user_tags;
+    let actions = [
+      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
+      <mui.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={this._submit}/>,
+    ];
+    //modal={false}
+    return (
+      <mui.Dialog title="Edit Tag" actions={actions} open={this.state.open} onRequestClose={this.close}>
+        <mui.TextField
+          type='number'
+          autofocus={true}
+          fullWidth={true}
+          value={score}
+          onChange={this._changeScore}
+          floatingLabelText="Manually enter a score"
+        />
+        <mui.Checkbox
+          label="Lock tag to score (won't be effected when thumbing)."
+          onCheck={this._changeLock}
+          checked={locked}
+        />
+      </mui.Dialog>
+    );
+  }
+
+  _changeScore = e => this.setState(update(this.state, {
+    tag: {user_tags: {score: {$set: e.target.value}}}
+  }));
+
+  _changeLock = e => {
+    debugger;
+    this.setState(update(this.state, {
+      tag: {user_tags: {locked: {$set: e.target.checked}}}
+    }))
+  };
 
   _submit = () => {
-    _fetch(`user/${this.props.table}/${this.props.id}`, {method:"PUT", body:{
-      score: this.refs.score.getValue(),
-      lock: this.refs.lock.isChecked()
-    }})
-    .then(json => {
-      this.refs.dialog.dismiss();
-      this.props.onUpdate();
-    });
-  }
-
-  _remove = () => {
-    _fetch(`user/${this.props.table}/${this.props.id}`, {method:"DELETE"})
-      .then(()=> this.props.onUpdate() );
-  }
+    let {tag} = this.state;
+    let {score, locked} = tag.user_tags;
+    _fetch(`user/tags/${tag.id}`, {method:"PUT", body: {score, locked}})
+      .then(json => {
+        this.close();
+        this.props.onSubmit();
+      });
+  };
 }
 
 export default class Profile extends React.Component{
@@ -63,22 +72,48 @@ export default class Profile extends React.Component{
     this.state = {
       profile: {
         tags: [],
-        user_companies: []
       },
       canSubmit: false
     };
     this._refresh();
   }
 
-  render(){
-    if (!this.state.profile) return null;
-    let lockText = "Check to lock an attribute, meaning it won't be counted against in scoring";
-    let {profile} = this.state;
+  //<Tag key={t.id} label={t.key} tag={t.user_tags} id={t.id} onUpdate={this._refresh}/>
+  renderTag = tag => {
+    let {score, locked} = tag.user_tags;
+    return (
+      <mui.ListItem key={tag.id}
+        primaryText={(
+          <div>
+            <span style={{fontWeight:'bold', color: score > 0 ? 'green' : 'red'}}>
+              {locked && <mui.FontIcon className="material-icons">lock_outline</mui.FontIcon>}
+              {score > 0 ? '+' : ''}{score}
+            </span> {tag.text}
+          </div>
+        )}
+        rightIconButton={(
+          <mui.IconMenu iconButtonElement={
+            <mui.IconButton><MoreVertIcon /></mui.IconButton>
+          }>
+            <mui.MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</mui.MenuItem>
+            <mui.MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</mui.MenuItem>
+          </mui.IconMenu>
+        )}
+      />
+    );
+  }
 
+  render(){
+    let {profile} = this.state;
+    if (!profile) return null;
     let isUrl = "Must be a url";
+    let tags = this.state.profile.tags;
 
     return (
       <mui.ClearFix>
+
+        <TagEdit selected={this.state.selected} ref="dialog" onSubmit={this._refresh} />
+        <SeedTags onSeed={this._refresh} ref="seed" />
 
         <mui.Card>
           <mui.CardHeader avatar={profile.pic} />
@@ -88,7 +123,7 @@ export default class Profile extends React.Component{
               ref="form"
               onValid={() => this.setState({canSubmit: true})}
               onInvalid={() => this.setState({canSubmit: false})}
-              onValidSubmit={this.submitForm}>
+              onValidSubmit={this._submitProfile}>
 
               <fui.FormsyText name='fullname' required hintText="Full Name" value={profile.fullname} fullWidth={true}/>
               <fui.FormsyText name='pic' hintText="Photo URL" value={profile.pic} fullWidth={true} validations="isUrl" validationError={isUrl} />
@@ -103,44 +138,35 @@ export default class Profile extends React.Component{
           </mui.CardText>
         </mui.Card>
 
-        {/*<mui.Card>
-          <mui.CardTitle title='Scores' subtitle={lockText}/>
+        <mui.Card>
+          <mui.CardTitle title='Scores' subtitle="Check to lock an attribute, meaning it won't be counted against in scoring" />
           <mui.CardText>
-            <mui.Tabs>
-              <mui.Tab label="Tags" >
-                <mui.List>
-                  {this.state.profile.tags.map(t =>
-                    <Tag key={t.id} label={t.key} obj={t.user_tags} id={t.id} table='user_tags' onUpdate={this._refresh}/>
-                  )}
-                </mui.List>
-              </mui.Tab>
-
-              <mui.Tab label="Companies" >
-                <mui.List ref="whatever">
-                  {this.state.profile.user_companies.map(c =>
-                    <Tag key={c.id} label={c.title} obj={c} id={c.id} table='user_companies' onUpdate={this._refresh}/>
-                  )}
-                </mui.List>
-              </mui.Tab>
-
-            </mui.Tabs>
+            <mui.List>
+              {tags.length ? tags.map(this.renderTag) : (
+                <mui.ListItem primaryText={(
+                  <div>No tag scores yet, click below head to <a href="/#/inbox">inbox</a>.</div>
+                )} />
+              )}
+            </mui.List>
+            <mui.RaisedButton label="Seed More Tags" onTouchTap={this._seedTags} />
           </mui.CardText>
-        </mui.Card>*/}
+        </mui.Card>
       </mui.ClearFix>
     )
   }
 
-  _setPref = (pref, e, checked) => {
-    _fetch(`user/preferences`, {method:"PUT", body:{
-      [pref]: checked
-    }})
-  };
-
   _refresh = () => _fetch('user').then(profile => this.setState({profile}));
 
-  submitForm = (body) => {
+  _submitProfile = (body) => {
     _fetch(`user/preferences`, {method: "PUT", body})
       .then(() => global._alerts.alert("Profile saved."))
       .catch(json => global._alerts.alert(json.json.message));
   };
+
+  _removeTag = id => {
+    _fetch(`user/tags/${id}`, {method:"DELETE"}).then(this._refresh);
+  };
+
+  _seedTags = () => this.refs.seed.open();
+
 }

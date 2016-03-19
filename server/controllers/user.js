@@ -11,7 +11,7 @@ exports.get = (req, res, next) => {
     where:{id:req.user.id},
     attributes: {exclude: 'activationKey hash resetPasswordKey salt'},
     include:[
-      {model:db.Tag, order:[['key', 'ASC']]},
+      {model: db.Tag, order:[['key', 'ASC']]},
     ],
   }).then(user => res.json(user))
 };
@@ -19,10 +19,10 @@ exports.get = (req, res, next) => {
 exports.override = (req, res, next) => {
   // removed req.params.table, TODO remove from client
   let where = {user_id: req.user.id, tag_id: req.params.id};
-  let prom = sequelize.model.UserTag;
+  let prom = db.UserTag;
   prom = req.method === 'DELETE'
     ? prom.destroy({where})
-    : prom.update({locked: req.body.lock, score: req.body.score}, {where});
+    : prom.update(_.pick(req.body, ['locked', 'score']), {where});
   prom.then(() => res.send({})).catch(next);
 };
 

@@ -14,8 +14,8 @@ router.get('/', function(req, res){
 router.post('/payments', payments.validate);
 
 router.get('/user', ensureAuth, user.get);
-router.put('/user/:table/:id', ensureAuth, user.override);
-router.delete('/user/:table/:id', ensureAuth, user.override);
+router.put('/user/tags/:id', ensureAuth, user.override);
+router.delete('/user/tags/:id', ensureAuth, user.override);
 router.put('/user/preferences', ensureAuth, user.setPref);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 router.get('/user/activate', user.activate);

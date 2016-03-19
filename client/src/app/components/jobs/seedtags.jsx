@@ -5,10 +5,14 @@ import {_fetch, getTags, me} from '../../helpers';
 import Select from 'react-select';
 
 export default class SeedTags extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {open: false};
-    this._shouldSeedTags();
+  }
+
+  componentWillMount() {
+    if (this.props.auto)
+      this._shouldSeedTags();
   }
 
   render() {
@@ -18,7 +22,7 @@ export default class SeedTags extends React.Component {
         secondary={true}
         onTouchTap={() => {
           this._seedSkipped=true;
-          this.handleClose();
+          this.close();
         }}
       />,
       <mui.FlatButton
@@ -36,7 +40,7 @@ export default class SeedTags extends React.Component {
         actions={actions}
         modal={false}
         open={this.state.open}
-        onRequestClose={this.handleClose}>
+        onRequestClose={this.close}>
         <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
         <Select.Async
           multi={true}
@@ -48,20 +52,20 @@ export default class SeedTags extends React.Component {
     );
   }
 
-  handleOpen = () => this.setState({open: true});
-  handleClose = () => this.setState({open: false});
+  open = () => this.setState({open: true});
+  close = () => this.setState({open: false});
 
   _shouldSeedTags = () => {
     me().then(user => {
       if (_.isEmpty(user.tags) && !this._seedSkipped)
-        this.handleOpen();
+        this.open();
     });
-  }
+  };
 
   _seedTags = () => {
     let tags = _.map(this.state.selected, 'label').join(',');
     _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(() => {
-      this.handleClose();
+      this.close();
       this.props.onSeed();
     });
   };
