@@ -60,7 +60,7 @@ describe('Jobpig', function() {
     });
   })
 
-  it.only('email', done => {
+  it('email', done => {
     mail.testEmail = true;
     //nconf.set('NODE_ENV', 'development'); // emails are disabled when NODE_ENV=test FIXME this isn't setting anything??
     agent.post('/register').send({email: 'tylerrenelle@gmail.com', password: '1234', confirmPassword: '1234'}).expect(200)
@@ -70,7 +70,26 @@ describe('Jobpig', function() {
     .then(() => {
       done();
       mail.testEmail = false;
+      expect('user cannot email others without validated email').to.be(true);
     })
+  });
+
+  it('updates profile fields', done => {
+    let body = _.clone(users.good.toJSON());
+    let url = 'http://x.com';
+    _.assign(body, {email: 'dont@update.com', password: 'dontUpdate', fullname: 'x', pic: url, linkedin_url: url, github_url: url, twitter_url: url, bio: 'x'})
+    agent.put('/user').set('x-access-token', jwts.good).send(body).expect(200)
+      .then(json => {
+        let updated = json.body;
+        expect(updated.email).to.be(users.good.email);
+        expect(updated.fullname).to.be('x');
+        expect(updated.pic).to.be(url);
+        expect(updated.linkedin_url).to.be(url);
+        expect(updated.github_url).to.be(url);
+        expect(updated.twitter_url).to.be(url);
+        expect(updated.bio).to.be('x');
+        done();
+      })
   });
 
 
@@ -111,40 +130,38 @@ describe('Jobpig', function() {
     })
   });
 
-  describe('custom job posts', () => {
-    it('lists my job postings', done => {
-      // Create custom job post
-      agent.post('/jobs')
-        .set('x-access-token', jwts.employer)
-        .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
-        .expect(200)
-      // and create another, to check duplication errors
-      .then(() => agent.post('/jobs')
-        .set('x-access-token', jwts.employer)
-        .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
-        .expect(200))
-      .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
+  it('posts & lists my job postings', done => {
+    // Create custom job post
+    agent.post('/jobs')
+      .set('x-access-token', jwts.employer)
+      .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
+      .expect(200)
+    // and create another, to check duplication errors
+    .then(() => agent.post('/jobs')
+      .set('x-access-token', jwts.employer)
+      .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
+      .expect(200))
+    .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
 
-      // users upvote / downvote the posting
-      .then(_job=> {
-        jobPost = _job;
-        return Promise.all(
-          jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
-            jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
-          )
+    // users upvote / downvote the posting
+    .then(_job=> {
+      jobPost = _job;
+      return Promise.all(
+        jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
+          jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
         )
-      })
-
-      // Get the employer's results
-      .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
-      .then(res => {
-        let jobs = res.body;
-        expect(jobs[0].users.length).to.be(1);
-        expect(jobs[0].users[0].id).to.be(users.good.id);
-        //expect(jobs[0].users[0].score).to.be(70);
-        done();
-      }).catch(done);
+      )
     })
+
+    // Get the employer's results
+    .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
+    .then(res => {
+      let jobs = res.body;
+      expect(jobs[0].users.length).to.be(1);
+      expect(jobs[0].users[0].id).to.be(users.good.id);
+      //expect(jobs[0].users[0].score).to.be(70);
+      done();
+    }).catch(done);
   });
 
 

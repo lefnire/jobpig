@@ -8,12 +8,13 @@ const nconfUrl = clientOrServer => nconf.get('urls:' + nconf.get('NODE_ENV') + '
 
 exports.get = (req, res, next) => {
   db.User.findOne({
-    where:{id:req.user.id},
+    where:{id: req.user.id},
     attributes: {exclude: 'activationKey hash resetPasswordKey salt'},
     include:[
       {model: db.Tag, order:[['key', 'ASC']]},
     ],
   }).then(user => res.json(user))
+  .catch(next);
 };
 
 exports.override = (req, res, next) => {
@@ -26,10 +27,12 @@ exports.override = (req, res, next) => {
   prom.then(() => res.send({})).catch(next);
 };
 
-exports.setPref = (req, res, next) => {
-  req.body = _.omitBy(req.body, _.isEmpty);
-  db.User.update(req.body, {where:{id:req.user.id}})
-    .then(() => res.send({})).catch(next);
+exports.updateProfile = (req, res, next) => {
+  let updates = _(req.body)
+    .pick('fullname pic linkedin_url github_url twitter_url bio'.split(' '))
+    .omitBy(_.isEmpty).value();
+  db.User.update(updates, {where:{id: req.user.id}})
+    .then(() => exports.get(req, res, next));
 };
 
 exports.seedTags = (req, res, next) => {

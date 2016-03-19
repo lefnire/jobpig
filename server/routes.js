@@ -16,7 +16,7 @@ router.post('/payments', payments.validate);
 router.get('/user', ensureAuth, user.get);
 router.put('/user/tags/:id', ensureAuth, user.override);
 router.delete('/user/tags/:id', ensureAuth, user.override);
-router.put('/user/preferences', ensureAuth, user.setPref);
+router.put('/user', ensureAuth, user.updateProfile);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
 router.get('/user/activate', user.activate);
 router.post('/user/forgot-password', user.forgotPassword);

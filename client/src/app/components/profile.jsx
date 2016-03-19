@@ -158,8 +158,11 @@ export default class Profile extends React.Component{
   _refresh = () => _fetch('user').then(profile => this.setState({profile}));
 
   _submitProfile = (body) => {
-    _fetch(`user/preferences`, {method: "PUT", body})
-      .then(() => global._alerts.alert("Profile saved."))
+    _fetch(`user`, {method: "PUT", body})
+      .then(profile => {
+        this.setState({profile});
+        global._alerts.alert("Profile saved.")
+      })
       .catch(json => global._alerts.alert(json.json.message));
   };
 
