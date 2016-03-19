@@ -8,6 +8,7 @@ const Sequelize = require('sequelize');
 const app = require('../index');
 const nconf = require('nconf');
 const jobsController = require('../controllers/jobs');
+const mail = require('../lib/mail');
 let db;
 
 let oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return m}, {});
@@ -21,7 +22,7 @@ describe('Jobpig', function() {
     agent,
     jobPost;
 
-  before(function(done){
+  before(done => {
     db = require('../models/models');
     db.syncPromise.then(() => {
       // register 2 users, 1 employer
@@ -43,10 +44,38 @@ describe('Jobpig', function() {
         done();
       })
     })
+  });
+
+  it('registration rejects invalid stuff', done => {
+    agent.post('/register').send({email: `good@x.com`, password: '1234', confirmPassword: '1234'}).expect(403)
+    .then(() =>
+      agent.post('/register').send({email: `new@x.com`, password: 'a', confirmPassword: 'a'}).expect(403)
+    ).then(() =>
+      agent.post('/register').send({email: `new`, password: '1234', confirmPassword: '1234'}).expect(403)
+    ).then(() =>
+      db.User.count()
+    ).then(ct => {
+      expect(ct).to.be(3); // didn't create new user
+      done();
+    });
   })
 
+  it.only('email', done => {
+    mail.testEmail = true;
+    //nconf.set('NODE_ENV', 'development'); // emails are disabled when NODE_ENV=test FIXME this isn't setting anything??
+    agent.post('/register').send({email: 'tylerrenelle@gmail.com', password: '1234', confirmPassword: '1234'}).expect(200)
+    .then(() => agent.post('/user/forgot-password').send({email: 'tylerrenelle@gmail.com'}).expect(403))
+    .then(() => db.User.update({verified: true}, {where: {email: 'tylerrenelle@gmail.com'}}))
+    .then(() => agent.post('/user/forgot-password').send({email: 'tylerrenelle@gmail.com'}).expect(200))
+    .then(() => {
+      done();
+      mail.testEmail = false;
+    })
+  });
+
+
   //after(app.close)
-  it.only('runs cron', done => {
+  it.skip('runs cron', done => {
     //process.env.VCR_MODE = 'playback';
     //let sepia = require('sepia');
 
@@ -80,41 +109,44 @@ describe('Jobpig', function() {
       //revertSepia();
       done();
     })
-  })
+  });
 
-  it('lists my job postings', function(done){
-    // Create custom job post
-    agent.post('/jobs')
-      .set('x-access-token', jwts.employer)
-      .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
-      .expect(200)
-    // and create another, to check duplication errors
-    .then(() => agent.post('/jobs')
-      .set('x-access-token', jwts.employer)
-      .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
-      .expect(200))
-    .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
+  describe('custom job posts', () => {
+    it('lists my job postings', done => {
+      // Create custom job post
+      agent.post('/jobs')
+        .set('x-access-token', jwts.employer)
+        .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
+        .expect(200)
+      // and create another, to check duplication errors
+      .then(() => agent.post('/jobs')
+        .set('x-access-token', jwts.employer)
+        .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
+        .expect(200))
+      .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
 
-    // users upvote / downvote the posting
-    .then(_job=> {
-      jobPost = _job;
-      return Promise.all(
-        jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
-          jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
+      // users upvote / downvote the posting
+      .then(_job=> {
+        jobPost = _job;
+        return Promise.all(
+          jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
+            jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
+          )
         )
-      )
-    })
+      })
 
-    // Get the employer's results
-    .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
-    .then(res => {
-      let jobs = res.body;
-      expect(jobs[0].users.length).to.be(1);
-      expect(jobs[0].users[0].id).to.be(users.good.id);
-      //expect(jobs[0].users[0].score).to.be(70);
-      done();
-    }).catch(done);
-  })
+      // Get the employer's results
+      .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
+      .then(res => {
+        let jobs = res.body;
+        expect(jobs[0].users.length).to.be(1);
+        expect(jobs[0].users[0].id).to.be(users.good.id);
+        //expect(jobs[0].users[0].score).to.be(70);
+        done();
+      }).catch(done);
+    })
+  });
+
 
   it.skip('messages', function(done){
     const reply = (mid, jwt, body) => agent.post(`/messages/reply/${mid}`)

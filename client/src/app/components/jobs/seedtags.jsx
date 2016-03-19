@@ -45,7 +45,7 @@ export default class SeedTags extends React.Component {
         <Select.Async
           multi={true}
           value={this.state.selected}
-          loadOptions={() => getTags().then(options => {return {options}}) }
+          loadOptions={() => getTags().then(options => ({options})) }
           onChange={selected => this.setState({selected})}
         />
       </mui.Dialog>

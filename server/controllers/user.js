@@ -57,7 +57,7 @@ exports.activate = (req, res, next) => {
 exports.forgotPassword = (req, res, next) => {
   let email = req.body.email;
   db.User.findOne({where: {email, verified: true}}).then(user => {
-    if (!user) return next("User not found or not verified");
+    if (!user) return next({status:403, message:"User not found or not verified"});
     db.User.setResetPasswordKey(email, (err, user) => {
       if (err) return next(err);
 
@@ -67,8 +67,7 @@ exports.forgotPassword = (req, res, next) => {
         subject: "Reset Password",
         text: `Click this link to reset your password: ${link}`,
         html: `Click this link to reset your password: <a href="${link}">${link}</a>`
-      });
-      res.send({}); // success
+      }).then(() => res.send({})).catch(err => next(err));
     });
   }).catch(next);
 };

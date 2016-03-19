@@ -24,7 +24,7 @@ exports.setup = function (app) {
       email: req.body.email,
       pic: 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(req.body.email).digest("hex")
     }, req.body.password, function (err, _user) {
-      if (err) return next(err);
+      if (err) return next({status: 403, message: err.message || err});
       passport.authenticate('local', localOpts)(req, res, () => {
         res.json({token: sign(_user)});
       });

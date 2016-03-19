@@ -31,7 +31,7 @@ export function _fetch(url, opts={}) {
   return fetch(`${API_URL}/${url}`, opts)
     .then(response => {
       // If client gets an "unauthorized" response while logged in, log them out.
-      if (response.status === 403)
+      if (response.status === 403 && jwt)
         return logout();
       if (_.inRange(response.status, 200, 300)) {
         // NOTE response.json() fails when there's no body, figure work-around
@@ -39,7 +39,7 @@ export function _fetch(url, opts={}) {
       } else {
         return response.json().then(json => Promise.reject({response, json}));
       }
-    })
+    });
 }
 
 let user;
