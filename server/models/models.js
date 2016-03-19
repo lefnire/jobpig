@@ -138,12 +138,12 @@ let Job = sequelize.define('jobs', {
         });
 
         // full list of (unique) tags
-        tags = _(jobs).map('tags').flatten().uniqBy(f => `${f.key}-${f.type}`).value();
+        tags = _(jobs).map('tags').flatten().uniqBy(f => `${f.key}--${f.type}`).value();
 
         return Tag.findAll({where: {key: {$in: _.map(tags, 'key')}}, attributes: ['id', 'key', 'type']});
       }).then(existing => {
 
-        // Replace tag "shells" w/ the full models if available
+        // hydrate plain objects w/ their models if available
         tags = tags.map(t => _.find(existing, {key: t.key, type: t.type}) || t);
 
         // Only create tags that don't already exist
@@ -152,6 +152,7 @@ let Job = sequelize.define('jobs', {
           Tag.bulkCreate(_.reject(tags, 'id'), {returning: true}),
         ]);
       }).then(vals => {
+        // And hydrate the rest
         tags = tags.map(t => _.find(vals[1], {key: t.key, type: t.type}) || t);
 
         let joins = _.reduce(vals[0], (joins, j) => {
@@ -167,7 +168,7 @@ let Job = sequelize.define('jobs', {
 
     addCustom(user, job){
       _.defaults(job, {
-        key: job.url || uuid.v4(), // todo do we really need job.key for anything?
+        key: uuid.v4(),
         source: 'jobpig',
         user_id: user.id
       });

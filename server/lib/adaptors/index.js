@@ -89,8 +89,6 @@ let adaptors = [
 
 exports.adaptors = adaptors;
 
-// On production, adaptors.refresh() maxes resources - so we run serially. Speed things up on dev/test
-exports.refresh = () =>
-  nconf.get('NODE_ENV') === 'production'
-    ? Bluebird.each(adaptors, a => a._refresh())
-    : Promise.all(adaptors.map(a => a._refresh()));
+// On production, adaptors.refresh() maxes resources - so we run serially. Also, we get UniqueConstraint
+// race conditions if parallel. FIXME when sequelize postgres upsert supported
+exports.refresh = () => Bluebird.each(adaptors, a => a._refresh());
