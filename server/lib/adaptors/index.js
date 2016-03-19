@@ -61,26 +61,28 @@ exports.Adaptor = class Adaptor {
 }
 
 let adaptors = [
-  // dead: remoteworkhunt, offsite_careers, jobmote
-  // less useful: gunio, remoteok
-
   // Process those which seed tags first
   'stackoverflow',
 
   // Then the rest
-  'indeed',
-  'github',
   'authenticjobs',
+  'frontenddevjob',
+  'github',
+  //'gunio', // not useful
+  'hasjob',
+  'indeed',
+  'ionicjobs',
+  'jobmote', // dead
+  'jobspresso',
+  'landing_jobs',
+  //'offsite_careers', // dead
+  'pythonjobs',
+  'remotecoder',
+  //'remoteok', // not useful (scrapes the same things we do)
+  //'remoteworkhunt', // dead
+  'virtualvocations',
   'weworkremotely',
   'wfh',
-  'jobspresso',
-  'frontenddevjob',
-  'virtualvocations',
-  'hasjob',
-  'landing_jobs',
-  'remotecoder',
-  'pythonjobs',
-  'ionicjobs',
 
   // And the really slow adaptors last
   'workingnomads',
