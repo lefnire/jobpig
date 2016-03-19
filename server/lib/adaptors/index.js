@@ -33,7 +33,7 @@ exports.Adaptor = class Adaptor {
         })
         return this.addTagsFromContent(jobs);
       })
-      .then(jobs=> db.Job.bulkCreateWithTags(jobs) );
+      .then(db.Job.bulkCreateWithTags);
   }
 
   addTagsFromContent(jobs) {
@@ -61,13 +61,11 @@ exports.Adaptor = class Adaptor {
 }
 
 let adaptors = [
-  //'gunio',
-  //'remoteok',
+  // dead: remoteworkhunt, offsite_careers, jobmote
+  // less useful: gunio, remoteok
 
   // Process those which seed tags first
   'stackoverflow',
-  //'remoteworkhunt', // dead
-  //'offsite_careers', // dead
 
   // Then the rest
   'indeed',
@@ -80,8 +78,9 @@ let adaptors = [
   'virtualvocations',
   'hasjob',
   'landing_jobs',
-  //'jobmote',
   'remotecoder',
+  'pythonjobs',
+  'ionicjobs',
 
   // And the really slow adaptors last
   'workingnomads',

@@ -15,11 +15,13 @@ module.exports = class PythonJobs extends Adaptor {
           source: 'pythonjobs',
           title: j.title[0],
           url: j.link[0].$.href,
-          description: j.content[0]._,
           company: title.match( /at\s*(.+?)\s*\(/ )[1],
           location,
           remote: /anywhere/i.test(location),
-          tags: ['python']
+          tags: ['Python'],
+
+          // TODO scrape html
+          description: j.content[0]._,
         };
       })
       return Promise.resolve(jobs);
