@@ -6,6 +6,7 @@ import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
+import Error from '../error';
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -25,15 +26,21 @@ export default class CreateJob extends React.Component {
         open={this.state.open}
         actions={[
           <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
-          <StripeCheckout
-            token={this.onToken}
-            stripeKey="<nconf:stripe:public>"
-            amount={10000}>
-            <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} />
-          </StripeCheckout>
+          <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         ]} >
 
         <mui.ClearFix>
+
+          <StripeCheckout
+            ref="stripe"
+            token={this.onToken}
+            stripeKey="<nconf:stripe:public>"
+            amount={10000}>
+            <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
+          </StripeCheckout>
+
+          <Error error={this.state.error} />
+
           <Formsy.Form
             ref="form"
             onValid={() => this.setState({canSubmit: true})}
@@ -48,7 +55,7 @@ export default class CreateJob extends React.Component {
             <Select.Async
               multi={true}
               value={this.state.selected}
-              loadOptions={() => getTags().then(options => {return {options}}) }
+              loadOptions={() => getTags().then(options => ({options})) }
               onChange={selected => this.setState({selected})}
             />
 
@@ -63,19 +70,23 @@ export default class CreateJob extends React.Component {
   handleOpen = () => this.setState({open: true});
   handleClose = () => this.setState({open: false});
 
-  submitForm = (body) => {
+  submitForm = body => {
     body.tags = _.map(this.state.selected, 'label').join(',');
-    this.handleClose();
-    _fetch('jobs', {method:"POST", body}).then(this.props.onCreate);
+    this.job = body;
+    _fetch('jobs/validate', {method:"POST", body})
+    .then(() => this.refs.stripe.onClick())
+    .catch(error => this.setState({error}));
   };
 
-  onToken = (token) => {
+  onToken = token => {
     // POST server/payments {token: token}
-    _fetch('payments', {method: "POST", body:{token}})
+    _fetch('payments', {method: "POST", body:{token, job: this.job}})
     .then(()  => {
       global._alerts.alert('Payment success, posting job now.');
-      this.refs.form.submit();
+      this.handleClose();
+      this.props.onCreate();
+      this.job = null;
     })
-    .catch(err => global._alerts.alert(err));
+    .catch(error => this.setState({error}));
   };
 }

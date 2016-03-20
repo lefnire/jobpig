@@ -5,8 +5,11 @@ const _ = require('lodash');
 const stripe = require('stripe')(nconf.get('stripe:private'));
 
 exports.validate = (req, res, next) => {
-  // Create a new customer and then a new charge for that customer:
+  let job = req.body.job;
   let token = req.body.token;
+  let user_id = req.user.id;
+
+  // Create a new customer and then a new charge for that customer:
   return stripe.customers.create({
     email: token.email,
     source: token.id
@@ -16,7 +19,10 @@ exports.validate = (req, res, next) => {
       currency: 'usd',
       customer: customer.id
     })
-  }).then(charge => db.Payment.create({txn_id: charge.id}))
-  .then(() => res.send({}))
-  .catch(next);
+  }).then(charge => {
+    return Promise.all([
+        db.Payment.create({txn_id: charge.id}),
+        db.Job.addCustom(user_id, job)
+    ])
+  }).then(() => res.send({})).catch(next);
 };

@@ -45,6 +45,15 @@ let Job = sequelize.define('jobs', {
   url: {type:Sequelize.STRING, allowNull:false},
 }, {
   classMethods: {
+    defaults(job, user_id) {
+      // we can set key & url defaults, but not in the field options because they need access to eachother
+      if (_.isString(job.tags))
+        job.tags = job.tags.split(',').map(_.trim);
+      let key = uuid.v4();
+      return _(job).omitBy(_.isEmpty)
+        .defaults({key, user_id, source: 'jobpig', url: 'http://jobpigapp.com/jobs/' + key})
+        .value();
+    },
     filterJobs(user, status) {
       status = status || 'inbox';
       return sequelize.query(`
@@ -165,18 +174,12 @@ let Job = sequelize.define('jobs', {
       });
     },
 
-    addCustom(user, job){
-      _.defaults(job, {
-        key: uuid.v4(),
-        source: 'jobpig',
-        user_id: user.id
-      });
-      _.defaults(job, {url: 'http://jobpigapp.com/' + job.key}); // FIXME
-      job.tags = job.tags.split(',').map(_.trim);
+    addCustom(user_id, job){
+      job = Job.defaults(job, user_id);
       return this.bulkCreateWithTags([job]);
     },
-    score(user_id, job_id, status){
 
+    score(user_id, job_id, status){
       // First set its status
       let setStatus = UserJob.upsert({user_id,job_id,status});
 

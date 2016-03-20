@@ -57,7 +57,7 @@ var sign = function(user) {
 
 exports.ensureAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  var token = /*req.body.token || req.query.token ||*/ req.headers['x-access-token'];
   if (!token)
     return next({status:403, message: 'No token provided.'});
   // decode token

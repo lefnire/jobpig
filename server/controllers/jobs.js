@@ -4,7 +4,6 @@ const _ = require('lodash');
 const adaptors = require('../lib/adaptors');
 const TAG_TYPES = require('../lib/constants').TAG_TYPES;
 
-
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
     .then(jobs=> res.json(jobs))
@@ -18,10 +17,16 @@ exports.list = function(req, res, next){
 };
 
 exports.create = function(req, res, next){
-  req.body = _.omitBy(req.body, _.isEmpty);
-  db.Job.addCustom(req.user, req.body)
-    .then(() => res.send({}))
-    .catch(next);
+  // this is handled concurrently in Payments
+}
+
+exports.validate = function(req, res, next){
+  let job = db.Job.defaults(req.body, req.user.id);
+  db.Job.build(job).validate().then(errors => {
+    if (!errors)
+      return res.send({});
+    next({status: 400, message: errors.toString()});
+  })
 }
 
 exports.addNote = function(req, res, next){
