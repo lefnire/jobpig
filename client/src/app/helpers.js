@@ -51,13 +51,13 @@ export function me() {
   });
 }
 
-let tags;
-export function getTags() {
+let tags = {};
+export function getTags(type=1) {
   return new Promise((resolve, reject) => {
-  if (tags) return resolve(tags);
-  _fetch('jobs/tags').then(_tags => {
-      tags = _tags.map(t => {return {value: t.id, label: t.key}});
-      resolve(tags);
+    if (tags[type]) return resolve(tags[type]);
+    _fetch('jobs/tags/' + type).then(_tags => {
+      tags[type] = _tags.map(t => ({value: t.id, label: t.key}));
+      resolve(tags[type]);
     }).catch(reject);
-  })
+  });
 }

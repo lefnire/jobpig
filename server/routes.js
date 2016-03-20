@@ -30,7 +30,7 @@ router.delete('/messages/:mid', ensureAuth, messages.remove);
 
 router.get('/jobs/cron', jobs.poormanscron);
 router.get('/jobs/mine', ensureAuth, jobs.mine);
-router.get('/jobs/tags', jobs.getTags);
+router.get('/jobs/tags/:type', jobs.getTags);
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
 router.post('/jobs/validate', ensureAuth, jobs.validate);

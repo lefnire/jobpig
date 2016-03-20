@@ -21,6 +21,7 @@ export default class CreateJob extends React.Component {
     //Handle on server: key, source
     return (
       <mui.Dialog
+        bodyStyle={{overflow: 'visible'}}
         title="Create Job"
         modal={true}
         open={this.state.open}
@@ -48,8 +49,13 @@ export default class CreateJob extends React.Component {
             onValidSubmit={this.submitForm}>
             <fui.FormsyText name='title' required hintText="*Title" fullWidth={true}/>
             <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
-            <fui.FormsyText name='location' hintText="Location" fullWidth={true}/>
+            <Select.Async
+              value={this.state.location}
+              loadOptions={() => getTags(3).then(options => ({options})) }
+              onChange={location => this.setState({location})}
+            />
             <fui.FormsyCheckbox name='remote' label="Remote"/>
+            <fui.FormsyText name='description' required hintText="*Description" multiline={true} rows={2} fullWidth={true}/>
 
             {/*<fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>*/}
             <Select.Async
@@ -59,7 +65,7 @@ export default class CreateJob extends React.Component {
               onChange={selected => this.setState({selected})}
             />
 
-            <fui.FormsyText name='description' required hintText="*Description" multiline={true} rows={2} fullWidth={true}/>
+
           </Formsy.Form>
         </mui.ClearFix>
       </mui.Dialog>
@@ -71,6 +77,7 @@ export default class CreateJob extends React.Component {
   handleClose = () => this.setState({open: false});
 
   submitForm = body => {
+    body.location = this.state.location;
     body.tags = _.map(this.state.selected, 'label').join(',');
     this.job = body;
     _fetch('jobs/validate', {method:"POST", body})

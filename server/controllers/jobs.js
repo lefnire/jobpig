@@ -47,5 +47,10 @@ exports.poormanscron = function(req, res, next) {
   res.send({});
 }
 
-exports.getTags = (req, res, next) =>
-  db.Tag.findAll({where:{type: TAG_TYPES.TAG}}).then(tags => res.send(tags)).catch(next);
+exports.getTags = (req, res, next) => {
+  let type = +req.params.type;
+  if (!_.includes(_.values(TAG_TYPES), type))
+    return next({status: 400, message: 'Invalid tag type'});
+  db.Tag.findAll({where: {type}}).then(tags => res.send(tags)).catch(next);
+  //db.Tag.findAll({where:{type: TAG_TYPES.TAG}}).then(tags => res.send(tags)).catch(next);
+}
