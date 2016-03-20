@@ -3,15 +3,7 @@ import mui from 'material-ui';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import {_fetch} from '../../helpers';
-
-// FIXME refactor this, since it's used in auth too
-class Error extends React.Component {
-  render(){
-    if (!this.props.error) return null;
-    let err = this.props.error.json.message || this.props.error.response.statusText;
-    return <div style={{color:'red'}}>{err}</div>;
-  }
-}
+import Error from '../error';
 
 export default class ResetPassword extends React.Component {
 

@@ -1,14 +1,13 @@
 'use strict';
 
 //FIXME separate to multiple files
-
-const Sequelize = require('sequelize'),
-  nconf = require('nconf'),
-  _ = require('lodash'),
-  db = nconf.get(nconf.get("NODE_ENV")),
-  uuid = require('node-uuid'),
-  passportLocalSequelize = require('passport-local-sequelize'),
-  TAG_TYPES = require('../lib/constants').TAG_TYPES;
+const Sequelize = require('sequelize');
+const nconf = require('nconf');
+const _ = require('lodash');
+const db = nconf.get(nconf.get("NODE_ENV"));
+const uuid = require('node-uuid');
+const passportLocalSequelize = require('passport-local-sequelize');
+const TAG_TYPES = require('../lib/constants').TAG_TYPES;
 
 global.sequelize = new Sequelize(db.database, db.username, db.password, {
   host: db.host,

@@ -4,14 +4,7 @@ import _ from 'lodash';
 import {login, logout, _fetch} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
-
-class Error extends React.Component {
-  render(){
-    if (!this.props.error) return null;
-    let err = this.props.error.json.message || this.props.error.response.statusText;
-    return <div style={{color:'red'}}>{err}</div>;
-  }
-}
+import Error from '../error';
 
 class Login extends React.Component {
   constructor(){
