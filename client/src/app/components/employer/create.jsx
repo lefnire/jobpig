@@ -22,7 +22,7 @@ export default class CreateJob extends React.Component {
     return (
       <mui.Dialog
         bodyStyle={{overflow: 'visible'}}
-        title="Create Job"
+        title="Create Job | $100 for 30 days"
         modal={true}
         open={this.state.open}
         actions={[

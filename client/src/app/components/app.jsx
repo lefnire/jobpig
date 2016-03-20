@@ -2,7 +2,11 @@ import React from 'react';
 import {
   SocialPerson,
   CommunicationEmail,
-  PlacesBusinessCenter
+  PlacesBusinessCenter,
+  ActionExitToApp,
+  ActionHome,
+  ActionThumbUp,
+  ActionCheckCircle
 } from 'material-ui/lib/svg-icons';
 //import FontIcon from 'material-ui/lib/font-icon';
 import mui, {
@@ -16,7 +20,13 @@ import mui, {
   ToolbarSeparator,
   RaisedButton,
   IconButton,
-  FlatButton
+  FlatButton,
+  LeftNav,
+  AppBar,
+  Divider,
+  Menu,
+  List,
+  ListItem
 } from 'material-ui';
 import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
@@ -38,40 +48,35 @@ export default class App extends React.Component {
         'profile': 'Profile',
         'logout': "Logout"
       }[this.props.location.pathname.replace(/^\//, '')] || 'Jobpig';
-    let styles = {
-      toolbar: {
-        backgroundColor: Colors.blueGrey500,
-        //color: Colors.grey50
-      },
-      //light: {
-      //  color: 'white',
-      //}
-    }
 
     return (
       <div>
-        <Toolbar style={styles.toolbar}>
-          <ToolbarTitle text={title} />
-          <ToolbarGroup float="right" className="tyler-test">
-            <DropDownMenu value='inbox' onChange={(evt, idx, val) => this._goto('jobs/' + val)}>
-              <MenuItem value='inbox' primaryText="Inbox"/>
-              <MenuItem value='applied' primaryText="Applied"/>
-              <MenuItem value='liked' primaryText="Liked"/>
-            </DropDownMenu>
-            <IconButton touch={true} tooltip='Employer' onTouchTap={() => this._goto('employer')} >
-              <PlacesBusinessCenter />
-            </IconButton>
-            <IconButton touch={true} tooltip='Messages' onTouchTap={() => this._goto('messages')}>
-              <CommunicationEmail />
-            </IconButton>
-            <IconMenu
-              tooltip="Profile"
-              iconButtonElement={<IconButton touch={true}><SocialPerson /></IconButton>}>
-              <MenuItem primaryText="Profile" onTouchTap={() => this._goto('profile')}/>
-              <MenuItem primaryText="Logout" onTouchTap={() => this._goto('logout')}/>
-            </IconMenu>
-          </ToolbarGroup>
-        </Toolbar>
+        <AppBar
+          title={title}
+          iconClassNameRight="muidocs-icon-navigation-expand-more"
+          onLeftIconButtonTouchTap={()=>this.setState({navOpen: !this.state.navOpen})}
+          iconElementRight={<RaisedButton label="Post Job" primary={true} onTouchTap={()=>this._goto('employer?createJob=true')} />}
+        />
+        <LeftNav
+          docked={false}
+          width={200}
+          open={this.state.navOpen}
+          onRequestChange={navOpen => this.setState({navOpen})}
+        >
+          <List subheader="Jobs">
+            <MenuItem onTouchTap={()=>this._goto('jobs/inbox')} leftIcon={<ActionHome />}>Inbox</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('jobs/liked')} leftIcon={<ActionThumbUp />}>Liked</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('jobs/applied')} leftIcon={<ActionCheckCircle />}>Applied</MenuItem>
+          </List>
+          <Divider />
+          <List subheader="Personal">
+            <MenuItem onTouchTap={()=>this._goto('profile')} leftIcon={<SocialPerson />}>Profile</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('messages')} leftIcon={<CommunicationEmail />}>Messages</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('employer')} leftIcon={<PlacesBusinessCenter />}>Employer</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('logout')} leftIcon={<ActionExitToApp />}>Logout</MenuItem>
+          </List>
+
+        </LeftNav>
 
         {this.props.children}
 
@@ -80,11 +85,11 @@ export default class App extends React.Component {
     );
   }
 
-  handleToggle = () => this.setState({open: !this.state.open});
-  handleClose = () => this.setState({open: false});
+  toggleNav = () => this.setState({navOpen: !this.state.navOpen});
+  closeNav = () => this.setState({navOpen: false});
 
   _goto = route => {
-    this.handleClose();
+    this.closeNav();
     window.location = '/#/' + route;
   }
 }

@@ -12,6 +12,12 @@ export default class Employer extends React.Component {
     this._fetchMine();
   }
 
+  componentDidMount() {
+    if (~window.location.href.indexOf('createJob=true')) {
+      this.refs.createJob.handleOpen();
+    }
+  }
+
   render() {
     let styles = {
       button: {
