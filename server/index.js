@@ -21,7 +21,7 @@ app
 .use(bodyParser.urlencoded({ extended: false }))
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false})); //fixme used only for linkedin redirect, can we remove this?
+//.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false})); //fixme used only for linkedin redirect, can we remove this?
 
 require('./passport').setup(app);
 

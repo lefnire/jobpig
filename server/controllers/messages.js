@@ -14,7 +14,7 @@ exports.sent = (req, res, next) => {
 
 //TODO refactor contact & reply
 exports.contact = (req, res, next) => {
-  if (!req.user.verified) return next(new Error("Email not yet verified."));
+  if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
   let to,
     subject = req.body.subject,
     body = req.body.body;
@@ -25,14 +25,13 @@ exports.contact = (req, res, next) => {
     return db.Message.create({to: user.id, subject, body, user_id: req.user.id});
   })
   .then(message => {
-    res.send(message);
     let text = `<p>New Jobpig message</p><p>${body}</p>`
-    return mail.send({to, subject, text});
+    return mail.send({to, subject, text}).then(() => res.send(message));
   }).catch(next);
 };
 
 exports.reply = (req, res, next) => {
-  if (!req.user.verified) return next(new Error("Email not yet verified."));
+  if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
   let to, thread;
   db.Message.findOne({where: {id: req.params.mid}})
   .then(message => {
@@ -48,9 +47,8 @@ exports.reply = (req, res, next) => {
       message_id: req.params.mid
     });
   }).then(message => {
-    res.send(message);
     let text = `<p>New Jobpig message</p><p>${req.body.body}</p>`
-    return mail.send({to, subject: thread.subject, text});
+    return mail.send({to, subject: thread.subject, text}).then(() => res.send(message));
   }).catch(next);
 
 };

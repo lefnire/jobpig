@@ -324,14 +324,16 @@ Message.belongsTo(User); // sent
 Message.hasMany(Message, { onDelete: 'cascade' })
 Message.belongsTo(Message); // Response thread
 
-// If new setup, init db.
-let syncPromise = sequelize.sync(nconf.get('wipe') ? {force:true} : null)
-  .then(()=> Meta.count({$where:{key:'cron'}}))
-  .then(ct=>{
-    return (ct) ? Promise.resolve() :
-    sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',now()-interval '1 day', now(), now())`,
+// If new setup, init db. Export the function for tests, invoke immediately for dev/production
+let initDb = wipe => sequelize.sync(wipe ? {force:true} : null)
+  .then(() => Meta.count({$where:{key:'cron'}}))
+  .then(ct => {
+    return ct ? Promise.resolve()
+    : sequelize.query(`insert into meta (key,val,created_at,updated_at) values ('cron',now()-interval '1 day', now(), now())`,
       {type:sequelize.QueryTypes.UPDATE})
-  })
+  });
+if (nconf.get('NODE_ENV') !== 'test')
+  initDb(nconf.get('wipe'));
 
 module.exports = {
   User,
@@ -342,5 +344,5 @@ module.exports = {
   Message,
   Meta,
   Payment,
-  syncPromise
+  initDb
 };

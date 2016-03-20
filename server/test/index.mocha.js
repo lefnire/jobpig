@@ -1,6 +1,4 @@
 'use strict';
-process.env.wipe = true; // fresh db
-
 const _ = require('lodash');
 const expect = require('expect.js');
 const request = require('supertest-as-promised');
@@ -24,54 +22,63 @@ describe('Jobpig', function() {
 
   before(done => {
     db = require('../models/models');
-    db.syncPromise.then(() => {
+    agent = request(app);
+    done();
+  });
+
+  beforeEach(done => {
+    db.initDb(true).then(() => {
       // register 2 users, 1 employer
-      agent = request(app);
       return Promise.all(
         _.keys(users).map(k =>
-        agent.post('/register').send({email: `${k}@x.com`, password:'1234',confirmPassword:'1234'})
-        .expect(200).then(res => {
-          jwts[k] = res.body.token;
-          return Promise.resolve();
-        }))
+          agent.post('/register').send({email: `${k}@x.com`, password:'1234',confirmPassword:'1234'}).expect(200)
+          .then(res => {
+            jwts[k] = res.body.token;
+            return Promise.resolve();
+          }).catch(e => {debugger})
+        )
       ).then(() => db.User.findAll())
       .then(_users => {
         //store users in closure {good:[Object], bad:[Object], employer:[Object]}
-        users = _.reduce(_.keys(users), (m, k) => {
-          m[k] = _.find(_users, {email: `${k}@x.com`});
-          return m;
-        }, {});
+        users = _.mapValues(users, (v, k) => _.find(_users, {email: `${k}@x.com`}));
         done();
-      })
+      }).catch(done);
     })
   });
 
-  it('registration rejects invalid stuff', done => {
+  it('valid & invalid registration', done => {
     agent.post('/register').send({email: `good@x.com`, password: '1234', confirmPassword: '1234'}).expect(403)
-    .then(() =>
-      agent.post('/register').send({email: `new@x.com`, password: 'a', confirmPassword: 'a'}).expect(403)
-    ).then(() =>
-      agent.post('/register').send({email: `new`, password: '1234', confirmPassword: '1234'}).expect(403)
-    ).then(() =>
-      db.User.count()
-    ).then(ct => {
+    .then(() => agent.post('/register').send({email: `new@x.com`, password: 'a', confirmPassword: 'a'}).expect(403) )
+    .then(() => agent.post('/register').send({email: `new`, password: '1234', confirmPassword: '1234'}).expect(403) )
+    .then(() => db.User.count() )
+    .then(ct => {
       expect(ct).to.be(3); // didn't create new user
       done();
-    });
-  })
+    }).catch(done);
+  });
 
-  it('email', done => {
-    mail.testEmail = true;
-    //nconf.set('NODE_ENV', 'development'); // emails are disabled when NODE_ENV=test FIXME this isn't setting anything??
-    agent.post('/register').send({email: 'tylerrenelle@gmail.com', password: '1234', confirmPassword: '1234'}).expect(200)
-    .then(() => agent.post('/user/forgot-password').send({email: 'tylerrenelle@gmail.com'}).expect(403))
-    .then(() => db.User.update({verified: true}, {where: {email: 'tylerrenelle@gmail.com'}}))
-    .then(() => agent.post('/user/forgot-password').send({email: 'tylerrenelle@gmail.com'}).expect(200))
-    .then(() => {
-      done();
-      mail.testEmail = false;
-      expect('user cannot email others without validated email').to.be(true);
+  it('sends emails', done => {
+    let email = 'tylerrenelle@gmail.com';
+    let id;
+    // register tyler & manually check my personal email to make sure it came through (better way?)
+    //mail.testEmail = true;
+    agent.post('/register').send({email, password: '1234', confirmPassword: '1234'}).expect(200)
+    .then(() => db.User.findOne({where: {email}, attributes: ['id']}))
+    .then(model => {
+      id = model.id;
+      // attempt contacting me from employer, fail
+      return agent.post(`/messages/contact/${id}`).set('x-access-token', jwts.employer).send({subject:"-", body: "-"}).expect(403)
     })
+    // attempt resetting password, fail
+    .then(() => agent.post('/user/forgot-password').send({email}).expect(403) )
+    // verify tyler so i can receive forgot-password, verify employer so he can send me an email which i can check manually
+    .then(() => db.User.update({verified: true}, {where: {id: {$in: [id, users.employer.id]}}}) )
+    .then(() => agent.post('/user/forgot-password').send({email}).expect(200) )
+    .then(() => agent.post(`/messages/contact/${id}`).set('x-access-token', jwts.employer).send({subject:"-", body: "-"}).expect(200) )
+    .then(() => {
+      mail.testEmail = false;
+      done();
+    }).catch(done);
   });
 
   it('updates profile fields', done => {
@@ -89,7 +96,7 @@ describe('Jobpig', function() {
         expect(updated.twitter_url).to.be(url);
         expect(updated.bio).to.be('x');
         done();
-      })
+      }).catch(done);
   });
 
 
@@ -165,14 +172,16 @@ describe('Jobpig', function() {
   });
 
 
-  it.skip('messages', function(done){
+  it('messages', function(done){
     const reply = (mid, jwt, body) => agent.post(`/messages/reply/${mid}`)
       .set('x-access-token', jwt).send({body}).expect(200);
+    // They all need to be verified too
+    db.User.update({verified: true}, {where:{id: {$in: _.map(users, 'id')}}})
     // Initial contact
-    agent.post(`/messages/contact/${users.good.id}`)
+    .then(() => agent.post(`/messages/contact/${users.good.id}`)
       .set('x-access-token', jwts.employer)
       .send({subject:"Hello", body: "I have a job for you"})
-      .expect(200)
+      .expect(200) )
     // 3 replies
     .then(res => reply(res.body.id, jwts.good, "I'd like to hear more"))
     .then(res => reply(res.body.message_id, jwts.employer, "Contact me at employer@x.com"))

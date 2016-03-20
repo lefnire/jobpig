@@ -1,12 +1,12 @@
 'use strict';
 
-const passport = require('passport'),
-  nconf = require('nconf'),
-  User = require('./models/models').User,
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'),
-  crypto = require('crypto'),
-  mail = require('./lib/mail');
+const passport = require('passport');
+const nconf = require('nconf');
+const User = require('./models/models').User;
+const _ = require('lodash');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const mail = require('./lib/mail');
 
 exports.setup = function (app) {
   app.use(passport.initialize());
@@ -61,13 +61,14 @@ exports.ensureAuth = function (req, res, next) {
   if (!token)
     return next({status:403, message: 'No token provided.'});
   // decode token
-  jwt.verify(token, nconf.get('secret'), function(err, decoded) {
-    if (err) {
+  jwt.verify(token, nconf.get('secret'), (err, decoded) => {
+    if (err)
       return next({status:403, message:'Failed to authenticate token.'});
-    } else {
-      // if everything is good, save to request for use in other routes
-      req.user = decoded;
+    // if everything is good, save to request for use in other routes. Note we don't do req.user=decoded, since that
+    // contains stale data
+    User.findById(decoded.id).then(user => {
+      req.user = user;
       next();
-    }
+    });
   });
 }
