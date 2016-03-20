@@ -158,6 +158,11 @@ describe('Jobpig', function() {
       // Get the employer's results
       .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
       .then(res => {
+        // haven't paid yet
+        expect(res.body.length).to.be(0);
+        return sequelize.query(`UPDATE jobs SET pending=false`);
+      }).then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
+      .then(res => {
         let jobs = res.body;
         expect(jobs[0].users.length).to.be(1);
         expect(jobs[0].users[0].id).to.be(users.good.id);
@@ -206,7 +211,7 @@ describe('Jobpig', function() {
     const reply = (mid, jwt, body) => agent.post(`/messages/reply/${mid}`)
       .set('x-access-token', jwt).send({body}).expect(200);
     // They all need to be verified too
-    db.User.update({verified: true}, {where:{id: {$in: _.map(users, 'id')}}})
+    sequelize.query(`UPDATE users SET verified=true`)
     // Initial contact
     .then(() => agent.post(`/messages/contact/${users.good.id}`)
       .set('x-access-token', jwts.employer)

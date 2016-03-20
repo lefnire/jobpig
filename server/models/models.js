@@ -43,17 +43,9 @@ let Job = sequelize.define('jobs', {
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   title: {type:Sequelize.STRING, allowNull:false},
   url: {type:Sequelize.STRING, allowNull:false},
+  pending: {type: Sequelize.BOOLEAN, defaultValue: false}
 }, {
   classMethods: {
-    defaults(job, user_id) {
-      // we can set key & url defaults, but not in the field options because they need access to eachother
-      if (_.isString(job.tags))
-        job.tags = job.tags.split(',').map(_.trim);
-      let key = uuid.v4();
-      return _(job).omitBy(_.isEmpty)
-        .defaults({key, user_id, source: 'jobpig', url: 'http://jobpigapp.com/jobs/' + key})
-        .value();
-    },
     filterJobs(user, status) {
       status = status || 'inbox';
       return sequelize.query(`
@@ -70,12 +62,10 @@ let Job = sequelize.define('jobs', {
         LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id
         LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
 
+        WHERE j.pending <> TRUE
         GROUP BY j.id, uj.note, uj.status
-
         HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
-
         ORDER BY score DESC, j.created_at DESC
-
         LIMIT :limit;
       `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
     },
@@ -84,6 +74,7 @@ let Job = sequelize.define('jobs', {
         -- @see http://stackoverflow.com/a/27626358/362790
         SELECT u.users, jt.tags, jobs.*
         FROM jobs
+
 
         LEFT JOIN (
           SELECT job_id, json_agg(tags) tags
@@ -107,7 +98,7 @@ let Job = sequelize.define('jobs', {
           ) _
         ) u ON TRUE
 
-        WHERE jobs.user_id=:user_id
+        WHERE jobs.user_id=:user_id AND jobs.pending <> TRUE
         ORDER BY jobs.id
       `, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
     },
@@ -175,8 +166,20 @@ let Job = sequelize.define('jobs', {
     },
 
     addCustom(user_id, job){
-      job = Job.defaults(job, user_id);
-      return this.bulkCreateWithTags([job]);
+      // we can set key & url defaults, but not in the field options because they need access to eachother
+      if (_.isString(job.tags))
+        job.tags = job.tags.split(',').map(_.trim);
+      let key = uuid.v4();
+      job = _(job).omitBy(_.isEmpty)
+        .defaults({
+          key,
+          user_id,
+          source: 'jobpig',
+          url: 'http://jobpigapp.com/jobs/' + key,
+          pending: true // Important - this is set to true after they've paid
+        }).value();
+      return this.bulkCreateWithTags([job])
+        .then(() => Job.findOne({where:{key}}));
     },
 
     score(user_id, job_id, status){

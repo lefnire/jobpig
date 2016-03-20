@@ -33,7 +33,6 @@ router.get('/jobs/mine', ensureAuth, jobs.mine);
 router.get('/jobs/tags/:type', jobs.getTags);
 router.get('/jobs/:filter?', ensureAuth, jobs.list);
 router.post('/jobs', ensureAuth, jobs.create);
-router.post('/jobs/validate', ensureAuth, jobs.validate);
 router.post('/jobs/:id/add-note', ensureAuth, jobs.addNote); //before :status, cascades
 router.post('/jobs/:id/:status', ensureAuth, jobs.setStatus);
 

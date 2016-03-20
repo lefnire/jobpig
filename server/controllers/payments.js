@@ -5,7 +5,7 @@ const _ = require('lodash');
 const stripe = require('stripe')(nconf.get('stripe:private'));
 
 exports.validate = (req, res, next) => {
-  let job = req.body.job;
+  let job_id = req.body.job_id;
   let token = req.body.token;
   let user_id = req.user.id;
 
@@ -22,7 +22,7 @@ exports.validate = (req, res, next) => {
   }).then(charge => {
     return Promise.all([
         db.Payment.create({txn_id: charge.id}),
-        db.Job.addCustom(user_id, job)
+        db.Job.update({pending: false}, {where: {id: job_id}})
     ])
   }).then(() => res.send({})).catch(next);
 };

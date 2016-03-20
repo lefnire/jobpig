@@ -16,17 +16,11 @@ exports.list = function(req, res, next){
     .catch(next);
 };
 
-exports.create = function(req, res, next){
-  // this is handled concurrently in Payments
-}
-
-exports.validate = function(req, res, next){
-  let job = db.Job.defaults(req.body, req.user.id);
-  db.Job.build(job).validate().then(errors => {
-    if (!errors)
-      return res.send({});
-    next({status: 400, message: errors.toString()});
-  })
+exports.create = function(req, res, next) {
+  // FIXME add some pre-validators here so it doesn't get through
+  db.Job.addCustom(req.user.id, req.body)
+    .then(job => res.send(job))
+    .catch(next);
 }
 
 exports.addNote = function(req, res, next){

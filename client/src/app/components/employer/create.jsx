@@ -72,27 +72,28 @@ export default class CreateJob extends React.Component {
     )
   }
 
-
   handleOpen = () => this.setState({open: true});
   handleClose = () => this.setState({open: false});
 
   submitForm = body => {
-    body.location = this.state.location;
+    body.location = this.state.location.label;
     body.tags = _.map(this.state.selected, 'label').join(',');
-    this.job = body;
-    _fetch('jobs/validate', {method:"POST", body})
-    .then(() => this.refs.stripe.onClick())
+    _fetch('jobs', {method:"POST", body})
+    .then(created => {
+      this.job_id = created.id;
+      this.refs.stripe.onClick()
+    })
     .catch(error => this.setState({error}));
   };
 
   onToken = token => {
     // POST server/payments {token: token}
-    _fetch('payments', {method: "POST", body:{token, job: this.job}})
+    _fetch('payments', {method: "POST", body:{token, job_id: this.job_id}})
     .then(()  => {
       global._alerts.alert('Payment success, posting job now.');
       this.handleClose();
       this.props.onCreate();
-      this.job = null;
+      this.job_id = null;
     })
     .catch(error => this.setState({error}));
   };
