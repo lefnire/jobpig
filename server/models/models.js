@@ -279,7 +279,11 @@ let Meta = sequelize.define('meta', {
       return sequelize.query(`SELECT EXTRACT(DOY FROM meta.val::TIMESTAMP WITH TIME ZONE)!=EXTRACT(DOY FROM CURRENT_TIMESTAMP) val FROM meta WHERE key='cron'`,
         {type:sequelize.QueryTypes.SELECT}).then(res => Promise.resolve((res[0].val)));
     },
-    runCronIfNecessary(){
+    /**
+     * @param skipScrape for tests (testing if refresh happens properly after #days)
+     * @returns Promise
+     */
+    runCronIfNecessary(skipScrape) {
       return this.needsCron().then(val => {
         if (!val)
           return Promise.resolve();
@@ -292,11 +296,14 @@ let Meta = sequelize.define('meta', {
           DELETE FROM jobs WHERE
             (user_id IS NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '10 days') OR
             (user_id IS NOT NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '30 days');
-        `).then(() => require('../lib/adaptors').refresh()); //FIXME require here, circular reference models.js/adaptors.js
+        `).then(() =>
+          //FIXME require here, circular reference models.js/adaptors.js
+          skipScrape ? Promise.resolve() : require('../lib/adaptors').refresh()
+        );
       });
     }
   }
-})
+});
 
 // Jobs have tags
 Tag.belongsToMany(Job, {through: 'job_tags'});

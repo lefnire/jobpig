@@ -2,11 +2,10 @@
 const _ = require('lodash');
 const expect = require('expect.js');
 const request = require('supertest-as-promised');
-const Sequelize = require('sequelize');
 const app = require('../index');
 const nconf = require('nconf');
-const jobsController = require('../controllers/jobs');
 const mail = require('../lib/mail');
+const Bluebird = require('bluebird');
 let db;
 
 let oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return m}, {});
@@ -137,38 +136,69 @@ describe('Jobpig', function() {
     })
   });
 
-  it('posts & lists my job postings', done => {
-    // Create custom job post
-    agent.post('/jobs')
-      .set('x-access-token', jwts.employer)
-      .send({title: 'title1', description: 'description1', tags: 'javascript,jquery,angular,node'})
-      .expect(200)
-    // and create another, to check duplication errors
-    .then(() => agent.post('/jobs')
-      .set('x-access-token', jwts.employer)
-      .send({title: 'title2', description: 'description2', tags: 'javascript,jquery,angular,node'})
-      .expect(200))
-    .then(() => db.Job.findOne({where:{title:'title1'}, include:[db.Tag]}))
+  describe('custom jobs', () => {
+    let job1 = {title: 'custom-1', description: 'custom description 1', tags: 'javascript,jquery,angular,node'},
+      job2 = {title: 'custom-2', description: 'custom description 2', tags: 'javascript,jquery,angular,node'};
+    it('posts & lists my custom job', done => {
+      // Create custom job post
+      agent.post('/jobs').set('x-access-token', jwts.employer).send(job1).expect(200)
+      // and create another, to check duplication errors
+      .then(() => agent.post('/jobs').set('x-access-token', jwts.employer).send(job2).expect(200))
+      .then(() => db.Job.findOne({where:{title: job1.title}, include:[db.Tag]}))
 
-    // users upvote / downvote the posting
-    .then(_job=> {
-      jobPost = _job;
-      return Promise.all(
-        jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
-          jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
+      // users upvote / downvote the posting
+      .then(_job=> {
+        jobPost = _job;
+        return Promise.all(
+          jobPost.tags.map(t => users.bad.addTag(t, {score:-10}) ).concat(
+            jobPost.tags.map(t => users.good.addTag(t, {score:+10}) )
+          )
         )
-      )
-    })
+      })
+      // Get the employer's results
+      .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
+      .then(res => {
+        let jobs = res.body;
+        expect(jobs[0].users.length).to.be(1);
+        expect(jobs[0].users[0].id).to.be(users.good.id);
+        //expect(jobs[0].users[0].score).to.be(70);
+        done();
+      }).catch(done);
+    });
 
-    // Get the employer's results
-    .then(() => agent.get('/jobs/mine').set('x-access-token', jwts.employer).expect(200))
-    .then(res => {
-      let jobs = res.body;
-      expect(jobs[0].users.length).to.be(1);
-      expect(jobs[0].users[0].id).to.be(users.good.id);
-      //expect(jobs[0].users[0].score).to.be(70);
-      done();
-    }).catch(done);
+    it('prunes jobs properly', done => {
+      // Create a bunch of custom jobs
+      // FIXME should be able to use Promise.all, but can't due to tag-creation race-conditions; once we get sequelize postgres upsert, √
+      return Bluebird.each(
+        [job1, job2].concat(_.times(20, i => ({
+          title: `title-${i}`,
+          description: `description-${i}`,
+          tags: 'react,python,machine-learning,spark'
+        }))),
+        j => agent.post('/jobs').set('x-access-token', jwts.employer).send(j).expect(200)
+      ).then(() =>
+        // scraped jobs should expire after 10 days, custom jobs after 30
+        sequelize.query(`
+          UPDATE meta SET val = CURRENT_TIMESTAMP - INTERVAL '1 days' WHERE key='cron'; -- roll clock back
+          UPDATE jobs SET created_at = now() - INTERVAL '25 days'; -- pretend these were created 25 days ago
+          UPDATE jobs SET user_id = null WHERE title NOT IN ('custom-1', 'custom-2'); -- pretend that other jobs weren't custom, but scraped
+        `)
+      ).then(() => db.Meta.runCronIfNecessary(true))
+      .then(() => db.Job.count())
+      .then(ct => {
+        expect(ct).to.be(2);
+        return sequelize.query(`
+          UPDATE jobs SET created_at = now() - INTERVAL '30 days';
+          UPDATE meta SET val=CURRENT_TIMESTAMP - INTERVAL '1 day' WHERE key='cron'
+        `);
+      })
+      .then(() => db.Meta.runCronIfNecessary(true))
+      .then(() => db.Job.count())
+      .then(ct => {
+        expect(ct).to.be(0);
+        done();
+      }).catch(done);
+    });
   });
 
 
