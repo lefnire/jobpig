@@ -60,7 +60,7 @@ export function getTags(type=TAG_TYPES.TAG) {
   return new Promise((resolve, reject) => {
     if (tags[type]) return resolve(tags[type]);
     _fetch('jobs/tags/' + type).then(_tags => {
-      tags[type] = _tags.map(t => ({value: t.id, label: t.key}));
+      tags[type] = _tags.map(t => ({value: t.id, label: t.text}));
       resolve(tags[type]);
     }).catch(reject);
   });

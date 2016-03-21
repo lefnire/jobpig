@@ -51,7 +51,8 @@ let config = {
     // Copy
     new TransferWebpackPlugin([
       {from: 'client/src/www'},
-      {from: 'node_modules/css-social-buttons/css', to: 'node_modules/css-social-buttons/css'}
+      //{from: 'node_modules/css-social-buttons/css', to: 'node_modules/css-social-buttons/css'}
+      {from: 'node_modules/react-select/dist', to: 'node_modules/react-select/dist'}
     ], path.resolve(__dirname, ".")),
 
     prod? new S3Plugin({

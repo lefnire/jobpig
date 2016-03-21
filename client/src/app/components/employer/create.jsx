@@ -51,6 +51,8 @@ export default class CreateJob extends React.Component {
             <fui.FormsyText name='title' required hintText="*Title" fullWidth={true}/>
             <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
             <Select.Async
+              placeholder="Location"
+              allowCreate={true}
               value={this.state.location}
               loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
               onChange={location => this.setState({location})}
@@ -60,6 +62,8 @@ export default class CreateJob extends React.Component {
 
             {/*<fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>*/}
             <Select.Async
+              placeholder="Tags"
+              allowCreate={true}
               multi={true}
               value={this.state.selected}
               loadOptions={() => getTags().then(options => ({options})) }
