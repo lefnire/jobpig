@@ -67,7 +67,7 @@ let Job = sequelize.define('jobs', {
         WHERE j.pending <> TRUE
         GROUP BY j.id, uj.note, uj.status
         HAVING COALESCE(uj.status, :inbox) = :status AND COALESCE(SUM(ut.score),0)>-75
-        ORDER BY score DESC, j.created_at DESC, length(j.description) DESC -- length(desc) to hide some of the less hydrated posts until we can get to that
+        ORDER BY score DESC, length(j.description) DESC, j.created_at DESC -- length(desc) to hide some of the less hydrated posts until we can get to that
         LIMIT :limit;
       `, {
         type: sequelize.QueryTypes.SELECT,

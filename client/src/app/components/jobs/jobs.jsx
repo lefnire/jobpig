@@ -63,11 +63,11 @@ export default class Jobs extends Component {
     );
 
     return <div>
-      <SeedTags onSeed={this._fetchJobs} auto={true} />
+      <SeedTags onSeed={()=>this._fetchJobs()} auto={true} />
       {fetching? <mui.CircularProgress mode="indeterminate" size={1.5} />
         : isEmpty? emptySection
         : this.state.jobs.map(job =>
-          <Job job={job} key={job.id} onSetStatus={this._fetchJobs} />
+          <Job job={job} key={job.id} onSetStatus={()=>this._fetchJobs()} />
         )
       }
     </div>
