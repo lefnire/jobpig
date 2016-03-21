@@ -245,6 +245,8 @@ let Message = sequelize.define('messages', {
   },
   subject: Sequelize.STRING,
   body: {type: Sequelize.TEXT, allowNull: false},
+  // When users delete, remove for just the deleter (not the sender); handle that by tracking who deleted
+  deleted: {type: Sequelize.ARRAY(Sequelize.INTEGER), defaultValue: []}
 }, {
   classMethods: {
     hydrateMessages(to) {
@@ -269,7 +271,7 @@ let Message = sequelize.define('messages', {
             ORDER BY created_at
           ) r
         ) r ON TRUE
-        WHERE :to IN (m.user_id, m.to) AND m.to IS NOT NULL
+        WHERE :to IN (m.user_id, m.to) AND m.to IS NOT NULL AND NOT (:to = ANY (m.deleted))
         `, { replacements: {to}, type: sequelize.QueryTypes.SELECT});
     }
   }
