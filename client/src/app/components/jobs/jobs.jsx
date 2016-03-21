@@ -3,7 +3,8 @@ import mui from 'material-ui';
 import _ from 'lodash';
 import Job from './job';
 import SeedTags from './seedtags'
-import {_fetch} from '../../helpers';
+import {_fetch, constants} from '../../helpers';
+const {FILTERS} = constants;
 
 export default class Jobs extends Component {
   constructor() {
@@ -74,7 +75,7 @@ export default class Jobs extends Component {
 
   _fetchJobs = (filter) => {
     this.setState({isFetching: true});
-    filter = filter || this.props.params.filter;
+    filter = (filter || this.props.params.filter);
     _fetch(`jobs/${filter}`).then(jobs => {
       if (_.isEmpty(jobs) && filter === 'inbox') // poll for new jobs (the server is crunching)
         return window.setTimeout(this._fetchJobs, 2000);

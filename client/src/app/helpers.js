@@ -1,5 +1,9 @@
 import fetch from 'isomorphic-fetch';
 
+// Maybe put this file in a common/ dir?
+exports.constants = require('../../../server/lib/constants');
+const {TAG_TYPES} = exports.constants;
+
 export const API_URL = "<nconf:urls:server>";
 
 export function login(token, register) {
@@ -52,7 +56,7 @@ export function me() {
 }
 
 let tags = {};
-export function getTags(type=1) {
+export function getTags(type=TAG_TYPES.TAG) {
   return new Promise((resolve, reject) => {
     if (tags[type]) return resolve(tags[type]);
     _fetch('jobs/tags/' + type).then(_tags => {

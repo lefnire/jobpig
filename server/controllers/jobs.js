@@ -1,8 +1,9 @@
 'use strict';
 const db = require('../models/models');
 const _ = require('lodash');
-const adaptors = require('../lib/adaptors');
-const TAG_TYPES = require('../lib/constants').TAG_TYPES;
+const constants = require('../lib/constants');
+const TAG_TYPES = constants.TAG_TYPES;
+const FILTERS = constants.FILTERS;
 
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
@@ -11,8 +12,9 @@ exports.mine = function(req, res, next){
 }
 
 exports.list = function(req, res, next){
-  db.Job.filterJobs(req.user, req.params.filter)
-    .then(jobs=> res.send(jobs))
+  let filter = FILTERS[req.params.filter.toUpperCase()];
+  db.Job.filterJobs(req.user, filter)
+    .then(jobs => res.send(jobs))
     .catch(next);
 };
 
@@ -30,9 +32,11 @@ exports.addNote = function(req, res, next){
 }
 
 exports.setStatus = function(req, res, next){
-  db.Job.score(req.user.id, req.params.id, req.params.status)
-    .then(()=> res.send({}))
-    .catch(next);
+  let status = +req.params.status;
+  if (!_.includes(_.values(FILTERS), status))
+    return next({status: 400, message: 'Invalid status'});
+  db.Job.score(req.user.id, req.params.id, status)
+    .then(()=> res.send({})).catch(next);
 }
 
 // Idea from https://www.drupal.org/project/poormanscron

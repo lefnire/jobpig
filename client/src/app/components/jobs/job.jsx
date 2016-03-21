@@ -10,7 +10,8 @@ import {
   ActionThumbUp,
   ActionLabel
 } from 'material-ui/lib/svg-icons';
-import {_fetch} from '../../helpers';
+import {_fetch, constants} from '../../helpers';
+const {FILTERS, TAG_TYPES} = constants;
 
 export default class Job extends Component {
   constructor(){
@@ -23,7 +24,7 @@ export default class Job extends Component {
   render() {
     let {job} = this.props;
     let {editing} = this.state;
-    let isInbox = job.status === 'inbox';
+    let isInbox = job.status === FILTERS.INBOX;
 
     window.setTimeout(() => { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (editing) return this.refs.noteRef.focus();
@@ -56,10 +57,10 @@ export default class Job extends Component {
           }
           <mui.CardActions>{
             (!isInbox ? [
-              <mui.FlatButton label="Send to Inbox" onTouchTap={() => this._setStatus('inbox')}/>
+              <mui.FlatButton label="Send to Inbox" onTouchTap={() => this._setStatus(FILTERS.INBOX)}/>
             ] : []).concat(
-              <mui.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus('applied')}/>,
-              <mui.FlatButton label={isInbox ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus('hidden')}/>,
+              <mui.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
+              <mui.FlatButton label={isInbox ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
               <mui.FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
             )
           }</mui.CardActions>
@@ -75,10 +76,10 @@ export default class Job extends Component {
 
       {isInbox ?
         <mui.CardActions style={{position:'fixed', right:20, bottom: 20}}>{[
-          <mui.FloatingActionButton onTouchTap={() => this._setStatus('liked')}>
+          <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
             <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
           </mui.FloatingActionButton>,
-          <mui.FloatingActionButton onTouchTap={() => this._setStatus('disliked')}>
+          <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.DISLIKED)}>
             <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
           </mui.FloatingActionButton>,
         ]}</mui.CardActions> : false }
@@ -89,10 +90,10 @@ export default class Job extends Component {
     let score = job.score && (job.score > 0 ? '+' : '') + job.score;
     let _getFeat = type => _.get(_.find(job.tags, {type}), 'text');
     let items = _.filter([
-      {text: _getFeat(2), icon: <ActionSupervisorAccount tooltip="Company" />},
-      {text: _getFeat(3), icon: <ActionRoom tooltip="Location" />},
+      {text: _getFeat(TAG_TYPES.COMPANY), icon: <ActionSupervisorAccount tooltip="Company" />},
+      {text: _getFeat(TAG_TYPES.LOCATION), icon: <ActionRoom tooltip="Location" />},
       {
-        text: (score ? `(${score}) ` : '') + _(job.tags).filter({type: 1}).map('text').join(', '),
+        text: (score ? `(${score}) ` : '') + _(job.tags).filter({type: TAG_TYPES.TAG}).map('text').join(', '),
         icon: <ActionLabel tooltip="Tags"/>
       }
     ], 'text');
@@ -107,7 +108,8 @@ export default class Job extends Component {
 
   _setStatus = status => {
     _fetch(`jobs/${this.props.job.id}/${status}`, {method: "POST"})
-      .then(() => this.props.onSetStatus());
+      .then(this.props.onSetStatus)
+      .catch(global._alerts.alert);
   };
 
   _saveNote = () => {
@@ -116,6 +118,6 @@ export default class Job extends Component {
       .then(json => {
         this.props.job.note = note;
         this.setState({editing: false});
-      });
+      }).catch(global._alerts.alert);
   };
 }

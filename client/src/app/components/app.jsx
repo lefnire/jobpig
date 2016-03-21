@@ -53,7 +53,6 @@ export default class App extends React.Component {
       <div>
         <AppBar
           title={title}
-          iconClassNameRight="muidocs-icon-navigation-expand-more"
           onLeftIconButtonTouchTap={()=>this.setState({navOpen: !this.state.navOpen})}
           iconElementRight={<RaisedButton label="Post Job" primary={true} onTouchTap={()=>this._goto('employer?createJob=true')} />}
         />

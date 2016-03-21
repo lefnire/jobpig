@@ -5,6 +5,10 @@ exports.TAG_TYPES = {
   SOURCE: 4, // job board scraped
 };
 
-//exports.FILTERS = {
-//  'inbox','disliked','liked','applied','hidden'
-//}
+exports.FILTERS = {
+  INBOX: 1,
+  DISLIKED: 2,
+  LIKED: 3,
+  APPLIED: 4,
+  HIDDEN: 5
+};

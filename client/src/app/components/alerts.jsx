@@ -49,5 +49,5 @@ export default class Alerts extends React.Component {
     }
   };
 
-  alert = message => this.setState({open: true, message});
+  alert = message => this.setState({open: true, message: _.get(message, 'json.message', message)}); // try err.json.message (common), fall back on message
 };

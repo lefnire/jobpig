@@ -7,7 +7,9 @@ const _ = require('lodash');
 const db = nconf.get(nconf.get("NODE_ENV"));
 const uuid = require('node-uuid');
 const passportLocalSequelize = require('passport-local-sequelize');
-const TAG_TYPES = require('../lib/constants').TAG_TYPES;
+const constants = require('../lib/constants');
+const TAG_TYPES = constants.TAG_TYPES
+const FILTERS = constants.FILTERS;
 
 global.sequelize = new Sequelize(db.database, db.username, db.password, {
   host: db.host,
@@ -47,11 +49,11 @@ let Job = sequelize.define('jobs', {
 }, {
   classMethods: {
     filterJobs(user, status) {
-      status = status || 'inbox';
+      status = status || FILTERS.INBOX;
       return sequelize.query(`
         SELECT
         j.*
-        ,COALESCE(uj.status,'inbox') status
+        ,COALESCE(uj.status, :inbox) status
         ,uj.note
         ,json_agg(tags) tags
         ,COALESCE(SUM(ut.score),0) score
@@ -64,10 +66,18 @@ let Job = sequelize.define('jobs', {
 
         WHERE j.pending <> TRUE
         GROUP BY j.id, uj.note, uj.status
-        HAVING COALESCE(uj.status,'inbox') = :status AND COALESCE(SUM(ut.score),0)>-75
+        HAVING COALESCE(uj.status, :inbox) = :status AND COALESCE(SUM(ut.score),0)>-75
         ORDER BY score DESC, j.created_at DESC
         LIMIT :limit;
-      `, { replacements: {user_id:user.id, status, limit:status=='inbox' ? 1 : 50}, type: sequelize.QueryTypes.SELECT });
+      `, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          status,
+          inbox: FILTERS.INBOX,
+          user_id: user.id,
+          limit: status === FILTERS.INBOX ? 1 : 50
+        },
+      });
     },
     findMine(user){
       return sequelize.query(`
@@ -188,7 +198,7 @@ let Job = sequelize.define('jobs', {
 
       // Then score attributes, unless setting to 'inbox' or 'hidden'
       // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
-      let score = ~['inbox','hidden'].indexOf(status) ? 0 : status === 'disliked' ? -1 : +1;
+      let score = ~[FILTERS.INBOX, FILTERS.HIDDEN].indexOf(status) ? 0 : status === FILTERS.DISLIKED ? -1 : +1;
       if (!score)
         return setStatus;
 
@@ -225,7 +235,7 @@ let Tag = sequelize.define('tags', {
 });
 
 let UserJob = sequelize.define('user_jobs', {
-  status: {type:Sequelize.ENUM('inbox','disliked','liked','applied','hidden'), defaultValue:'inbox', allowNull:false},
+  status: {type:Sequelize.INTEGER, defaultValue: FILTERS.INBOX, allowNull:false},
   note: Sequelize.TEXT
 });
 

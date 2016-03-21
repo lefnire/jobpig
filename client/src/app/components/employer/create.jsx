@@ -1,12 +1,13 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch, getTags} from '../../helpers';
+import {_fetch, getTags, constants} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
 import Error from '../error';
+const {TAG_TYPES} = constants;
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -51,7 +52,7 @@ export default class CreateJob extends React.Component {
             <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
             <Select.Async
               value={this.state.location}
-              loadOptions={() => getTags(3).then(options => ({options})) }
+              loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
               onChange={location => this.setState({location})}
             />
             <fui.FormsyCheckbox name='remote' label="Remote"/>
