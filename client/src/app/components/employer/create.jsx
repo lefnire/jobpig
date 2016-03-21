@@ -56,7 +56,7 @@ export default class CreateJob extends React.Component {
               onChange={location => this.setState({location})}
             />
             <fui.FormsyCheckbox name='remote' label="Remote"/>
-            <fui.FormsyText name='description' required hintText="*Description" multiline={true} rows={2} fullWidth={true}/>
+            <fui.FormsyText name='description' required hintText="*Description" multiLine={true} rows={3} fullWidth={true}/>
 
             {/*<fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>*/}
             <Select.Async
