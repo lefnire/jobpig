@@ -9,6 +9,10 @@
     "development": {
       "server": "http://localhost:3000",
       "client": "http://localhost:3001"
+    },
+    "development": {
+      "server": "http://localhost:3000",
+      "client": "http://localhost:3001"
     }
   },
   "ga_tracking_id":"ga_tracking_id",
@@ -44,20 +48,18 @@
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
-
-  "gunio": {
-    "username": "username",
-    "password": "password"
-  },
-  "linkedin": {
-    "key": "key",
-    "secret": "secret"
-  },
   "stripe": {
-    "public": "public",
-    "private": "private"
+    "development": {
+      "public": "public",
+      "private": "private"
+    },
+    "production": {
+      "private": "private",
+      "public": "public"
+    }
   },
   "mail": {
+    "service": "Gmail",
     "host": "smtp.gmail.com",
     "port": 465,
     "secure": true,
