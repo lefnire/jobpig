@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
+global.jobpig = {};
+
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES} = exports.constants;

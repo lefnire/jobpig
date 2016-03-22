@@ -39,7 +39,7 @@ class Main extends Component {
   render() {
     return (
       <div>
-        <Alerts ref={c => global._alerts = c} />
+        <Alerts ref={c => global.jobpig.alerts = c} />
         <Router history={hashHistory} onUpdate={this.onUpdate}>
           {loggedIn() ? (
             <Route path="/"
@@ -70,10 +70,8 @@ class Main extends Component {
   onUpdate = () => {
     // FIXME this.state is always null at this point, what's going on?
     // this.refs.flash.onRoute(this.state.location)
-    let query = window.location.href.match(/(\?)(.*$)/)
-      [2].split('&').map(i => i.split('='))
-      .reduce((m,v) => {m[v[0]]=v[1];return m}, {});
-    global._alerts.flash({query});
+    let query = _.fromPairs(window.location.search.slice(1).split('&').map(i => i.split('=')));
+    global.jobpig.alerts.flash({query});
   };
 };
 

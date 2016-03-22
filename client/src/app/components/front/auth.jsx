@@ -57,10 +57,10 @@ class Login extends React.Component {
     e.preventDefault();
     _fetch('user/forgot-password', {method: "POST", body: {email: this.state.forgotEmail}})
       .then(json => {
-        global._alerts.alert("Email sent.");
+        global.jobpig.alerts.alert("Email sent.");
         this.setState({forgotEmail: ''});
       })
-      .catch(json => global._alerts.alert(json.json.message));
+      .catch(global.jobpig.alerts.alert);
   }
 
   submitForm = (body) => {

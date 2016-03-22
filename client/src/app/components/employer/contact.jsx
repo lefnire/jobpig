@@ -46,10 +46,8 @@ export default class Contact extends React.Component {
   handleClose = () => this.setState({open: false});
   submitForm = (body) => {
     _fetch(`messages/contact/${this.props.prospect.id}`, {method:"POST", body}).then(() => {
-      global._alerts.alert('Message sent.');
+      global.jobpig.alerts.alert('Message sent.');
       this.handleClose();
-    }).catch((json) => {
-      global._alerts.alert(json.json.message);
-    })
+    }).catch(global.jobpig.alerts.alert);
   }
 }

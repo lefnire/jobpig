@@ -39,6 +39,7 @@ export default class App extends React.Component {
   }
 
   render() {
+    this.location = this.props.location.pathname.replace(/^\//, '');
     let title = { //FIXME this is dirty. Use state instead?
         'jobs/inbox': 'Inbox',
         'jobs/applied': 'Applied',
@@ -47,14 +48,14 @@ export default class App extends React.Component {
         'messages': 'Messages',
         'profile': 'Profile',
         'logout': "Logout"
-      }[this.props.location.pathname.replace(/^\//, '')] || 'Jobpig';
+      }[this.location] || 'Jobpig';
 
     return (
       <div>
         <AppBar
           title={title}
           onLeftIconButtonTouchTap={()=>this.setState({navOpen: !this.state.navOpen})}
-          iconElementRight={<RaisedButton label="Post Job" primary={true} onTouchTap={()=>this._goto('employer?createJob=true')} />}
+          iconElementRight={<RaisedButton label="Post Job" primary={true} onTouchTap={this._postJob} />}
         />
         <LeftNav
           docked={false}
@@ -86,6 +87,15 @@ export default class App extends React.Component {
 
   toggleNav = () => this.setState({navOpen: !this.state.navOpen});
   closeNav = () => this.setState({navOpen: false});
+
+  //FIXME this is nasty. Use eventemitter or redux or something?
+  _postJob = () => {
+    if (this.location === 'employer') {
+      return global.jobpig.createJob.open();
+    }
+    this._goto('employer');
+    setTimeout(() => global.jobpig.createJob.open(), 100);
+  };
 
   _goto = route => {
     this.closeNav();

@@ -109,7 +109,7 @@ export default class Job extends Component {
   _setStatus = status => {
     _fetch(`jobs/${this.props.job.id}/${status}`, {method: "POST"})
       .then(this.props.onSetStatus)
-      .catch(global._alerts.alert);
+      .catch(global.jobpig.alerts.alert);
   };
 
   _saveNote = () => {
@@ -118,6 +118,6 @@ export default class Job extends Component {
       .then(json => {
         this.props.job.note = note;
         this.setState({editing: false});
-      }).catch(global._alerts.alert);
+      }).catch(global.jobpig.alerts.alert);
   };
 }

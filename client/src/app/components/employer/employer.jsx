@@ -12,30 +12,12 @@ export default class Employer extends React.Component {
     this._fetchMine();
   }
 
-  componentDidMount() {
-    if (~window.location.href.indexOf('createJob=true')) {
-      this.refs.createJob.handleOpen();
-    }
-  }
-
   render() {
-    let styles = {
-      button: {
-        position:'fixed',
-        bottom:10,
-        right:10
-      }
-    }
-
     let isEmpty = this.state.jobs.length === 0;
 
     return (
       <div>
-        <CreateJob ref='createJob' onCreate={this._fetchMine} />
-
-        <mui.FloatingActionButton style={styles.button} onTouchTap={() => this.refs.createJob.handleOpen()}>
-          <mui.FontIcon className="material-icons">add</mui.FontIcon>
-        </mui.FloatingActionButton>
+        <CreateJob ref={c => global.jobpig.createJob = c} onCreate={this._fetchMine} />
 
         {isEmpty ?
           <mui.Card style={{margin:40}}>

@@ -27,7 +27,7 @@ export default class CreateJob extends React.Component {
         modal={true}
         open={this.state.open}
         actions={[
-          <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
+          <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
           <mui.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         ]} >
 
@@ -77,8 +77,8 @@ export default class CreateJob extends React.Component {
     )
   }
 
-  handleOpen = () => this.setState({open: true});
-  handleClose = () => this.setState({open: false});
+  open = () => this.setState({open: true});
+  close = () => this.setState({open: false});
 
   submitForm = body => {
     body.location = this.state.location.label;
@@ -95,8 +95,8 @@ export default class CreateJob extends React.Component {
     // POST server/payments {token: token}
     _fetch('payments', {method: "POST", body:{token, job_id: this.job_id}})
     .then(()  => {
-      global._alerts.alert('Payment success, posting job now.');
-      this.handleClose();
+      global.jobpig.alerts.alert('Payment success, posting job now.');
+      this.close();
       this.props.onCreate();
       this.job_id = null;
     })

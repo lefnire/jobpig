@@ -161,9 +161,9 @@ export default class Profile extends React.Component{
     _fetch(`user`, {method: "PUT", body})
       .then(profile => {
         this.setState({profile});
-        global._alerts.alert("Profile saved.")
+        global.jobpig.alerts.alert("Profile saved.")
       })
-      .catch(json => global._alerts.alert(json.json.message));
+      .catch(global.jobpig.alerts.alert);
   };
 
   _removeTag = id => {
