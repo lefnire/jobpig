@@ -79,3 +79,7 @@ body {
     width: 20%;
   }
 }
+
+.Select-menu-outer {
+  z-index: 1600 !important; /* Otherwise we'll click underlying form-fields from Material-UI, which has z-index=1500 */
+}
