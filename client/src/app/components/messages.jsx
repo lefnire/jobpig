@@ -44,10 +44,9 @@ export default class Messages extends React.Component {
       <mui.Card style={{margin:40}}>
         <mui.CardText>
           <h1 style={{paddingBottom:10, borderBottom: '1px solid #eee'}}>Messages</h1>
-          <ul style={{padding:20, margin: 40, fontSize:"1.2em"}}>
-            <li>If you are searching for a job you can contact sponsored employers here.</li>
-            <li>If you are an employer you can contact potential employees here.</li>
-            </ul>
+          <p style={{padding:20, margin: 40, fontSize:"1.2em"}}>
+            Here you'll find messages when you've been contacted. Employers and searchers can contact each other via employer-posted jobs.
+          </p>
         </mui.CardText>
       </mui.Card>
     );
