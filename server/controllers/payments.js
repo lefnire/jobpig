@@ -2,7 +2,7 @@
 const nconf = require('nconf');
 const db = require('../models/models');
 const _ = require('lodash');
-const stripe = require('stripe')(nconf.get('stripe:private'));
+const stripe = require('stripe')(nconf.get(`stripe:${nconf.get('NODE_ENV')}:private`));
 
 exports.validate = (req, res, next) => {
   let job_id = req.body.job_id;

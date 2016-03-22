@@ -1,3 +1,6 @@
+require("../www/main.css");
+require("../../../node_modules/react-select/dist/react-select.min.css");
+
 // Custom
 import {API_URL} from './helpers';
 import fetch from 'isomorphic-fetch';
