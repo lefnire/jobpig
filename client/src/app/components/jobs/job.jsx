@@ -36,7 +36,7 @@ export default class Job extends Component {
     return <div className='padded'>
       <mui.Card>
         <mui.CardTitle
-          title={<a href={job.url} target='_blank'>{job.title}</a>}
+          title={<a className="job-title" href={job.url} target='_blank'>{job.title}</a>}
           subtitle={this._meta(job)}
         />
         <mui.CardText>

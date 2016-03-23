@@ -48,6 +48,7 @@
     "react-stripe-checkout": "^1.7.2",
     "react-tap-event-plugin": "^0.2.1",
     "request": "^2.58.0",
+    "sanitize-html": "^1.11.3",
     "sequelize": "^3.19.3",
     "serve-favicon": "^2.3.0",
     "stripe": "^4.4.0",

@@ -31,7 +31,7 @@ export default class Footer extends React.Component {
             <a href="http://www.freepik.com/free-photos-vectors/animal" style={styles.link}>Animal vector designed by Freepik</a>
           </li>
           <li style={styles.li}>
-            <a href= "https://github/lefnire/jobpig" style={styles.link}>Fork on Github</a>
+            <a href="https://github.com/lefnire/jobpig" style={styles.link}>Fork on GitHub</a>
           </li>
         </ul>
       </FullWidthSection>

@@ -113,7 +113,7 @@ export default class Front extends React.Component {
           <mui.Card>
             <mui.CardTitle
               title={<span>And making <i>you</i> easier to find</span>}
-              subtitle={`No more "didn't do their homework" recuiter emails, companies find you because you're a good fit.`} />
+              subtitle={`Your profile is only visible to companies for whose job you're great fit.`} />
             <mui.Divider />
             <mui.CardHeader
               title='Me'

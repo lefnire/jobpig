@@ -10,6 +10,7 @@ const passportLocalSequelize = require('passport-local-sequelize');
 const constants = require('../lib/constants');
 const TAG_TYPES = constants.TAG_TYPES
 const FILTERS = constants.FILTERS;
+const sanitizeHtml = require('sanitize-html');
 
 global.sequelize = new Sequelize(db.database, db.username, db.password, {
   host: db.host,
@@ -125,6 +126,8 @@ let Job = sequelize.define('jobs', {
 
         // normalize tags
         jobs.forEach(job => {
+          job.description = sanitizeHtml(job.description); // remove unsafe tags // TODO make this a hook instead?
+
           job.tags = _(job.tags)
             .map(text => ({text, key: text, type: TAG_TYPES.TAG})) // turn into tag objects
             .concat([ // add other job meta
