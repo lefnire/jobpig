@@ -112,21 +112,26 @@ export default class Front extends React.Component {
           <br/>
           <mui.Card>
             <mui.CardTitle
-              title={<span>And making <i>you</i> easier to find</span>}
-              subtitle={`Your profile is only visible to companies for whose job you're great fit.`} />
+              title="Employers, find those needles in the haystack"
+              subtitle="View candidates for whom your job is a great match, based on searcher preferences. No more combing through profiles." />
             <mui.Divider />
             <mui.CardHeader
-              title='Me'
+              title='Candidate'
               subtitle='Full-stack JavaScript Developer'
               avatar="http://lorempixel.com/100/100/people"
               />
             <mui.CardText>
               <p>
-                "Me" matches your company by a score of <span style={{color:'green'}}>+10</span> on the following attributes: <b>React</b>, <b>Node</b>, <b>Postgres</b>.
+                "Candidate" matches your company by a score of <span style={{color:'green'}}>+10</span> on: <b>React</b>, <b>Node</b>, <b>Postgres</b>, <b>San Francisco, CA</b>.
               </p>
               <mui.RaisedButton label="Contact" />
             </mui.CardText>
           </mui.Card>
+
+          <div style={{display: 'flex', alignContent: 'space-between'}}>
+            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Search Jobs" onTouchTap={()=>this.refs.auth.handleOpen()} />
+            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Post a Job" onTouchTap={()=>this.refs.auth.handleOpen()} />
+          </div>
 
         </FullWidthSection>
         <Footer />
