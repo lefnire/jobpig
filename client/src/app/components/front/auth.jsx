@@ -98,8 +98,8 @@ class Register extends React.Component{
           name="password"
           required
           hintText="Password"
-          validations="minLength:3"
-          validationError="Password must be at least 3 characters"
+          validations="minLength:8"
+          validationError="Password must be at least 8 characters"
           fullWidth={true}
           type="password"/>
         <fui.FormsyText

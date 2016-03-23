@@ -8,10 +8,15 @@ const {TAG_TYPES} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
 
-export function login(token, register) {
+export function setToken(token) {
   window.localStorage.setItem('jwt', token);
   let d = new Date();
   window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
+  jwt = token;
+}
+
+export function login(token, register) {
+  setToken(token);
   if (!register) return window.location = '/';
   window.location = '/?flash=FILL_PROFILE&redirect=/#/profile';
 }

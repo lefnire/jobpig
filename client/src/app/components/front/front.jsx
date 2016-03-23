@@ -5,6 +5,7 @@ import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
 import Footer from '../footer';
 import {Colors, Typography} from 'material-ui/lib/styles';
+import CreateAndReg from '../employer/createAndReg';
 
 export default class Front extends React.Component {
   render(){
@@ -34,6 +35,7 @@ export default class Front extends React.Component {
         */}
 
         <Auth ref='auth' />
+        <CreateAndReg ref='createAndReg' />
 
         <div className='login'>
           <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.handleOpen()} />
@@ -130,7 +132,7 @@ export default class Front extends React.Component {
 
           <div style={{display: 'flex', alignContent: 'space-between'}}>
             <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Search Jobs" onTouchTap={()=>this.refs.auth.handleOpen()} />
-            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Post a Job" onTouchTap={()=>this.refs.auth.handleOpen()} />
+            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Post a Job" onTouchTap={()=>this.refs.createAndReg.open()} />
           </div>
 
         </FullWidthSection>
