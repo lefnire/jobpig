@@ -52,10 +52,10 @@ export default class CreateJob extends React.Component {
             <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
             <Select.Async
               placeholder="Location"
-              allowCreate={true}
               value={this.state.location}
               loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
-              onChange={location => this.setState({location})}
+              onChange={this.changeLocation}
+              filterOptions={this.filterOptions}
             />
             <fui.FormsyCheckbox name='remote' label="Remote"/>
             <fui.FormsyText name='description' required hintText="*Description" multiLine={true} rows={3} fullWidth={true}/>
@@ -63,11 +63,11 @@ export default class CreateJob extends React.Component {
             {/*<fui.FormsyText name='tags' required hintText="*Skills/Tags (comma-delimited)" fullWidth={true}/>*/}
             <Select.Async
               placeholder="Tags"
-              allowCreate={true}
               multi={true}
-              value={this.state.selected}
+              value={this.state.tags}
               loadOptions={() => getTags().then(options => ({options})) }
-              onChange={selected => this.setState({selected})}
+              onChange={this.changeTags}
+              filterOptions={this.filterOptions}
             />
 
 
@@ -77,12 +77,33 @@ export default class CreateJob extends React.Component {
     )
   }
 
+  // FIXME Temporary until react-select fixes allowCreate={true}
+  filterOptions = (options, filter, currentValues) =>
+    !filter ? options : _(options)
+      .filter(o => RegExp(filter, 'ig').test(o.label))
+      .difference(currentValues)
+      .concat(_.some(currentValues, {label: filter}) ? [] : [{label: `Add ${filter}`, value: filter, create:true}])
+      .value();
+
+  changeLocation = location => {
+    if (location.create)
+      location.label = location.label.replace(/^Add /, '');
+    this.setState({location});
+  };
+  changeTags = tags => {
+    let entered = _.last(tags);
+    if (entered && entered.create)
+      entered.label = entered.label.replace(/^Add /, '');
+    this.setState({tags});
+  }
+  // /FIXME -----------------
+
   open = () => this.setState({open: true});
   close = () => this.setState({open: false});
 
   submitForm = body => {
     body.location = this.state.location.label;
-    body.tags = _.map(this.state.selected, 'label').join(',');
+    body.tags = _.map(this.state.tags, 'label').join(',');
     _fetch('jobs', {method:"POST", body})
     .then(created => {
       this.job_id = created.id;
