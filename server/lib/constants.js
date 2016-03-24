@@ -12,3 +12,9 @@ exports.FILTERS = {
   APPLIED: 4,
   HIDDEN: 5
 };
+
+exports.AUTH_ACTIONS = {
+  LOGIN: 0,
+  REGISTER: 1,
+  POST_JOB: 2
+};

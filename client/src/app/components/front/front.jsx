@@ -5,7 +5,8 @@ import Auth from './auth.jsx';
 import FullWidthSection from './full-width-section.jsx';
 import Footer from '../footer';
 import {Colors, Typography} from 'material-ui/lib/styles';
-import CreateAndReg from '../employer/createAndReg';
+import {constants} from '../../helpers';
+const {AUTH_ACTIONS} = constants;
 
 export default class Front extends React.Component {
   render(){
@@ -17,6 +18,15 @@ export default class Front extends React.Component {
         color: Colors.grey50,
         fontWeight: Typography.fontWeightMedium,
       },
+      ctaButtons: {
+        display: 'flex',
+        alignContent: 'space-between'
+      },
+      ctaButton: {
+        flex: 1,
+        margin: 10,
+        height: '100px'
+      }
     };
 
     let rightIconMenu = (
@@ -35,10 +45,9 @@ export default class Front extends React.Component {
         */}
 
         <Auth ref='auth' />
-        <CreateAndReg ref='createAndReg' />
 
         <div className='login'>
-          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.handleOpen()} />
+          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
         </div>
         <FullWidthSection style={styles.root} className='root'>
           <img src="Pig.png" className='pig' />
@@ -130,9 +139,9 @@ export default class Front extends React.Component {
             </mui.CardText>
           </mui.Card>
 
-          <div style={{display: 'flex', alignContent: 'space-between'}}>
-            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Search Jobs" onTouchTap={()=>this.refs.auth.handleOpen()} />
-            <mui.RaisedButton style={{flex: 1, margin: 10, height: '100px'}} primary={true} label="Post a Job" onTouchTap={()=>this.refs.createAndReg.open()} />
+          <div style={styles.ctaButtons}>
+            <mui.RaisedButton style={styles.ctaButton} primary={true} label="Search Jobs" onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.REGISTER)} />
+            <mui.RaisedButton style={styles.ctaButton} primary={true} label="Post a Job" onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} />
           </div>
 
         </FullWidthSection>

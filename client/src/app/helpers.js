@@ -4,21 +4,20 @@ global.jobpig = {};
 
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
-const {TAG_TYPES} = exports.constants;
+const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
 
-export function setToken(token) {
+export function login(token, action) {
   window.localStorage.setItem('jwt', token);
   let d = new Date();
   window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
-  jwt = token;
-}
+  //jwt = token;
 
-export function login(token, register) {
-  setToken(token);
-  if (!register) return window.location = '/';
-  window.location = '/?flash=FILL_PROFILE&redirect=/#/profile';
+  window.location = {
+    [AUTH_ACTIONS.POST_JOB]: '/?flash=POST_JOB&redirect=/#/employer',
+    [AUTH_ACTIONS.REGISTER]: '/?flash=FILL_PROFILE&redirect=/#/profile'
+  }[action] || '/';
 }
 
 export function logout() {

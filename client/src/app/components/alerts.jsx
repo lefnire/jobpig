@@ -40,6 +40,7 @@ export default class Alerts extends React.Component {
               {' '}<a href="/#/inbox" onClick={this.close} style={{color: 'white'}}>Inbox</a>
             </span>
           ),
+          POST_JOB: `Click "Post Job" top right; you'll attract matching candidates in no time!`,
           PASSWORD_RESET: "Password successfully reset, please log in.",
         }[key],
         opts: {

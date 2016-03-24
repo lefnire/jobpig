@@ -17,8 +17,8 @@ exports.setup = function (app) {
     if (req.body.password != req.body.confirmPassword)
       return next({status:403, message:'Password does not match Confirm Password'});
 
-    if (req.body.password.length < 3)
-      return next({status:403, message:'Password should be greater than 3 characters.'});
+    if (req.body.password.length < 8)
+      return next({status:403, message:'Password should be at least 8 characters.'});
 
     User.register({
       email: req.body.email,

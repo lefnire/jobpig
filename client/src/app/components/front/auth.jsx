@@ -1,10 +1,12 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {login, logout, _fetch} from '../../helpers';
+import {login, logout, _fetch, constants} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Error from '../error';
+import update from 'react-addons-update';
+const {AUTH_ACTIONS} = constants;
 
 class Login extends React.Component {
   constructor(){
@@ -18,6 +20,7 @@ class Login extends React.Component {
   render(){
     return (
       <div>
+
         <Formsy.Form
           ref="form"
           onValid={() => this.setState({canSubmit: true})}
@@ -85,6 +88,11 @@ class Register extends React.Component{
         onValid={() => this.setState({canSubmit: true})}
         onInvalid={() => this.setState({canSubmit: false})}
         onValidSubmit={this.submitForm}>
+
+        {this.props.action === AUTH_ACTIONS.POST_JOB && (
+          <p>Register first (required for listing management, and for candidates to contact you). You'll be redirected to your listings after.</p>
+        )}
+
         <Error error={this.state.error} />
         <fui.FormsyText
           name='email'
@@ -117,7 +125,11 @@ class Register extends React.Component{
 
   submitForm = (body) => {
     _fetch('register', {method:"POST", body})
-      .then(json => login(json.token, true))
+      .then(json => {
+        let {action} = this.props;
+        action = action === AUTH_ACTIONS.POST_JOB ? action : AUTH_ACTIONS.REGISTER;
+        login(json.token, action);
+      })
       .catch(error => this.setState({error}))
   }
 }
@@ -127,39 +139,35 @@ export default class Auth extends React.Component {
     super();
     this.state = {
       open: false,
+      action: AUTH_ACTIONS.LOGIN
     };
   }
 
   render() {
     const actions = [
-      <mui.FlatButton
-          label="Cancel"
-          secondary={true}
-          onTouchTap={this.handleClose}
-      />,
-      //<mui.FlatButton
-      //    label="Submit"
-      //    primary={true}
-      //    disabled={true}
-      //    onTouchTap={this.handleClose}
-      ///>,
+      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
     ];
-    return <mui.Dialog
-        actions={actions}
-        modal={true}
-        open={this.state.open}>
-      <mui.Tabs>
-        <mui.Tab label="Login" >
-          <Login />
-        </mui.Tab>
-        <mui.Tab label="Register" >
-          <Register />
-        </mui.Tab>
-      </mui.Tabs>
-    </mui.Dialog>
+    const initialTab = {
+      [AUTH_ACTIONS.LOGIN]: 0,
+      [AUTH_ACTIONS.REGISTER]: 1,
+      [AUTH_ACTIONS.POST_JOB]: 1
+    }[this.state.action];
+    return (
+      <mui.Dialog actions={actions} modal={true} open={this.state.open} >
+        <mui.Tabs initialSelectedIndex={initialTab}>
+          <mui.Tab label="Login">
+            <Login />
+          </mui.Tab>
+          <mui.Tab label="Register">
+            <Register action={this.state.action}/>
+          </mui.Tab>
+        </mui.Tabs>
+      </mui.Dialog>
+    );
+
   }
 
-  handleOpen = () => this.setState({open: true});
-  handleClose = () => this.setState({open: false});
+  open = (action=AUTH_ACTIONS.LOGIN) => this.setState({action, open: true});
+  close = () => this.setState({open: false});
 
 }
