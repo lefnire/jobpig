@@ -1,13 +1,12 @@
-A Pandora-like job board/scraper.
+A Pandora-like job finder.
 
 ##Technologies
 
 * React, React-Router, Webpack, Material UI
-* Node v4.x / Express (v4.x because lotta es6, use [nvm](https://github.com/creationix/nvm) if need previous version for other projects)
+* Node v4.x / Express
 * Postgres / Sequelize
 
 ##Setup
-
 
 ```shell
 $ npm install -g nodemon
@@ -17,4 +16,4 @@ $ npm run server # in one terminal tab
 $ npm run client # in another terminal tab, then go to localhost:3001
 ```
 
-TODO: better this README
+[TODO (Workflowy)](https://workflowy.com/s/4iUOvvf45S)
