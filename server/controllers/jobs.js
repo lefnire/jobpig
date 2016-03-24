@@ -4,6 +4,7 @@ const _ = require('lodash');
 const constants = require('../lib/constants');
 const TAG_TYPES = constants.TAG_TYPES;
 const FILTERS = constants.FILTERS;
+const nconf = require('nconf');
 
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
@@ -40,8 +41,10 @@ exports.setStatus = function(req, res, next){
 }
 
 // Idea from https://www.drupal.org/project/poormanscron
+let runCron = nconf.get('NODE_ENV') === 'test' ? db.Meta.runCronIfNecessary
+  : _.debounce(() => db.Meta.runCronIfNecessary(), 60*60*1000);
 exports.poormanscron = function(req, res, next) {
-  db.Meta.runCronIfNecessary();
+  runCron();
   res.send({});
 }
 
