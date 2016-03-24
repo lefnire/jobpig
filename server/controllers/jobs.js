@@ -41,8 +41,10 @@ exports.setStatus = function(req, res, next){
 }
 
 // Idea from https://www.drupal.org/project/poormanscron
-let runCron = nconf.get('NODE_ENV') === 'test' ? db.Meta.runCronIfNecessary
-  : _.debounce(() => db.Meta.runCronIfNecessary(), 60*60*1000);
+let runCron = nconf.get('NODE_ENV') === 'production'
+  ? _.debounce(() => db.Meta.runCronIfNecessary(), 60*60*1000)
+  : db.Meta.runCronIfNecessary;
+
 exports.poormanscron = function(req, res, next) {
   runCron();
   res.send({});
