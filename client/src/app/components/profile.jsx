@@ -144,7 +144,7 @@ export default class Profile extends React.Component{
             <mui.List>
               {tags.length ? tags.map(this.renderTag) : (
                 <mui.ListItem primaryText={(
-                  <div>No tag scores yet, click below head to <a href="/#/inbox">inbox</a>.</div>
+                  <div>No tag scores yet, click below head to <a href="/#/match">matches</a>.</div>
                 )} />
               )}
             </mui.List>

@@ -15,6 +15,8 @@ let revertSepia = ()=>
 describe('Jobpig', function() {
   this.timeout(0);
   let users = {good: null, bad: null, employer: null},
+    password = '123456789',
+    confirmPassword = password,
     jwts = {},
     agent,
     jobPost;
@@ -30,7 +32,7 @@ describe('Jobpig', function() {
       // register 2 users, 1 employer
       return Promise.all(
         _.keys(users).map(k =>
-          agent.post('/register').send({email: `${k}@x.com`, password:'1234',confirmPassword:'1234'}).expect(200)
+          agent.post('/register').send({email: `${k}@x.com`, password, confirmPassword}).expect(200)
           .then(res => {
             jwts[k] = res.body.token;
             return Promise.resolve();
@@ -46,9 +48,9 @@ describe('Jobpig', function() {
   });
 
   it('valid & invalid registration', done => {
-    agent.post('/register').send({email: `good@x.com`, password: '1234', confirmPassword: '1234'}).expect(403)
-    .then(() => agent.post('/register').send({email: `new@x.com`, password: 'a', confirmPassword: 'a'}).expect(403) )
-    .then(() => agent.post('/register').send({email: `new`, password: '1234', confirmPassword: '1234'}).expect(403) )
+    agent.post('/register').send({email: `good@x.com`, password, confirmPassword}).expect(403)
+    .then(() => agent.post('/register').send({email: `new@x.com`, password: '1234', confirmPassword: '1234'}).expect(403) )
+    .then(() => agent.post('/register').send({email: `new`, password, confirmPassword}).expect(403) )
     .then(() => db.User.count() )
     .then(ct => {
       expect(ct).to.be(3); // didn't create new user
@@ -61,7 +63,7 @@ describe('Jobpig', function() {
     let id;
     // register tyler & manually check my personal email to make sure it came through (better way?)
     //mail.testEmail = true;
-    agent.post('/register').send({email, password: '1234', confirmPassword: '1234'}).expect(200)
+    agent.post('/register').send({email, password, confirmPassword}).expect(200)
     .then(() => db.User.findOne({where: {email}, attributes: ['id']}))
     .then(model => {
       id = model.id;

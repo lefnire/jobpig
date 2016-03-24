@@ -37,7 +37,7 @@ export default class Alerts extends React.Component {
             <span>
               <a style={{cursor: 'pointer', color: 'red', marginRight: 10}} onClick={this.close}>&#x2716;</a>
               Fill out profile, then head to
-              {' '}<a href="/#/inbox" onClick={this.close} style={{color: 'white'}}>Inbox</a>
+              {' '}<a href="/#/match" onClick={this.close} style={{color: 'white'}}>Matches</a>
             </span>
           ),
           POST_JOB: `Click "Post Job" top right; you'll attract matching candidates in no time!`,

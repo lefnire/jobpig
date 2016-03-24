@@ -6,7 +6,7 @@ exports.TAG_TYPES = {
 };
 
 exports.FILTERS = {
-  INBOX: 1,
+  MATCH: 1,
   DISLIKED: 2,
   LIKED: 3,
   APPLIED: 4,

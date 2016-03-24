@@ -27,7 +27,7 @@ export default class Jobs extends Component {
 
   render() {
     let {filter} = this.props.params;
-    let fetching = this.state.isFetching || (!this.state.jobs[0] && filter === 'inbox');
+    let fetching = this.state.isFetching || (!this.state.jobs[0] && filter === 'match');
     let isEmpty = !fetching && this.state.jobs.length === 0;
 
     let styles = {
@@ -80,7 +80,7 @@ export default class Jobs extends Component {
     this.setState({isFetching: true});
     filter = (filter || this.props.params.filter);
     _fetch(`jobs/${filter}`).then(jobs => {
-      if (_.isEmpty(jobs) && filter === 'inbox') // poll for new jobs (the server is crunching)
+      if (_.isEmpty(jobs) && filter === 'match') // poll for new jobs (the server is crunching)
         return window.setTimeout(this._fetchJobs, 2000);
       this.setState({jobs, isFetching: false});
     });

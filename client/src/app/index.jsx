@@ -54,8 +54,8 @@ class Main extends Component {
               <Route path="profile" component={Profile} />
               <Route path="logout" onEnter={logout} />
               <Route path="messages" component={Messages} />
-              <IndexRedirect to="jobs/inbox" />
-              <Redirect path="*" to="jobs/inbox"/>
+              <IndexRedirect to="jobs/match" />
+              <Redirect path="*" to="jobs/match"/>
             </Route>
           ) : (
             <Route onEnter={this.onEnter}>

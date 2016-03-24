@@ -50,11 +50,11 @@ let Job = sequelize.define('jobs', {
 }, {
   classMethods: {
     filterJobs(user, status) {
-      status = status || FILTERS.INBOX;
+      status = status || FILTERS.MATCH;
       return sequelize.query(`
         SELECT
         j.*
-        ,COALESCE(uj.status, :inbox) status
+        ,COALESCE(uj.status, :match) status
         ,uj.note
         ,json_agg(tags) tags
         ,COALESCE(SUM(ut.score),0) score
@@ -67,16 +67,16 @@ let Job = sequelize.define('jobs', {
 
         WHERE j.pending <> TRUE
         GROUP BY j.id, uj.note, uj.status
-        HAVING COALESCE(uj.status, :inbox) = :status AND COALESCE(SUM(ut.score),0)>-75
+        HAVING COALESCE(uj.status, :match) = :status AND COALESCE(SUM(ut.score),0)>-75
         ORDER BY score DESC, length(j.description) DESC, j.created_at DESC -- length(desc) to hide some of the less hydrated posts until we can get to that
         LIMIT :limit;
       `, {
         type: sequelize.QueryTypes.SELECT,
         replacements: {
           status,
-          inbox: FILTERS.INBOX,
+          match: FILTERS.MATCH,
           user_id: user.id,
-          limit: status === FILTERS.INBOX ? 1 : 50
+          limit: status === FILTERS.MATCH ? 1 : 50
         },
       });
     },
@@ -199,9 +199,9 @@ let Job = sequelize.define('jobs', {
       // First set its status
       let setStatus = UserJob.upsert({user_id,job_id,status});
 
-      // Then score attributes, unless setting to 'inbox' or 'hidden'
+      // Then score attributes, unless setting to 'match' or 'hidden'
       // hidden means "hide this post, but don't hurt it" (maybe repeats of something you've already applied to)
-      let score = ~[FILTERS.INBOX, FILTERS.HIDDEN].indexOf(status) ? 0 : status === FILTERS.DISLIKED ? -1 : +1;
+      let score = ~[FILTERS.MATCH, FILTERS.HIDDEN].indexOf(status) ? 0 : status === FILTERS.DISLIKED ? -1 : +1;
       if (!score)
         return setStatus;
 
@@ -238,7 +238,7 @@ let Tag = sequelize.define('tags', {
 });
 
 let UserJob = sequelize.define('user_jobs', {
-  status: {type:Sequelize.INTEGER, defaultValue: FILTERS.INBOX, allowNull:false},
+  status: {type:Sequelize.INTEGER, defaultValue: FILTERS.MATCH, allowNull:false},
   note: Sequelize.TEXT
 });
 
@@ -304,7 +304,7 @@ let Meta = sequelize.define('meta', {
      * @returns Promise
      */
     runCronIfNecessary(skipScrape) {
-      return this.needsCron().then(val => {
+      return Meta.needsCron().then(val => {
         if (!val)
           return Promise.resolve();
         console.log('Refreshing jobs....');
@@ -329,7 +329,7 @@ let Meta = sequelize.define('meta', {
 Tag.belongsToMany(Job, {through: 'job_tags'});
 Job.belongsToMany(Tag, {through: 'job_tags'});
 
-// User sets job status [inbox|applied|liked|disliked]
+// User sets job status [match|applied|liked|disliked]
 User.belongsToMany(Job, {through: UserJob});
 Job.belongsToMany(User, {through: UserJob});
 

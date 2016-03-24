@@ -24,7 +24,7 @@ export default class Job extends Component {
   render() {
     let {job} = this.props;
     let {editing} = this.state;
-    let isInbox = job.status === FILTERS.INBOX;
+    let isMatch = job.status === FILTERS.MATCH;
 
     window.setTimeout(() => { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (editing) return this.refs.noteRef.focus();
@@ -56,11 +56,11 @@ export default class Job extends Component {
             </mui.Paper>
           }
           <mui.CardActions>{
-            (!isInbox ? [
-              <mui.FlatButton label="Send to Inbox" onTouchTap={() => this._setStatus(FILTERS.INBOX)}/>
+            (!isMatch ? [
+              <mui.FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
             ] : []).concat(
               <mui.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
-              <mui.FlatButton label={isInbox ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
+              <mui.FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
               <mui.FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
             )
           }</mui.CardActions>
@@ -74,7 +74,7 @@ export default class Job extends Component {
         </mui.CardText>
       </mui.Card>
 
-      {isInbox ?
+      {isMatch ?
         <mui.CardActions style={{position:'fixed', right:20, bottom: 20}}>{[
           <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
             <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>

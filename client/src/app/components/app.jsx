@@ -41,7 +41,7 @@ export default class App extends React.Component {
   render() {
     this.location = this.props.location.pathname.replace(/^\//, '');
     let title = { //FIXME this is dirty. Use state instead?
-        'jobs/inbox': 'Inbox',
+        'jobs/match': 'Matches',
         'jobs/applied': 'Applied',
         'jobs/liked': 'Liked',
         'employer': 'Employer',
@@ -64,7 +64,7 @@ export default class App extends React.Component {
           onRequestChange={navOpen => this.setState({navOpen})}
         >
           <List subheader="Jobs">
-            <MenuItem onTouchTap={()=>this._goto('jobs/inbox')} leftIcon={<ActionHome />}>Inbox</MenuItem>
+            <MenuItem onTouchTap={()=>this._goto('jobs/match')} leftIcon={<ActionHome />}>Matches</MenuItem>
             <MenuItem onTouchTap={()=>this._goto('jobs/liked')} leftIcon={<ActionThumbUp />}>Liked</MenuItem>
             <MenuItem onTouchTap={()=>this._goto('jobs/applied')} leftIcon={<ActionCheckCircle />}>Applied</MenuItem>
           </List>
