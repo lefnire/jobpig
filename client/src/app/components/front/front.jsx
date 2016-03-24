@@ -63,7 +63,7 @@ export default class Front extends React.Component {
             <mui.CardHeader
               title='Seeking Senior JavaScript Developer'
               subtitle='Company, Inc | San Francisco, CA'
-              avatar="http://lorempixel.com/100/100/technics/10"
+              avatar="/sample-avatars/10.jpg"
               />
             <mui.CardText>
               <p>
@@ -108,7 +108,7 @@ export default class Front extends React.Component {
                   ].map((i,n)=>
                     <mui.ListItem
                       style={ i.disabled ? {textDecoration:'line-through', opacity:0.5} : {}}
-                      leftAvatar={<mui.Avatar src={"http://lorempixel.com/100/100/technics/"+(n+1)} />}
+                      leftAvatar={<mui.Avatar src={`/sample-avatars/${n+1}.jpg`} />}
                       primaryText={i.title}
                       secondaryText={i.sub}
                       rightIconButton={rightIconMenu}
@@ -129,7 +129,7 @@ export default class Front extends React.Component {
             <mui.CardHeader
               title='Candidate'
               subtitle='Full-stack JavaScript Developer'
-              avatar="http://lorempixel.com/100/100/people"
+              avatar="/sample-avatars/people.jpg"
               />
             <mui.CardText>
               <p>
