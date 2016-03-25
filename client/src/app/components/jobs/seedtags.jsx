@@ -42,7 +42,8 @@ export default class SeedTags extends React.Component {
         modal={false}
         open={this.state.open}
         onRequestClose={this.close}>
-        <p>You'll be thumbing your way to custom jobs in no time! You can either kickstart it here with a few words for jobs you're looking for (eg "react, angular, node") or you can skip this part and start thumbing.</p>
+        <p>You'll be thumbing your way to matches soon, but let's kickstart it with a few must-haves. Try tags like <b>JavaScript</b>, <b>Python</b>, <b>San Francisco, CA</b>, or <b>Remote</b>.</p>
+        <p>Jobpig handles attributes equally (skills, industry, location, company, is-remote, commitment, etc); so besides this seeding, you won't set search preferences - it learns.</p>
         <Select.Async
           multi={true}
           value={this.state.selected}
@@ -59,8 +60,6 @@ export default class SeedTags extends React.Component {
   close = () => this.setState({open: false});
 
   loadOptions = () => {
-    return getTags().then(options => ({options}));
-    // FIXME allow seeding all tag types; this will require server change to receive [{tag_id, tag_type}]
     return Promise.all([
       getTags(TAG_TYPES.TAG),
       getTags(TAG_TYPES.LOCATION),
@@ -75,7 +74,7 @@ export default class SeedTags extends React.Component {
   };
 
   _seedTags = () => {
-    let tags = _.map(this.state.selected, 'label');
+    let tags = _.map(this.state.selected, 'value');
     _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(() => {
       this.close();
       this.props.onSeed();

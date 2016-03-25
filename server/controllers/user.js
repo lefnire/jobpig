@@ -36,9 +36,8 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.seedTags = (req, res, next) => {
-  let tags = req.body.tags;
-  tags = (_.isString(tags) ? tags.split(',') : tags).map(t => t.trim().toLowerCase());
-  db.Tag.findAll({where: {key: {$in: tags}}, attributes: ['id']})
+  let tags = _.filter(req.body.tags, _.isNumber); // previously, tags were coming in as strings
+  db.Tag.findAll({where: {id: {$in: tags}}, attributes: ['id']}) // make sure they're there before mapping
   .then(_tags=> sequelize.model('user_tags').bulkCreate(
     _tags.map(t => ({tag_id: t.id, user_id: req.user.id, score: 15}) )
   ))
