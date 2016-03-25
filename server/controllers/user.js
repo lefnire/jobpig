@@ -36,8 +36,9 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.seedTags = (req, res, next) => {
-  let tags = req.body.tags.split(',').map(t=>t.trim().toLowerCase());
-  db.Tag.findAll({where: {key: {$in:tags}}, attributes: ['id']})
+  let tags = req.body.tags;
+  tags = (_.isString(tags) ? tags.split(',') : tags).map(t => t.trim().toLowerCase());
+  db.Tag.findAll({where: {key: {$in: tags}}, attributes: ['id']})
   .then(_tags=> sequelize.model('user_tags').bulkCreate(
     _tags.map(t => ({tag_id: t.id, user_id: req.user.id, score: 15}) )
   ))

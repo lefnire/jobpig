@@ -70,4 +70,17 @@ export function getTags(type=TAG_TYPES.TAG) {
       resolve(tags[type]);
     }).catch(reject);
   });
-}
+};
+
+export const filterOptions = (allowCreate) => (options, filter, currentValues) => {
+  if (!filter) return [];
+  return _(options)
+    .filter(o => ~o.label.toLowerCase().indexOf(filter.toLowerCase()))
+    .difference(currentValues)
+    .concat(
+      !allowCreate ? []
+      : _.some(currentValues, {label: filter}) ? []
+      : [{label: `Add ${filter}`, value: filter, create: true}]
+    ).slice(0,50)
+    .value();
+};

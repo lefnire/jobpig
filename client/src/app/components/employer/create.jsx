@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import {_fetch, getTags, constants} from '../../helpers';
+import {_fetch, getTags, constants, filterOptions} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
@@ -55,14 +55,16 @@ export default class CreateJob extends React.Component {
               value={this.state.tags}
               loadOptions={() => getTags().then(options => ({options})) }
               onChange={this.changeTags}
-              filterOptions={this.filterOptions}
+              noResultsText="Start typing"
+              filterOptions={filterOptions(true)}
             />
             <Select.Async
               placeholder="Location"
               value={this.state.location}
               loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
               onChange={this.changeLocation}
-              filterOptions={this.filterOptions}
+              noResultsText="Start typing"
+              filterOptions={filterOptions(true)}
             />
             <fui.FormsyCheckbox name='remote' label="Remote"/>
             <fui.FormsyText name='description' required hintText="*Job Description" multiLine={true} rows={3} fullWidth={true}/>
@@ -74,14 +76,6 @@ export default class CreateJob extends React.Component {
   }
 
   // FIXME Temporary until react-select fixes allowCreate={true}
-  filterOptions = (options, filter, currentValues) => {
-    return _(options)
-      .filter(o => filter ? RegExp(filter, 'ig').test(o.label) : true)
-      .difference(currentValues)
-      .concat(_.some(currentValues, {label: filter}) ? [] : [{label: `Add ${filter}`, value: filter, create: true}])
-      .value();
-  };
-
   changeLocation = location => {
     if (location.create)
       location.label = location.label.replace(/^Add /, '');
