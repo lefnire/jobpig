@@ -49,7 +49,7 @@ exports.setup = function (app) {
 }
 
 var sign = function(user) {
-  var u = _.omit(user, ['hash', 'salt']);
+  var u = _.pick(user, ['id', 'email']);
   return jwt.sign(u, nconf.get('secret'), {
     expiresInMinutes: 1440 // expires in 24 hours
   });
