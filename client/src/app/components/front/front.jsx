@@ -66,29 +66,12 @@ export default class Front extends React.Component {
           <a href="https://github.com/lefnire/jobpig"><img style={{position: 'absolute', top: 0, left: 0, border: 0}} src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" /></a>
         */}
 
-        <Auth ref='auth' />
-
-        <mui.Popover
-          open={this.state.popOpen}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={() => this.setState({popOpen: false})}
-        >
-          <div style={styles.popover}>
-            This is a demo, register for the real deal.
-          </div>
-        </mui.Popover>
-
-        <div className='login'>
-          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
-        </div>
         <FullWidthSection style={styles.root} className='root'>
-          <img src="Pig.png" className='pig' />
           <div className='tagline' >
             <h1 style={styles.title} className='front-title'>Jobpig</h1>
-            <h2 style={styles.title} className='front-subtitle'>Find jobs tailored to you.</h2>
+            <h2 style={styles.title} className='front-subtitle'>Rate Jobs, Find Matches</h2>
           </div>
+          <img src="Pig.png" className='pig' />
         </FullWidthSection>
         <FullWidthSection className='examples'>
           <mui.Card>
@@ -115,7 +98,10 @@ export default class Front extends React.Component {
 
           <br/>
           <mui.Card>
-            <mui.CardTitle title='That adjusts scores' />
+            <mui.CardTitle
+              title='That adjusts scores'
+              subtitle="Ratings teach Jobpig your search preferences."
+            />
             <mui.Divider />
             <mui.CardText>
               <mui.List>
@@ -180,6 +166,24 @@ export default class Front extends React.Component {
 
         </FullWidthSection>
         <Footer />
+
+        <Auth ref='auth' />
+
+        <mui.Popover
+          open={this.state.popOpen}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={() => this.setState({popOpen: false})}
+        >
+          <div style={styles.popover}>
+            This is a demo, register for the real deal.
+          </div>
+        </mui.Popover>
+
+        <div className='login'>
+          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
+        </div>
       </div>
     );
   }
