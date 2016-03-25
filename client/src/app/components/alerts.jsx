@@ -36,8 +36,7 @@ export default class Alerts extends React.Component {
           FILL_PROFILE: (
             <span>
               <a style={{cursor: 'pointer', color: 'red', marginRight: 10}} onClick={this.close}>&#x2716;</a>
-              Fill out profile, then head to
-              {' '}<a href="/#/match" onClick={this.close} style={{color: 'white'}}>Matches</a>
+              Fill <a href="/#/profile" onClick={this.close} style={{color: 'white'}}>profile</a> so employers can find you!
             </span>
           ),
           POST_JOB: `Click "Post Job" top right; you'll attract matching candidates in no time!`,

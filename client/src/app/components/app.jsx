@@ -31,11 +31,16 @@ import mui, {
 import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
 import Footer from './footer';
+import {me} from '../helpers';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {open: false};
+  }
+
+  componentDidMount() {
+    this._notifyFillProfile();
   }
 
   render() {
@@ -100,5 +105,14 @@ export default class App extends React.Component {
   _goto = route => {
     this.closeNav();
     window.location = '/#/' + route;
-  }
+  };
+
+  _notifyFillProfile = () => {
+    me().then(user => {
+      let noData = _(user).pick('linkedin_url twitter_url stackoverflow_url github_url fullname bio company'.split(' ')).values().compact().isEmpty();
+      if (noData && !_.isEmpty(user.tags)) { // don't show on initial exposure
+        global.jobpig.alerts.flash({query: {flash: 'FILL_PROFILE'}});
+      }
+    });
+  };
 }

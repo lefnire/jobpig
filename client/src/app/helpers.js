@@ -16,7 +16,7 @@ export function login(token, action) {
 
   window.location = {
     [AUTH_ACTIONS.POST_JOB]: '/?flash=POST_JOB&redirect=/#/employer',
-    [AUTH_ACTIONS.REGISTER]: '/?flash=FILL_PROFILE&redirect=/#/profile'
+    //[AUTH_ACTIONS.REGISTER]: '/?flash=FILL_PROFILE&redirect=/#/profile'
   }[action] || '/';
 }
 

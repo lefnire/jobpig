@@ -20,7 +20,6 @@ class Login extends React.Component {
   render(){
     return (
       <div>
-
         <Formsy.Form
           ref="form"
           onValid={() => this.setState({canSubmit: true})}
