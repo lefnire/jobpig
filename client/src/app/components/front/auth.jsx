@@ -90,7 +90,7 @@ class Register extends React.Component{
         onValidSubmit={this.submitForm}>
 
         {this.props.action === AUTH_ACTIONS.POST_JOB && (
-          <p>Register first (required for listing management, and for candidates to contact you). You'll be redirected to your listings after.</p>
+          <p>Register first (required for listing management, and for candidates to contact you). You'll be redirected post your job after.</p>
         )}
 
         <Error error={this.state.error} />
