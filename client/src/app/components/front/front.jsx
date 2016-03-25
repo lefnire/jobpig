@@ -9,6 +9,20 @@ import {constants} from '../../helpers';
 const {AUTH_ACTIONS} = constants;
 
 export default class Front extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      popOpen: false
+    };
+  }
+
+  popOpen = event => {
+    this.setState({
+      popOpen: true,
+      anchorEl: event.currentTarget,
+    });
+  };
+
   render(){
     let styles = {
       root: {
@@ -26,14 +40,22 @@ export default class Front extends React.Component {
         flex: 1,
         margin: 10,
         height: '100px'
-      }
+      },
+      popover: {
+        padding: 10,
+      },
+      a: {
+        pointer: 'cursor'
+      },
     };
+
+    let fake = { onTouchTap: this.popOpen };
 
     let rightIconMenu = (
       <mui.IconMenu iconButtonElement={<mui.IconButton><MoreVertIcon /></mui.IconButton>}>
-        <mui.MenuItem>Apply</mui.MenuItem>
-        <mui.MenuItem>Like</mui.MenuItem>
-        <mui.MenuItem>Dislike</mui.MenuItem>
+        <mui.MenuItem {...fake}>Apply</mui.MenuItem>
+        <mui.MenuItem {...fake}>Like</mui.MenuItem>
+        <mui.MenuItem {...fake}>Dislike</mui.MenuItem>
       </mui.IconMenu>
     );
 
@@ -45,6 +67,18 @@ export default class Front extends React.Component {
         */}
 
         <Auth ref='auth' />
+
+        <mui.Popover
+          open={this.state.popOpen}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={() => this.setState({popOpen: false})}
+        >
+          <div style={styles.popover}>
+            This is a demo, register for the real deal.
+          </div>
+        </mui.Popover>
 
         <div className='login'>
           <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
@@ -69,11 +103,11 @@ export default class Front extends React.Component {
               <p>
                 Come work for the coolest company on earth! We use <b>React</b>, React Native, <b>Node.js</b>/Express, <b>Postgres</b>. PTO, paid vacation, 401k, and an HTC Vive room for competitive produce-juggling.
               </p>
-              <mui.FloatingActionButton>
+              <mui.FloatingActionButton {...fake}>
                 <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
               </mui.FloatingActionButton>
               &nbsp;&nbsp;
-              <mui.FloatingActionButton>
+              <mui.FloatingActionButton {...fake}>
                 <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
               </mui.FloatingActionButton>
             </mui.CardText>
@@ -135,7 +169,7 @@ export default class Front extends React.Component {
               <p>
                 "Candidate" matches your company by a score of <span style={{color:'green'}}>+10</span> on: <b>React</b>, <b>Node</b>, <b>Postgres</b>, <b>San Francisco, CA</b>.
               </p>
-              <mui.RaisedButton label="Contact" />
+              <mui.RaisedButton label="Contact" {...fake} />
             </mui.CardText>
           </mui.Card>
 
