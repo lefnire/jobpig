@@ -33,6 +33,7 @@
     "method-override": "^2.3.3",
     "morgan": "^1.6.1",
     "nconf": "^0.7.1",
+    "newrelic": "^1.26.0",
     "nightmare": "^1.8.2",
     "node-uuid": "^1.4.3",
     "nodemailer": "^2.3.0",

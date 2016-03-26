@@ -1,12 +1,14 @@
 'use strict';
-
 //Config
-var nconf = require('nconf');
+const nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
+
+require('newrelic');
+
 require('./models/models');
 
 //Express
-var express = require('express'),
+const express = require('express'),
   app = express(),
   path = require('path'),
   bodyParser = require('body-parser');
