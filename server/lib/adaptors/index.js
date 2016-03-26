@@ -105,6 +105,12 @@ let adaptors = [
 
 exports.adaptors = adaptors;
 
-// On production, adaptors.refresh() maxes resources - so we run serially. Also, we get UniqueConstraint
-// race conditions if parallel. FIXME when sequelize postgres upsert supported
-exports.refresh = () => Bluebird.each(adaptors, a => a._refresh());
+// On production, adaptors.refresh() maxes resources - so we run serially (Bluebird.each, since no Promise.each).
+// We also get UniqueConstraint race conditions if parallel. FIXME when sequelize postgres upsert supported
+exports.refresh = () => Bluebird.each(adaptors, adaptor =>
+  adaptor._refresh().catch(err => {
+    // Don't stop the rest from refreshing when one fails, so pretend all is fine (TODO email admin)
+    console.error(err);
+    return Promise.resolve();
+  })
+);
