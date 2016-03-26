@@ -23,8 +23,8 @@ module.exports = class PythonJobs extends Adaptor {
           // TODO scrape html
           description: j.content[0]._,
         };
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }

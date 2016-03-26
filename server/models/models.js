@@ -134,6 +134,7 @@ let Job = sequelize.define('jobs', {
               {key: job.company, text: job.company, type: TAG_TYPES.COMPANY},
               {key: job.location, text: job.location, type: TAG_TYPES.LOCATION},
               {key: job.source, text: job.source, type: TAG_TYPES.SOURCE},
+              {key: job.commitment, text: job.commitment, type: TAG_TYPES.COMMITMENT},
               {key: job.remote ? 'remote' : null, text: 'Remote', type: TAG_TYPES.TAG} // tag so they can use in seeding
             ])
             .filter('key') // remove empty vals

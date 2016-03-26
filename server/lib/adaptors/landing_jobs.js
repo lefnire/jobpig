@@ -19,7 +19,7 @@ module.exports = class LandingJobs extends Adaptor {
         remote: /remote/gi.test(j.content[0]._),
         tags: []
       }));
-      return Promise.resolve(jobs);
+      return Promise.resolve({jobs, feed});
     })
   }
 }

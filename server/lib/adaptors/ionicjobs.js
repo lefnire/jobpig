@@ -24,7 +24,7 @@ module.exports = class IonicJobs extends Adaptor {
           tags: ['Ionic']
         };
       });
-      return Promise.resolve(jobs);
+      return Promise.resolve({jobs, feed});
     })
   }
 }

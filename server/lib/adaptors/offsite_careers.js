@@ -20,8 +20,8 @@ module.exports = class OffsiteCareers extends Adaptor {
           remote: true,
           tags: j.category
         }
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }

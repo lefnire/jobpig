@@ -20,8 +20,8 @@ module.exports = class Remotecoder extends Adaptor {
           remote: true,
           tags: []
         }
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }

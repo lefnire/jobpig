@@ -9,6 +9,9 @@ const db = require('../../models/models');
 const Bluebird = require('bluebird');
 const nconf = require('nconf');
 
+const fs = require('fs');
+const path = require('path');
+
 exports.Adaptor = class Adaptor {
   constructor() {
     this.nightmare = nightmare;
@@ -25,7 +28,19 @@ exports.Adaptor = class Adaptor {
 
   _refresh() {
     return this.refresh()
-      .then(jobs=> {
+      .then(result => {
+        let jobs = result.jobs;
+
+        //TODO strip null values from job? (already handled in bulkCreate?)
+
+        // During tests, dumpt the output so we can make x-validate job-parsing
+        if (nconf.get('NODE_ENV') === 'test') {
+          fs.writeFileSync(
+            path.join(__dirname, 'json_dumps', `${jobs[0].source}.json`),
+            JSON.stringify(result.feed.slice(0,100))
+          );
+        }
+
         jobs.forEach(job=> {
           // job ids in database are alphanumeric URLs (in case of repeats from other websites)
           job.key = job.key || job.url.replace(/\W+/g, "");

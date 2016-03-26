@@ -21,7 +21,7 @@ module.exports = class Github extends Adaptor {
           tags: [] // parsed below
         }
       })
-      return Promise.resolve(jobs);
+      return Promise.resolve({jobs, feed});
     })
   }
 }

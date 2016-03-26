@@ -27,7 +27,7 @@ module.exports = class Indeed extends Adaptor {
           tags: []
         };
       })
-      return Promise.resolve(jobs);
+      return Promise.resolve({jobs, feed});
     })
   }
 }

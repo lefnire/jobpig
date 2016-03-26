@@ -21,8 +21,8 @@ module.exports = class Jobspresso extends Adaptor {
           remote: /anywhere/gi.test(location),
           tags: []
         }
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }

@@ -5,9 +5,9 @@ let _ = require('lodash');
 
 module.exports = class StackOverflow extends Adaptor {
   refresh() {
-    return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results=> {
+    return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results => {
       let feed = results.rss.channel[0].item;
-      let jobs = _.map(feed.slice(0,500), item=> {
+      let jobs = _.map(feed.slice(0,500), item => {
         return {
           key: item.guid[0]._,
           source: 'stackoverflow',
@@ -20,8 +20,8 @@ module.exports = class StackOverflow extends Adaptor {
           remote: /allows remote/gi.test(item.title[0]),
           tags: item.category
         }
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }

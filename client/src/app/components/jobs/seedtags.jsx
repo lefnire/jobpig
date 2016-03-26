@@ -63,7 +63,8 @@ export default class SeedTags extends React.Component {
     return Promise.all([
       getTags(TAG_TYPES.TAG),
       getTags(TAG_TYPES.LOCATION),
-    ]).then(vals => ({options: vals[0].concat(vals[1])}));
+      getTags(TAG_TYPES.COMMITMENT),
+    ]).then(vals => ({options: vals[0].concat(vals[1]).concat(vals[2]) }));
   };
 
   _shouldSeedTags = () => {

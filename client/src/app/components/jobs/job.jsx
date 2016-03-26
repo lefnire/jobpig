@@ -8,7 +8,8 @@ import {
   ActionSupervisorAccount,
   ActionRoom,
   ActionThumbUp,
-  ActionLabel
+  ActionLabel,
+  ActionSchedule
 } from 'material-ui/lib/svg-icons';
 import {_fetch, constants} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
@@ -92,6 +93,7 @@ export default class Job extends Component {
     let items = _.filter([
       {text: _getFeat(TAG_TYPES.COMPANY), icon: <ActionSupervisorAccount tooltip="Company" />},
       {text: _getFeat(TAG_TYPES.LOCATION), icon: <ActionRoom tooltip="Location" />},
+      {text: _getFeat(TAG_TYPES.COMMITMENT), icon: <ActionSchedule tooltip="Commitment" />},
       {
         text: (score ? `(${score}) ` : '') + _(job.tags).filter({type: TAG_TYPES.TAG}).map('text').join(', '),
         icon: <ActionLabel tooltip="Tags"/>

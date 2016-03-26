@@ -5,6 +5,7 @@ client/build
 *.sql
 tmp
 /fixtures
+/server/lib/adaptors/json_dumps
 
 # remove these when ready to add migrations to the mi
 /migrations

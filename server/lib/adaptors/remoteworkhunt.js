@@ -20,8 +20,8 @@ module.exports = class Remoteworkhunt extends Adaptor {
           remote: true,
           tags: j.category.slice(1)
         }
-      })
-      return Promise.resolve(jobs);
+      });
+      return Promise.resolve({jobs, feed});
     })
   }
 }
