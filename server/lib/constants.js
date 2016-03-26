@@ -3,7 +3,7 @@ exports.TAG_TYPES = {
   COMPANY: 2,
   LOCATION: 3,
   SOURCE: 4, // job board scraped
-  COMMITMENT: 5
+  COMMITMENT: 5 // Full-time, Part-time, Contract, Internship, Temporary
 };
 
 exports.FILTERS = {

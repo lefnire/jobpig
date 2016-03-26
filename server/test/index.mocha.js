@@ -102,7 +102,7 @@ describe('Jobpig', function() {
 
 
   //after(app.close)
-  it.skip('runs cron', done => {
+  it.only('runs cron', done => {
     //process.env.VCR_MODE = 'playback';
     //let sepia = require('sepia');
 

@@ -6,8 +6,8 @@ let _ = require('lodash');
 module.exports = class StackOverflow extends Adaptor {
   refresh() {
     return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results => {
-      let feed = results.rss.channel[0].item;
-      let jobs = _.map(feed.slice(0,500), item => {
+      let feed = results.rss.channel[0].item.slice(0,500);
+      let jobs = feed.map(item => {
         return {
           key: item.guid[0]._,
           source: 'stackoverflow',
@@ -16,7 +16,6 @@ module.exports = class StackOverflow extends Adaptor {
           url: item.link[0],
           description: item.description[0],
           location: _.get(item, 'location[0]._'),
-          money: null,
           remote: /allows remote/gi.test(item.title[0]),
           tags: item.category
         }

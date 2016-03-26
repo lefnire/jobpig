@@ -6,18 +6,25 @@ let _ = require('lodash');
 module.exports = class PythonJobs extends Adaptor {
   refresh() {
     return this.fetchFeed('http://www.pythonjobs.com/jobs.atom').then(results => {
-      let feed = results.feed.entry;
-      let jobs = _.map(feed.slice(0,100), j => {
+      let feed = results.feed.entry.slice(0,100);
+      let jobs = feed.map(j => {
         let title = j.title[0],
-          location = title.match( /\((.+?)\)$/ )[1];
+          location = title.match( /at .*\((.+?)\)$/ )[1],
+          remote = false;
+
+        if (/(anywhere|remote)/gi.test(location)) {
+          location = null;
+          remote = true;
+        }
+
         return {
+          title,
+          location,
+          remote,
           key: j.id[0],
           source: 'pythonjobs',
-          title: j.title[0],
           url: j.link[0].$.href,
           company: title.match( /at\s*(.+?)\s*\(/ )[1],
-          location,
-          remote: /anywhere/i.test(location),
           tags: ['Python'],
 
           // TODO scrape html

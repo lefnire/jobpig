@@ -83,19 +83,19 @@ let adaptors = [
   'authenticjobs',
   'frontenddevjob',
   'github',
-  //'gunio', // not useful
-  'hasjob',
+  //'gunio', // [deleted@7857574] not useful (unfrequented)
+  //'hasjob', // mostly low-paying offshore jobs
   'indeed',
-  'ionicjobs',
-  'jobmote', // dead
+  //'ionicjobs', // TODO hydrate
+  'jobmote',
   'jobspresso',
   'landing_jobs',
   //'offsite_careers', // dead
-  'pythonjobs',
+  'pythonjobs', // TODO hydrate
   'remotecoder',
-  //'remoteok', // not useful (scrapes the same things we do)
+  //'remoteok', // [deleted@7857574] not useful (scrapes the same things we do)
   //'remoteworkhunt', // dead
-  'virtualvocations',
+  'virtualvocations', // TODO hydrate
   'weworkremotely',
   'wfh',
 

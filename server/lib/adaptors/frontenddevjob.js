@@ -6,27 +6,34 @@ let _ = require('lodash');
 module.exports = class Frontenddevjob extends Adaptor {
   refresh() {
     return this.fetchFeed('https://zapier.com/engine/rss/242783/frontenddevjob').then(results=> {
-      let feed = results.rss.channel[0].item
-      let jobs = _.map(feed.slice(0,100), j=> {
+      let feed = results.rss.channel[0].item.slice(0,100);
+      let jobs = feed.map(j => {
 
-        let company = /at (.*?) (on site|remote)/.exec(j.title[0]);
-          company = company && company[1];
-        let location = /on site (.*)/.exec(j.title[0]);
-          location = location && location[1];
+        let title = j.title[0], //title = /^.*?\s(.*?) at/.exec(title)[1] //TODO full title until we've validated it parses well
+          commitment = /^(.*?)\s/.exec(title)[1],
+          company = / at (.*?) (on site|remote)/.exec(j.title[0])[1],
+          location = null,
+          remote = false;
+
+        if (/remote/gi.test(title)) {
+          remote = true;
+        } else {
+          location = /on site (.*)/.exec(title)[1];
+        }
 
         return {
+          title,
+          company,
+          location,
+          remote,
+          commitment,
           key: j.guid[0]._,
           source: 'frontenddevjob',
-          title: j.title[0],
-          company,
           url: j.link[0],
           description: j.description[0],
-          location,
-          money: null,
-          remote: /remote/gi.test(j.title[0]),
           tags: []
         }
-      })
+      });
       return Promise.resolve({jobs, feed});
     })
   }

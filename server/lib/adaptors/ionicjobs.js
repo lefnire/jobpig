@@ -18,8 +18,8 @@ module.exports = class IonicJobs extends Adaptor {
           company,
 
           // TODO scrape html
-          description: '',
-          location: '',
+          description: j.description[0],
+          location: null,
           remote: false,
           tags: ['Ionic']
         };
