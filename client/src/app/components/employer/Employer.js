@@ -1,7 +1,7 @@
 import React from 'react';
 import mui from 'material-ui';
-import CreateJob from './create.jsx';
-import Job from '../jobs/job.jsx';
+import CreateJob from './Create';
+import Job from '../jobs/Job';
 import _ from 'lodash';
 import {_fetch} from '../../helpers';
 

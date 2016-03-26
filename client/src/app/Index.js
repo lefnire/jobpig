@@ -4,7 +4,7 @@ require("../../../node_modules/react-select/dist/react-select.min.css");
 // Custom
 import {API_URL} from './helpers';
 import fetch from 'isomorphic-fetch';
-import Alerts from './components/alerts';
+import Alerts from './components/Alerts';
 import url from 'url';
 
 // React
@@ -21,13 +21,13 @@ import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 // React-Router
 import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
-import App from './components/app.jsx';
-import Front from './components/front/front.jsx';
-import ResetPassword from './components/front/reset-password.jsx';
-import Jobs from './components/jobs/jobs.jsx';
-import Employer from './components/employer/employer.jsx';
-import Messages from './components/messages.jsx'
-import Profile from './components/profile.jsx';
+import App from './components/App';
+import Front from './components/front/Front';
+import ResetPassword from './components/front/ResetPassword';
+import Jobs from './components/jobs/Jobs';
+import Employer from './components/employer/Employer';
+import Messages from './components/Messages'
+import Profile from './components/Profile';
 import {loggedIn, logout} from './helpers';
 
 const myTheme = {

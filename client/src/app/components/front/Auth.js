@@ -4,7 +4,7 @@ import _ from 'lodash';
 import {login, logout, _fetch, constants} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
-import Error from '../error';
+import Error from '../Error';
 import update from 'react-addons-update';
 const {AUTH_ACTIONS} = constants;
 

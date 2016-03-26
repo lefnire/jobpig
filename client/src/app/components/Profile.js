@@ -5,7 +5,7 @@ import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import update from 'react-addons-update';
-import SeedTags from './jobs/seedtags';
+import SeedTags from './jobs/SeedTags';
 
 export default class TagEdit extends React.Component {
   constructor(props) {

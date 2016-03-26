@@ -6,7 +6,7 @@ import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
-import Error from '../error';
+import Error from '../Error';
 const {TAG_TYPES} = constants;
 
 export default class CreateJob extends React.Component {

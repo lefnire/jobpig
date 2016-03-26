@@ -3,7 +3,7 @@ import mui from 'material-ui';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import {_fetch} from '../../helpers';
-import Error from '../error';
+import Error from '../Error';
 
 export default class ResetPassword extends React.Component {
 

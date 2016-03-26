@@ -19,7 +19,7 @@ let config = {
   entry: (prod ? [] :
     ['webpack/hot/dev-server',
     'webpack/hot/only-dev-server'])
-    .concat(path.join(__dirname, 'client/src/app/index.jsx')),
+    .concat(path.join(__dirname, 'client/src/app/Index')),
   //Config options on how to interpret requires imports
   resolve: { // FIXME remove?
     //When require, do not have to add these extensions to file's name

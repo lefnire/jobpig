@@ -30,7 +30,7 @@ import mui, {
 } from 'material-ui';
 import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
-import Footer from './footer';
+import Footer from './Footer';
 import {me} from '../helpers';
 
 export default class App extends React.Component {

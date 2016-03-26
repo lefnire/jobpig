@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import mui from 'material-ui';
 import _ from 'lodash';
-import Job from './job';
-import SeedTags from './seedtags'
+import Job from './Job';
+import SeedTags from './SeedTags'
 import {_fetch, constants} from '../../helpers';
 const {FILTERS} = constants;
 

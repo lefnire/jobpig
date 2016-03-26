@@ -1,9 +1,9 @@
 import React from 'react';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-import Auth from './auth.jsx';
+import Auth from './Auth';
 import FullWidthSection from './full-width-section.jsx';
-import Footer from '../footer';
+import Footer from '../Footer';
 import {Colors, Typography} from 'material-ui/lib/styles';
 import {constants} from '../../helpers';
 const {AUTH_ACTIONS} = constants;
