@@ -67,5 +67,9 @@
       "user": "user@gmail.com",
       "pass": "pass"
     }
+  },
+  "newrelic": {
+    "license": "license",
+    "log_level": "info"
   }
 }

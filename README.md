@@ -15,5 +15,3 @@ $ npm install
 $ npm run server # in one terminal tab
 $ npm run client # in another terminal tab, then go to localhost:3001
 ```
-
-[TODO (Workflowy)](https://workflowy.com/s/4iUOvvf45S)
