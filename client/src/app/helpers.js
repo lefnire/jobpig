@@ -65,6 +65,14 @@ let tags = {};
 export function getTags(type=TAG_TYPES.TAG) {
   return new Promise((resolve, reject) => {
     if (tags[type]) return resolve(tags[type]);
+
+    if (type === TAG_TYPES.LOCATION) {
+      return fetch('/locs.json').then(res => res.json()).then(json => {
+        tags[type] = json.map((label, value) => ({value, label}));
+        resolve(tags[type]);
+      })
+    }
+
     _fetch('jobs/tags/' + type).then(_tags => {
       tags[type] = _tags.map(t => ({value: t.id, label: t.text}));
       resolve(tags[type]);
