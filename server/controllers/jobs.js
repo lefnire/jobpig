@@ -1,5 +1,5 @@
 'use strict';
-const db = require('../models/models');
+const db = require('../models');
 const _ = require('lodash');
 const constants = require('../lib/constants');
 const TAG_TYPES = constants.TAG_TYPES;

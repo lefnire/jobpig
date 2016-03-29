@@ -22,7 +22,7 @@ describe('Jobpig', function() {
     jobPost;
 
   before(done => {
-    db = require('../models/models');
+    db = require('../models');
     agent = request(app);
     done();
   });

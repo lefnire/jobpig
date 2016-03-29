@@ -5,7 +5,7 @@ nconf.argv().env().file({ file: 'config.json' });
 
 require('newrelic');
 
-require('./models/models');
+require('./models');
 
 //Express
 const express = require('express'),

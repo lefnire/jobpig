@@ -1,5 +1,5 @@
 'use strict';
-const db = require('../models/models');
+const db = require('../models');
 const _ = require('lodash');
 const nconf = require('nconf');
 const mail = require('../lib/mail');

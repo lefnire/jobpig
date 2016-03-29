@@ -5,7 +5,7 @@ const nightmare = new (require('nightmare'))();
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser();
 const request = require('request');
-const db = require('../../models/models');
+const db = require('../../models');
 const Bluebird = require('bluebird');
 const nconf = require('nconf');
 

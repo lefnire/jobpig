@@ -1,6 +1,6 @@
 'use strict';
 const nconf = require('nconf');
-const db = require('../models/models');
+const db = require('../models');
 const _ = require('lodash');
 const stripe = require('stripe')(nconf.get(`stripe:${nconf.get('NODE_ENV')}:private`));
 

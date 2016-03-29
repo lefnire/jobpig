@@ -2,7 +2,7 @@
 
 const passport = require('passport');
 const nconf = require('nconf');
-const User = require('./models/models').User;
+const User = require('./models').User;
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
