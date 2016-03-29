@@ -15,7 +15,7 @@ exports.validate = (req, res, next) => {
     source: token.id
   }).then(customer => {
     return stripe.charges.create({
-      amount: 10000,
+      amount: 5000,
       currency: 'usd',
       customer: customer.id
     })

@@ -22,7 +22,7 @@ export default class CreateJob extends React.Component {
     return (
       <mui.Dialog
         bodyStyle={{overflow: 'visible'}}
-        title="Create Job | $100 for 30 days"
+        title="Post Job ($50 for 30 days)"
         modal={true}
         open={this.state.open}
         actions={[
@@ -36,7 +36,7 @@ export default class CreateJob extends React.Component {
             ref="stripe"
             token={this.onToken}
             stripeKey="<nconf:stripe:public>"
-            amount={10000}>
+            amount={5000}>
             <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
           </StripeCheckout>
 
@@ -107,6 +107,7 @@ export default class CreateJob extends React.Component {
     // POST server/payments {token: token}
     _fetch('payments', {method: "POST", body:{token, job_id: this.job_id}})
     .then(()  => {
+      goog_report_conversion();
       global.jobpig.alerts.alert('Payment success, posting job now.');
       this.close();
       this.props.onCreate();

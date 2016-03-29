@@ -20,7 +20,7 @@ export default class Footer extends React.Component {
       },
       link: {
         color: "white",
-        textDecoration: "none",
+        //textDecoration: "none",
       }
     };
 
@@ -28,10 +28,13 @@ export default class Footer extends React.Component {
       <FullWidthSection style={styles.footer}>
         <ul className='footer-links'>
           <li style={styles.li}>
-            <a href="http://www.freepik.com/free-photos-vectors/animal" style={styles.link}>Animal vector designed by Freepik</a>
+            <a href="mailto:tylerrenelle@gmail.com" style={styles.link}>Contact Us</a>
           </li>
           <li style={styles.li}>
             <a href="https://github.com/lefnire/jobpig" style={styles.link}>Fork on GitHub</a>
+          </li>
+          <li style={styles.li}>
+            <a href="http://www.freepik.com/free-photos-vectors/animal" style={styles.link}>Animal vector designed by Freepik</a>
           </li>
         </ul>
       </FullWidthSection>
