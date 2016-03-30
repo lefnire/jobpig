@@ -15,7 +15,6 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import {Colors} from 'material-ui/lib/styles';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
@@ -32,8 +31,8 @@ import {loggedIn, logout} from './helpers';
 
 const myTheme = {
   palette: {
-    accent1Color: Colors.cyan700,
-    primary1Color: Colors.blueGrey500
+    accent1Color: '#414B82',
+    primary1Color: '#272D4E'
   }
 };
 

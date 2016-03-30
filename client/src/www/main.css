@@ -15,7 +15,7 @@ body {
 /* -- Front -- */
 
 .root {
-  overflow: hidden;
+  background-color: #272D4E;
 }
 
 .tagline {
@@ -36,7 +36,8 @@ body {
 }
 
 .front-title, .front-subtitle {
-  font-family: 'Special Elite', cursive;
+  /*font-family: 'Special Elite', cursive;*/
+  color: white !important;
 }
 
 .front-subtitle {
@@ -86,4 +87,67 @@ body {
 
 .job-title {
   text-decoration: none;
+}
+
+.sample-scores {
+  display: flex;
+}
+.sample-scores ul {
+  flex: 1;
+  list-style: none;
+}
+.sample-score-up {
+  font-weight: bold;
+  color: green;
+}
+
+.sample-score-down {
+  font-weight: bold;
+  color: red;
+}
+
+.static-modal .modal {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  bottom: auto;
+  z-index: 1;
+  display: block;
+}
+
+.footer {
+  background-color: #272D4E;
+  text-align: center;
+  color: white;
+  /*margin-top: 200px;*/
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+.footer li {
+  list-style: none;
+}
+.footer a {
+  color: white;
+  /*text-decoration: none;*/
+}
+
+
+@-webkit-keyframes flashing-button {
+  0% {
+    background-color: green;
+  }
+  50% {
+    background-color: #414B82;
+  }
+  100% {
+    background-color: green;
+  }
+}
+
+.flashing-button {
+  -webkit-animation-name: flashing-button;
+  -webkit-animation-duration: 900ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
 }
