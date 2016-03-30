@@ -81,6 +81,39 @@ body {
   }
 }
 
+.front {
+  display: flex;
+  flex-direction: column;
+}
+.front .jp-row {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.front .jp-row .jp-col {
+  flex: 1;
+}
+.jp-col.jp-content {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.jp-content {
+  font-size: 1.2em;
+}
+.jp-content .jp-role {
+  background-color: #eee;
+  padding: 5px;
+  color: #414B82
+}
+@media (max-width: 750px) {
+  .front .jp-col {
+    min-width: 80%;
+  }
+}
+
+
 .Select-menu-outer {
   z-index: 1600 !important; /* Otherwise we'll click underlying form-fields from Material-UI, which has z-index=1500 */
 }

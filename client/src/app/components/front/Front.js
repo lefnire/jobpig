@@ -57,9 +57,10 @@ export default class Front extends React.Component {
           </div>
           <img src="Pig.png" className='pig' />
         </Jumbotron>
-        <Grid fluid={true}>
-          <Row>
-            <Col xs={12} md={6}>
+
+        <div className='front'>
+          <div className="jp-row">
+            <div className="jp-col">
               <div className="static-modal" >
                 <Modal.Dialog>
                   {job ? (
@@ -96,10 +97,10 @@ export default class Front extends React.Component {
                   )}
                 </Modal.Dialog>
               </div>
-            </Col>
-            <Col xs={12} md={6}>
-              <h4>Rate Jobs, Find Matches</h4>
-              <p>Thumbs teach Jobpig your search preferences. Over time, your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+            </div>
+            <div className="jp-col jp-content">
+              <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+              <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
               {_.isEmpty(scores) ? null : (
                 <Modal.Body>
                   <mui.CardHeader
@@ -125,23 +126,20 @@ export default class Front extends React.Component {
                   )}
                 </Modal.Body>
               )}
-            </Col>
-          </Row>
-          <hr/>
+            </div>
+          </div>
 
-
-          <Row>
-            <Col xs={12} md={6}>
-              <h4>Employers, find that needle in the haystack</h4>
-              <p>View candidates for whom your job is a great match, based on searcher preferences. Candidates find you like Pandora listeners find artists; and you can pre-empt contact.</p>
+          <div className="jp-row">
+            <div className="jp-col jp-content">
+              <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
+              <p>View candidates for whom your job is a great match. Candidates find you like Pandora listeners find artists.</p>
               <ul>
                 <li>View matching candidates, sorted by score</li>
                 <li>Contact matches, and matches contact you</li>
-                <li>View your posts' statistics</li>
                 <li>$50/30d</li>
               </ul>
-            </Col>
-            <Col xs={12} md={6}>
+            </div>
+            <div className="jp-col">
               <div className="static-modal">
                 <Modal.Dialog>
                   <Modal.Header>
@@ -178,10 +176,10 @@ export default class Front extends React.Component {
                   </Modal.Body>
                 </Modal.Dialog>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-        </Grid>
+        </div>
         <Footer />
 
         <Auth ref='auth' />
