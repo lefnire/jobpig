@@ -22,9 +22,8 @@ export default class Employer extends React.Component {
         {isEmpty ?
           <mui.Card style={{margin:40}}>
             <mui.CardText>
-              <h1 style={{paddingBottom:10, borderBottom: '1px solid #eee'}}>Employers, post jobs here!</h1>
               <ul style={{padding:20, margin: 40, fontSize:"1.2em"}}>
-                <li>Post a job ($100 for 30 days): click "Post Job" in the top right corner.</li>
+                <li>Post a job ($50 for 30 days): click "Post Job" in the top right corner.</li>
                 {/*<li>Statistics on you job posting.</li>*/}
                 <li>View & contact prospective candidates for your job, sorted by match.</li>
                 <li>Your job will have higher view priority for searchers. Searchers may additionally contact you through Jobpig</li>

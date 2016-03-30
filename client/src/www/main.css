@@ -95,6 +95,14 @@ body {
 .front .jp-row .jp-col {
   flex: 1;
 }
+.jp-row-2 {
+  margin-top: 20px;
+  padding-top: 20px;
+  background-color: #414B82;
+}
+.jp-row-2 .jp-content {
+  color: white;
+}
 .jp-col.jp-content {
   padding-right: 20px;
   padding-left: 20px;
@@ -154,7 +162,7 @@ body {
   text-align: center;
   color: white;
   /*margin-top: 200px;*/
-  margin-top: 20px;
+  /*margin-top: 20px;*/
   margin-bottom: 0px;
 }
 .footer li {

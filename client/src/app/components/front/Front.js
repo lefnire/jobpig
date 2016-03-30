@@ -61,10 +61,9 @@ export default class Front extends React.Component {
         <div className='front'>
           <div className="jp-row">
             <div className="jp-col">
-              <div className="static-modal" >
-                <Modal.Dialog>
+                <mui.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
                   {job ? (
-                    <Modal.Body>
+                    <Modal.Header>
                       <mui.CardHeader
                         title={job.title}
                         subtitle={<span><u>{job.company}</u> | <u>{job.location}</u></span>}
@@ -72,12 +71,9 @@ export default class Front extends React.Component {
                       />
                       <br/>
                       <div>{job.description}</div>
-                    </Modal.Body>
-
+                    </Modal.Header>
                   ) : (
-                    <Modal.Body>
                       <h5>This was sample content, register for the real deal.</h5>
-                    </Modal.Body>
                   )}
 
                   {job ? (
@@ -95,8 +91,7 @@ export default class Front extends React.Component {
                       <mui.RaisedButton onTouchTap={() => this.refs.auth.open()} primary={true} label="Register" />
                     </Modal.Footer>
                   )}
-                </Modal.Dialog>
-              </div>
+                </mui.Paper>
             </div>
             <div className="jp-col jp-content">
               <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
@@ -129,7 +124,7 @@ export default class Front extends React.Component {
             </div>
           </div>
 
-          <div className="jp-row">
+          <div className="jp-row jp-row-2">
             <div className="jp-col jp-content">
               <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
               <p>View candidates for whom your job is a great match. Candidates find you like Pandora listeners find artists.</p>
@@ -141,7 +136,7 @@ export default class Front extends React.Component {
             </div>
             <div className="jp-col">
               <div className="static-modal">
-                <Modal.Dialog>
+                <mui.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
                   <Modal.Header>
                     <Modal.Title>My Job Post</Modal.Title>
                   </Modal.Header>
@@ -174,7 +169,7 @@ export default class Front extends React.Component {
 
                     <mui.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
                   </Modal.Body>
-                </Modal.Dialog>
+                </mui.Paper>
               </div>
             </div>
           </div>

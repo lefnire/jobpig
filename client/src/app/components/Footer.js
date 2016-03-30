@@ -14,6 +14,7 @@ export default class Footer extends React.Component {
           </li>
           <li >
             <a href="https://github.com/lefnire/jobpig" >Fork on GitHub</a>
+            {/*<iframe src="https://ghbtns.com/github-btn.html?user=lefnire&repo=jobpig&type=fork&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>*/}
           </li>
           <li>
             <a href="http://www.freepik.com/free-photos-vectors/animal">Animal vector designed by Freepik</a>
