@@ -1,11 +1,57 @@
 import React from 'react';
-import {API_URL, _fetch} from '../helpers';
+import {API_URL, _fetch, logout} from '../helpers';
 import mui from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import update from 'react-addons-update';
 import SeedTags from './jobs/SeedTags';
+
+class DeleteAccount extends React.Component {
+  constructor(){
+    super();
+    this.state = {open: false};
+  }
+
+  open = () => this.setState({open: true});
+  close = () => this.setState({open: false});
+
+  submit = body => {
+    _fetch('user', {body, method: "DELETE"}).then(logout);
+  };
+
+  render(){
+    const actions = [
+      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
+      <mui.FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit() }
+      />,
+    ];
+    return (
+      <mui.Dialog
+        title="Delete account"
+        actions={actions}
+        modal={false}
+        open={this.state.open}
+        onRequestClose={this.close}
+      >
+        <Formsy.Form
+          ref="form"
+          onValid={() => this.setState({canSubmit: true})}
+          onInvalid={() => this.setState({canSubmit: false})}
+          onValidSubmit={this.submit}
+        >
+          <p>Confirm deletion by typing "DELETE" in the input below and submitting.</p>
+          <fui.FormsyText
+            name='confirm'
+            required
+            fullWidth={true}
+            validations="equals:DELETE"
+            type="email"/>
+        </Formsy.Form>
+      </mui.Dialog>
+    );
+  }
+}
 
 export default class TagEdit extends React.Component {
   constructor(props) {
@@ -133,6 +179,7 @@ export default class Profile extends React.Component{
               <fui.FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
 
               <mui.RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
+              <a style={{cursor:'pointer', color: 'red', marginLeft: 15}} onClick={()=>this.refs.delete.open()}>Delete account</a>
 
             </Formsy.Form>
           </mui.CardText>
@@ -151,6 +198,8 @@ export default class Profile extends React.Component{
             <mui.RaisedButton label="Seed More Tags" onTouchTap={this._seedTags} />
           </mui.CardText>
         </mui.Card>
+
+        <DeleteAccount ref="delete" />
       </mui.ClearFix>
     )
   }

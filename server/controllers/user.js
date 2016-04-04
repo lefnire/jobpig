@@ -80,3 +80,12 @@ exports.resetPassword = (req, res, next) => {
     res.send({});
   });
 };
+
+exports.delete = (req, res, next) => {
+  if (req.body.confirm === 'DELETE') {
+    return db.User.destroy({where: {id: req.user.id}})
+      .then(() => res.send({}))
+      .catch(err => next(err));
+  }
+  return res.send({status: 400, message: "Confirmation required"})
+}
