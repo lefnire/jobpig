@@ -3,7 +3,8 @@
 const nconf = require('nconf');
 nconf.argv().env().file({ file: 'config.json' });
 
-require('newrelic');
+if (nconf.get('NODE_ENV') === 'production')
+  require('newrelic');
 
 require('./models');
 

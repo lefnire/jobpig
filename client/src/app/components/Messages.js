@@ -19,14 +19,6 @@ class Reply extends React.Component {
     );
   }
 }
-let styles = {
-  footer: {
-    backgroundColor: Colors.blueGrey500,
-    textAlign: 'center',
-    color: Colors.grey50,
-    marginTop: 200
-  }
-}
 
 export default class Messages extends React.Component {
   constructor() {
@@ -41,14 +33,15 @@ export default class Messages extends React.Component {
 
   renderEmpty(){
     return (
-      <mui.Card style={{margin:40}}>
-        <mui.CardText>
-          <h1 style={{paddingBottom:10, borderBottom: '1px solid #eee'}}>Messages</h1>
-          <p style={{padding:20, margin: 40, fontSize:"1.2em"}}>
-            Here you'll find messages when you've been contacted. Employers and searchers can contact each other via employer-posted jobs.
-          </p>
-        </mui.CardText>
-      </mui.Card>
+      <div className="padded">
+        <mui.Card>
+          <mui.CardText>
+            <p className="empty-text">
+              Here you'll find messages when you've been contacted. Employers and searchers can contact each other via employer-posted jobs.
+            </p>
+          </mui.CardText>
+        </mui.Card>
+      </div>
     );
   }
 

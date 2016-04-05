@@ -192,3 +192,8 @@ body {
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-timing-function: ease-in-out;
 }
+
+.empty-text {
+  font-size: 1.2em;
+  line-height: 1.5;
+}

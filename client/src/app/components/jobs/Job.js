@@ -9,7 +9,8 @@ import {
   ActionRoom,
   ActionThumbUp,
   ActionLabel,
-  ActionSchedule
+  ActionSchedule,
+  ImageRemoveRedEye
 } from 'material-ui/lib/svg-icons';
 import {_fetch, constants} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
@@ -23,9 +24,13 @@ export default class Job extends Component {
   }
 
   render() {
-    let {job} = this.props;
+    let {job, isEmployer, style} = this.props;
     let {editing} = this.state;
     let isMatch = job.status === FILTERS.MATCH;
+    let isInList = _.includes([FILTERS.APPLIED, FILTERS.LIKED, FILTERS.DISLIKED], job.status);
+    let styles = {
+      card: _.defaults({}, style, isInList && {marginBottom: 20})
+    };
 
     window.setTimeout(() => { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
       if (editing) return this.refs.noteRef.focus();
@@ -34,57 +39,73 @@ export default class Job extends Component {
     // Test tag issues: jobs have multiple companies, locations, etc. Remove after a while
     //if (_.reduce([2,3,4], (m,type) => m && _.filter(job.tags, {type}).length>1, true)) debugger;
 
-    return <div className='padded'>
-      <mui.Card>
-        <mui.CardTitle
-          title={<a className="job-title" href={job.url} target='_blank'>{job.title}</a>}
-          subtitle={this._meta(job)}
-        />
-        <mui.CardText>
-          {editing ?
-            <mui.Paper zDepth={2} style={{padding:5}}>
-              <mui.TextField
-                ref='noteRef'
-                hintText="Add personal comments here."
-                defaultValue={job.note}
-                fullWidth={true}
-                multiLine={true} />
-              <mui.FlatButton label="Save" onTouchTap={this._saveNote} />&nbsp;
-              <mui.FlatButton label="Cancel" onTouchTap={() => this.setState({editing: false})} />
-            </mui.Paper>
-            : job.note && <mui.Paper zDepth={2} style={{padding: 5}}>
-              <p>{job.note}</p>
-            </mui.Paper>
-          }
-          <mui.CardActions>{
-            (!isMatch ? [
-              <mui.FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
-            ] : []).concat(
-              <mui.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
-              <mui.FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
-              <mui.FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
-            )
-          }</mui.CardActions>
-        </mui.CardText>
-      </mui.Card>
+    return (
+      <div style={styles.card} className={isInList? 'padded': ''}>
+        <mui.Card>
+          <mui.CardTitle
+            title={<a className="job-title" href={job.url} target='_blank'>{job.title}</a>}
+            subtitle={this._meta(job)}
+            actAsExpander={isInList}
+            showExpandableButton={isInList}
+          />
+          {isEmployer? null: (
+            <div>
+              {editing ?
+                <mui.Paper zDepth={2} style={{padding:5}}>
+                  <mui.TextField
+                    ref='noteRef'
+                    hintText="Add personal comments here."
+                    defaultValue={job.note}
+                    fullWidth={true}
+                    multiLine={true} />
+                  <mui.FlatButton label="Save" onTouchTap={this._saveNote} />&nbsp;
+                  <mui.FlatButton label="Cancel" onTouchTap={() => this.setState({editing: false})} />
+                </mui.Paper>
+                : job.note && <mui.Paper zDepth={2} style={{padding: 5}}>
+                  <p>{job.note}</p>
+                </mui.Paper>
+              }
+              {isEmployer? null : (
+                <mui.CardActions>{
+                  (!isMatch ? [
+                    <mui.FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
+                  ] : []).concat(
+                    <mui.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
+                    <mui.FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
+                    <mui.FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
+                  )
+                }</mui.CardActions>
+              )}
+            </div>
+          )}
+          <mui.CardText
+            style={{background:'#f8f8f8'}}
+            expandable={isInList}
+            ref={c => isInList && c && c.setState({expanded: false})}
+          >
+            <p dangerouslySetInnerHTML={{__html:job.description}}></p>
+            {!job.users? null: (
+              <div>
+                <h4>Matching Candidates</h4>
+                {job.users.map(u => <Prospect key={u.id} prospect={u} />)}
+              </div>
+            )}
+          </mui.CardText>
 
-      <mui.Card style={{background:'#f8f8f8'}}>
-        <mui.CardText>
-          <p dangerouslySetInnerHTML={{__html:job.description}}></p>
-          {job.users && job.users.map(u => <Prospect key={u.id} prospect={u} />)}
-        </mui.CardText>
-      </mui.Card>
+          {!isMatch? null : (
+            <mui.CardActions style={{position:'fixed', right:20, bottom: 20}}>
+              <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
+                <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
+              </mui.FloatingActionButton>
+              <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.DISLIKED)}>
+                <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
+              </mui.FloatingActionButton>
+            </mui.CardActions>
+          )}
+        </mui.Card>
 
-      {isMatch ?
-        <mui.CardActions style={{position:'fixed', right:20, bottom: 20}}>{[
-          <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
-            <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
-          </mui.FloatingActionButton>,
-          <mui.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.DISLIKED)}>
-            <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
-          </mui.FloatingActionButton>,
-        ]}</mui.CardActions> : false }
-    </div>;
+      </div>
+    );
   }
 
   _meta = job => {
@@ -104,6 +125,9 @@ export default class Job extends Component {
         {items.map((item, i) => (
           <mui.ListItem key={i} primaryText={item.text} leftIcon={item.icon} />
         ))}
+        {!job.views? null: (
+          <mui.ListItem primaryText={job.views + ' Views'} leftIcon={<ImageRemoveRedEye tooltip="Views" />} />
+        )}
       </span>
     );
   }
