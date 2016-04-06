@@ -72,7 +72,7 @@ export function getTags(type=TAG_TYPES.SKILL) {
   });
 };
 
-export const filterOptions = (allowCreate) => (options, filter, currentValues) => {
+export const filterOptions = (allowCreate, text='Add') => (options, filter, currentValues) => {
   if (!filter) return [];
   return _(options)
     .filter(o => ~o.label.toLowerCase().indexOf(filter.toLowerCase()))
@@ -80,7 +80,7 @@ export const filterOptions = (allowCreate) => (options, filter, currentValues) =
     .concat(
       !allowCreate ? []
       : _.some(currentValues, {label: filter}) ? []
-      : [{label: `Add ${filter}`, value: filter, create: true}]
+      : [{label: `${text} ${filter}`, value: filter, create: true}]
     ).slice(0,50)
     .value();
 };

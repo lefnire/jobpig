@@ -6,6 +6,8 @@ const app = require('../index');
 const nconf = require('nconf');
 const mail = require('../lib/mail');
 const Bluebird = require('bluebird');
+const constants = require("../lib/constants");
+const TAG_TYPES = constants.TAG_TYPES;
 let db;
 
 let oldReqs = _.reduce(['http','https'], (m,v)=>{m[v]=require(v).request;return m}, {});
@@ -82,6 +84,31 @@ describe('Jobpig', function() {
     }).catch(done);
   });
 
+  it('seed tags', done => {
+    let newTag = {text: 'Salt Lake City', type: TAG_TYPES.LOCATION, create: true}
+    db.Tag.bulkCreate([
+      {key: 'javascript', text: 'JavaScript', type: TAG_TYPES.SKILL},
+      {key: 'python', text: 'Python', type: TAG_TYPES.SKILL},
+      {key: 'san_francisco_ca', text: 'San Francisco, CA', type: TAG_TYPES.LOCATION},
+      {key: 'boston_ma', text: 'Boston, MA', type: TAG_TYPES.LOCATION},
+    ], {returning: true})
+    .then(created => {
+      let body = {tags: created.concat([newTag])};
+      agent.post('/user/seed-tags').set('x-access-token', jwts.good).send(body).expect(200)
+      .then(res => agent.get('/jobs/tags/' + TAG_TYPES.LOCATION))
+      .then(res => {
+        expect(res.body.length).to.be(2); // requesting LOCATION, so skills excluded (and SLC excluded because it's not vetted)
+        let body = {tags: [newTag]};
+        //agent.post('/user/seed-tags').set('x-access-token', jwts.good).send(body).expect(200); // TODO expect !vetted (since same user)
+        return agent.post('/user/seed-tags').set('x-access-token', jwts.bad).send(body).expect(200);
+      }).then(res => agent.get('/jobs/tags/' + TAG_TYPES.LOCATION))
+      .then(res => {
+        expect(res.body.length).to.be(3);
+        done();
+      })
+    })
+  });
+
   it('updates profile fields', done => {
     let body = _.clone(users.good.toJSON());
     let url = 'http://x.com';
@@ -102,7 +129,7 @@ describe('Jobpig', function() {
 
 
   //after(app.close)
-  it.only('runs cron', done => {
+  it.skip('runs cron', done => {
     //process.env.VCR_MODE = 'playback';
     //let sepia = require('sepia');
 

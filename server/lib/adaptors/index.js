@@ -52,7 +52,7 @@ exports.Adaptor = class Adaptor {
   }
 
   addTagsFromContent(jobs) {
-    return db.Tag.findAll({attributes: ['key']}).then(tags=> {
+    return db.Tag.findAll({where: {pending: {$not: true}}, attributes: ['key']}).then(tags=> {
       jobs.forEach(job=> {
         job.tags = job.tags.concat(
           _.reduce(tags, (m, v)=> {

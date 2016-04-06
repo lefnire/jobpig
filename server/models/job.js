@@ -1,5 +1,6 @@
 'use strict';
 const constants = require('../lib/constants');
+const utils = require('../lib/utils');
 const FILTERS = constants.FILTERS;
 const TAG_TYPES = constants.TAG_TYPES;
 const Sequelize = require('sequelize');
@@ -106,16 +107,10 @@ let Job = sequelize.define('jobs', {
                 {key: job.remote ? 'remote' : null, text: 'Remote', type: TAG_TYPES.SKILL} // tag so they can use in seeding
               ])
               .filter('key') // remove empty vals
-              .map(feature => { // normalize tag keys, for uniqueness
-                feature.key = feature.key
-                  .trim().toLowerCase() // sanitize
-                  .replace(/[_\. ](?=js)/g, '') // node.js, node_js, node js => nodejs
-                  .replace(/\.(?!net)/g, '') // replace all periods, except .net, asp.net, etc
-                  .replace(/(\s+|\-)/g, '_') // space/- => _
-                  .replace(/[^a-zA-Z0-9#\+\._]/g, '') // remove punctuation, except language chars (c++, c#, TODO what else?)
-                //.replace(/_+/g,'_') // for any consecutive _s (eg "NY, NY" = NY__NY): squash to one _
-                return feature;
-              }).value();
+              .map(tag => _.assign(tag, {
+                key: utils.textToKey(tag.key)
+              }))
+              .value();
           });
 
           // full list of (unique) tags
