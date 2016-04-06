@@ -62,7 +62,7 @@ export function me() {
 }
 
 let tags = {};
-export function getTags(type=TAG_TYPES.TAG) {
+export function getTags(type=TAG_TYPES.SKILL) {
   return new Promise((resolve, reject) => {
     if (tags[type]) return resolve(tags[type]);
     _fetch('jobs/tags/' + type).then(_tags => {

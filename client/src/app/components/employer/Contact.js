@@ -1,5 +1,5 @@
 import React from 'react';
-import mui from 'material-ui';
+import MUI from 'material-ui';
 import _ from 'lodash';
 import {_fetch} from '../../helpers';
 import Formsy from 'formsy-react'
@@ -16,19 +16,19 @@ export default class Contact extends React.Component {
 
   render() {
     const actions = [
-      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
-      <mui.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={() => this.refs.form.submit()}/>,
+      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
+      <MUI.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={() => this.refs.form.submit()}/>,
     ];
 
     return (
-      <mui.Dialog
+      <MUI.Dialog
         title="Contact"
         actions={actions}
         modal={false}
         open={this.state.open}
         onRequestClose={this.handleClose}
       >
-        <mui.ClearFix>
+        <MUI.ClearFix>
           <Formsy.Form
           ref="form"
           onValid={() => this.setState({canSubmit: true})}
@@ -37,8 +37,8 @@ export default class Contact extends React.Component {
             <fui.FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
             <fui.FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
           </Formsy.Form>
-        </mui.ClearFix>
-      </mui.Dialog>
+        </MUI.ClearFix>
+      </MUI.Dialog>
     );
   }
 

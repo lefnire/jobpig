@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import mui from 'material-ui';
+import MUI from 'material-ui';
 import _ from 'lodash';
 import {_fetch, getTags, me, constants, filterOptions} from '../../helpers';
 import Select from 'react-select';
@@ -18,7 +18,7 @@ export default class SeedTags extends React.Component {
 
   render() {
     const actions = [
-      <mui.FlatButton
+      <MUI.FlatButton
         label="Skip"
         secondary={true}
         onTouchTap={() => {
@@ -26,7 +26,7 @@ export default class SeedTags extends React.Component {
           this.close();
         }}
       />,
-      <mui.FlatButton
+      <MUI.FlatButton
         label="Submit"
         primary={true}
         keyboardFocused={true}
@@ -36,7 +36,7 @@ export default class SeedTags extends React.Component {
 
     // Select.Async#menuContainerStyle={{zIndex:1600}} may be necessary (Mui.Dialog's is 1500)
     return (
-      <mui.Dialog title="Seed Tags"
+      <MUI.Dialog title="Seed Tags"
         bodyStyle={{overflow: 'visible'}}
         actions={actions}
         modal={false}
@@ -52,7 +52,7 @@ export default class SeedTags extends React.Component {
           noResultsText="Start typing"
           filterOptions={filterOptions()}
         />
-      </mui.Dialog>
+      </MUI.Dialog>
     );
   }
 
@@ -61,7 +61,7 @@ export default class SeedTags extends React.Component {
 
   loadOptions = () => {
     return Promise.all([
-      getTags(TAG_TYPES.TAG),
+      getTags(TAG_TYPES.SKILL),
       getTags(TAG_TYPES.LOCATION),
       getTags(TAG_TYPES.COMMITMENT),
     ]).then(vals => ({options: vals[0].concat(vals[1]).concat(vals[2]) }));

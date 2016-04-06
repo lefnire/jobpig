@@ -1,5 +1,5 @@
 import React from 'react';
-import mui from 'material-ui';
+import MUI from 'material-ui';
 import Auth from './Auth';
 import Footer from '../Footer';
 import _ from 'lodash';
@@ -61,10 +61,10 @@ export default class Front extends React.Component {
         <div className='front'>
           <div className="jp-row">
             <div className="jp-col">
-                <mui.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+                <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
                   {job ? (
                     <Modal.Header>
-                      <mui.CardHeader
+                      <MUI.CardHeader
                         title={job.title}
                         subtitle={<span><u>{job.company}</u> | <u>{job.location}</u></span>}
                         avatar={job.avatar}
@@ -78,27 +78,27 @@ export default class Front extends React.Component {
 
                   {job ? (
                     <Modal.Footer>
-                      <mui.FloatingActionButton onTouchTap={() => this.score(job, 1)} className={_.isEmpty(scores) ? 'flashing-button' : ''}>
-                        <mui.FontIcon className="material-icons">thumb_up</mui.FontIcon>
-                      </mui.FloatingActionButton>
+                      <MUI.FloatingActionButton onTouchTap={() => this.score(job, 1)} className={_.isEmpty(scores) ? 'flashing-button' : ''}>
+                        <MUI.FontIcon className="material-icons">thumb_up</MUI.FontIcon>
+                      </MUI.FloatingActionButton>
                       &nbsp;&nbsp;
-                      <mui.FloatingActionButton onTouchTap={() => this.score(job, -1)}>
-                        <mui.FontIcon className="material-icons">thumb_down</mui.FontIcon>
-                      </mui.FloatingActionButton>
+                      <MUI.FloatingActionButton onTouchTap={() => this.score(job, -1)}>
+                        <MUI.FontIcon className="material-icons">thumb_down</MUI.FontIcon>
+                      </MUI.FloatingActionButton>
                     </Modal.Footer>
                   ) : (
                     <Modal.Footer>
-                      <mui.RaisedButton onTouchTap={() => this.refs.auth.open()} primary={true} label="Register" />
+                      <MUI.RaisedButton onTouchTap={() => this.refs.auth.open()} primary={true} label="Register" />
                     </Modal.Footer>
                   )}
-                </mui.Paper>
+                </MUI.Paper>
             </div>
             <div className="jp-col jp-content">
               <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
               <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
               {_.isEmpty(scores) ? null : (
                 <Modal.Body>
-                  <mui.CardHeader
+                  <MUI.CardHeader
                     title='You'
                     subtitle='Full-stack JavaScript Developer'
                     avatar="/sample-avatars/person.jpg"
@@ -136,7 +136,7 @@ export default class Front extends React.Component {
             </div>
             <div className="jp-col">
               <div className="static-modal">
-                <mui.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+                <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
                   <Modal.Header>
                     <Modal.Title>My Job Post</Modal.Title>
                   </Modal.Header>
@@ -148,7 +148,7 @@ export default class Front extends React.Component {
                     <ListGroup>
                       <ListGroupItem style={{display: 'flex'}}>
                         <div style={{flex:2}}>
-                          <mui.CardHeader
+                          <MUI.CardHeader
                             title="Mrs. Candidate"
                             subtitle="Full-stack JavaScript Developer"
                             avatar="/sample-avatars/person.jpg"
@@ -160,16 +160,16 @@ export default class Front extends React.Component {
                             <li className="sample-score-up">+3 Full-time</li>
                             <li className="sample-score-up">+3 San Francisco</li>
                           </ul>
-                          <mui.RaisedButton label="Contact" />
+                          <MUI.RaisedButton label="Contact" />
                         </div>
                       </ListGroupItem>
                       <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
                       <ListGroupItem header="Candidate 3">...</ListGroupItem>
                     </ListGroup>
 
-                    <mui.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
+                    <MUI.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
                   </Modal.Body>
-                </mui.Paper>
+                </MUI.Paper>
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default class Front extends React.Component {
         <Auth ref='auth' />
 
         <div className='login'>
-          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
+          <MUI.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
         </div>
       </div>
     );

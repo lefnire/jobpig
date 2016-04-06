@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 let Tag = sequelize.define('tags', {
   key: {type: Sequelize.STRING, allowNull: false},
   text: Sequelize.STRING,
-  type: {type: Sequelize.INTEGER /*ENUM(_.values(TAG_TYPES))*/, defaultValue: TAG_TYPES.TAG, allowNull: false}
+  type: {type: Sequelize.INTEGER /*ENUM(_.values(TAG_TYPES))*/, defaultValue: TAG_TYPES.SKILL, allowNull: false}
 }, {
   indexes: [
     {unique: true, fields: ['key', 'type']},

@@ -1,5 +1,5 @@
 import React from 'react';
-import mui from 'material-ui';
+import MUI from 'material-ui';
 import CreateJob from './Create';
 import Job from '../jobs/Job';
 import _ from 'lodash';
@@ -32,7 +32,7 @@ export default class Employer extends React.Component {
         {text: "Ruby on Rails"},
         {text: "JavaScript"},
         {text: "PostgreSQL"}
-      ].map((t,key) => _.assign({key, type: TAG_TYPES.TAG}, t)),
+      ].map((t,key) => _.assign({key, type: TAG_TYPES.SKILL}, t)),
       users: [{
         id: 1,
         fullname: 'Tyler Renelle',

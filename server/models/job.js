@@ -97,13 +97,13 @@ let Job = sequelize.define('jobs', {
             job.description = sanitizeHtml(job.description); // remove unsafe tags // TODO make this a hook instead?
 
             job.tags = _(job.tags)
-              .map(text => ({text, key: text, type: TAG_TYPES.TAG})) // turn into tag objects
+              .map(text => ({text, key: text, type: TAG_TYPES.SKILL})) // turn into tag objects
               .concat([ // add other job meta
                 {key: job.company, text: job.company, type: TAG_TYPES.COMPANY},
                 {key: job.location, text: job.location, type: TAG_TYPES.LOCATION},
                 {key: job.source, text: job.source, type: TAG_TYPES.SOURCE},
                 {key: job.commitment, text: job.commitment, type: TAG_TYPES.COMMITMENT},
-                {key: job.remote ? 'remote' : null, text: 'Remote', type: TAG_TYPES.TAG} // tag so they can use in seeding
+                {key: job.remote ? 'remote' : null, text: 'Remote', type: TAG_TYPES.SKILL} // tag so they can use in seeding
               ])
               .filter('key') // remove empty vals
               .map(feature => { // normalize tag keys, for uniqueness

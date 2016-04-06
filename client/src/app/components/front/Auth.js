@@ -1,5 +1,5 @@
 import React from 'react';
-import mui from 'material-ui';
+import MUI from 'material-ui';
 import _ from 'lodash';
 import {login, logout, _fetch, constants} from '../../helpers';
 import Formsy from 'formsy-react'
@@ -40,7 +40,7 @@ class Login extends React.Component {
             hintText="Password"
             fullWidth={true}
             type="password"/>
-          <mui.RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
+          <MUI.RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
         </Formsy.Form>
         <div style={{marginTop: 10}}>
           <a onClick={() => this.setState({forgotPass: !this.state.forgotPass})} style={{cursor: 'pointer'}}>Forgot Password</a>
@@ -117,7 +117,7 @@ class Register extends React.Component{
           hintText="Confirm Password"
           fullWidth={true}
           type="password"/>
-        <mui.RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+        <MUI.RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
       </Formsy.Form>
     )
   }
@@ -144,7 +144,7 @@ export default class Auth extends React.Component {
 
   render() {
     const actions = [
-      <mui.FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
+      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
     ];
     const initialTab = {
       [AUTH_ACTIONS.LOGIN]: 0,
@@ -152,16 +152,16 @@ export default class Auth extends React.Component {
       [AUTH_ACTIONS.POST_JOB]: 1
     }[this.state.action];
     return (
-      <mui.Dialog actions={actions} modal={true} open={this.state.open} >
-        <mui.Tabs initialSelectedIndex={initialTab}>
-          <mui.Tab label="Login">
+      <MUI.Dialog actions={actions} modal={true} open={this.state.open} >
+        <MUI.Tabs initialSelectedIndex={initialTab}>
+          <MUI.Tab label="Login">
             <Login />
-          </mui.Tab>
-          <mui.Tab label="Register">
+          </MUI.Tab>
+          <MUI.Tab label="Register">
             <Register action={this.state.action}/>
-          </mui.Tab>
-        </mui.Tabs>
-      </mui.Dialog>
+          </MUI.Tab>
+        </MUI.Tabs>
+      </MUI.Dialog>
     );
 
   }
