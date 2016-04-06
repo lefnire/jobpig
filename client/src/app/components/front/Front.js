@@ -127,10 +127,11 @@ export default class Front extends React.Component {
           <div className="jp-row jp-row-2">
             <div className="jp-col jp-content">
               <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
-              <p>View candidates for whom your job is a great match. Candidates find you like Pandora listeners find artists.</p>
+              <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
               <ul>
                 <li>View matching candidates, sorted by score</li>
                 <li>Contact matches, and matches contact you</li>
+                <li>Your post is be promoted to matching users</li>
                 <li>$50/30d</li>
               </ul>
             </div>

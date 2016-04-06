@@ -61,8 +61,10 @@ let Tag = sequelize.define('tags', {
   },
   indexes: [
     {unique: true, fields: ['key', 'type']},
-    {unique: false, fields: ['type']},
-    {unique: false, fields: ['key']}
+    {unique: false, fields: ['key']},
+    //{unique: false, fields: ['type']},
+    {unique: false, fields: ['type', 'pending']},
+    {unique: false, fields: ['pending']},
   ]
 });
 

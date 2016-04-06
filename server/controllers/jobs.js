@@ -27,7 +27,7 @@ exports.create = function(req, res, next) {
 }
 
 exports.addNote = function(req, res, next){
-  db.UserJob.upsert({job_id:req.params.id, user_id:req.user.id, note:req.body.note})
+  db.UserJob.upsert({job_id: req.params.id, user_id: req.user.id, note: req.body.note})
     .then(() => res.send({}))
     .catch(next);
 }
@@ -54,6 +54,9 @@ exports.getTags = (req, res, next) => {
   let type = +req.params.type;
   if (!_.includes(_.values(TAG_TYPES), type))
     return next({status: 400, message: 'Invalid tag type'});
-  db.Tag.findAll({where: {type, pending: {$not: true}}}).then(tags => res.send(tags)).catch(next);
+  db.Tag.findAll({
+    where: {type, pending: false},
+    attributes: ['key', 'type', 'text', 'id']
+  }).then(tags => res.send(tags)).catch(next);
   //db.Tag.findAll({where:{type: TAG_TYPES.SKILL}}).then(tags => res.send(tags)).catch(next);
 }

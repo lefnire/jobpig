@@ -11,7 +11,7 @@ exports.get = (req, res, next) => {
     where:{id: req.user.id},
     attributes: {exclude: 'activationKey hash resetPasswordKey salt'},
     include:[
-      {model: db.Tag, order:[['key', 'ASC']]},
+      {model: db.Tag, order:[['key', 'ASC']], attributes: ['key', 'text', 'type', 'id']},
     ],
   }).then(user => res.json(user))
   .catch(next);
