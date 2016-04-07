@@ -46,9 +46,28 @@ export default class CreateJob extends React.Component {
             ref="form"
             onValid={() => this.setState({canSubmit: true})}
             onInvalid={() => this.setState({canSubmit: false})}
-            onValidSubmit={this.submitForm}>
-            <fui.FormsyText name='title' required hintText="*Job Title" fullWidth={true}/>
-            <fui.FormsyText name='company' required hintText="*Company" fullWidth={true}/>
+            onValidSubmit={this.submitForm}
+          >
+            <fui.FormsyText
+              name='title'
+              required
+              hintText="*Job Title"
+              fullWidth={true}
+            />
+            <fui.FormsyText
+              name='company'
+              required
+              hintText="*Company"
+              fullWidth={true}
+            />
+            <fui.FormsyText
+              name='url'
+              hintText="Job URL (optional)"
+              fullWidth={true}
+              validations="isUrl"
+              validationError="Enter a valid URL"
+
+            />
             <Select.Async
               placeholder="Tags"
               multi={true}
@@ -66,8 +85,18 @@ export default class CreateJob extends React.Component {
               noResultsText="Start typing"
               filterOptions={filterOptions(true)}
             />
-            <fui.FormsyCheckbox name='remote' label="Remote"/>
-            <fui.FormsyText name='description' required hintText="*Job Description" multiLine={true} rows={3} fullWidth={true}/>
+            <fui.FormsyCheckbox
+              name='remote'
+              label="Remote"
+            />
+            <fui.FormsyText
+              name='description'
+              required
+              hintText="*Job Description"
+              multiLine={true}
+              rows={3}
+              fullWidth={true}
+            />
 
           </Formsy.Form>
         </MUI.ClearFix>

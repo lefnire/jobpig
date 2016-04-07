@@ -152,7 +152,7 @@ let Job = sequelize.define('jobs', {
           key,
           user_id,
           source: 'jobpig',
-          url: 'http://jobpigapp.com/jobs/' + key,
+          url: job.url || 'http://jobpigapp.com/jobs/' + key,
           pending: true // Important - this is set to true after they've paid
         }).value();
       return this.bulkCreateWithTags([job])
