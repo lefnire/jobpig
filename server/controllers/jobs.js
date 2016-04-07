@@ -5,6 +5,7 @@ const constants = require('../lib/constants');
 const TAG_TYPES = constants.TAG_TYPES;
 const FILTERS = constants.FILTERS;
 const nconf = require('nconf');
+const moment = require('moment');
 
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
@@ -50,13 +51,24 @@ exports.poormanscron = function(req, res, next) {
   res.send({});
 }
 
+let _tags = {}; // {tags, debounce}
 exports.getTags = (req, res, next) => {
   let type = +req.params.type;
   if (!_.includes(_.values(TAG_TYPES), type))
     return next({status: 400, message: 'Invalid tag type'});
+
+  // Cache fetched tags for 1h (kinda heavy query). Rethink if too heavy on server memory
+  if (_tags[type] &&
+    moment().diff(_tags[type].debounce, 'hours') < 1) { // only fetch new tags every hour
+    return Promise.resolve(res.send(_tags[type].tags))
+  }
+
   db.Tag.findAll({
     where: {type, pending: false},
-    attributes: ['key', 'type', 'text', 'id']
-  }).then(tags => res.send(tags)).catch(next);
-  //db.Tag.findAll({where:{type: TAG_TYPES.SKILL}}).then(tags => res.send(tags)).catch(next);
+    attributes: ['key', 'type', 'text', 'id'],
+    raw: true
+  }).then(tags => {
+    _tags[type] = {tags, debounce: moment()};
+    res.send(tags)
+  }).catch(next);
 }

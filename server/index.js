@@ -17,7 +17,6 @@ const express = require('express'),
 app
 //.use(favicon(__dirname + '/public/favicon.ico'));
 .set('views', __dirname + '/views')
-.set('view engine', 'jade')
 .use(require('morgan')('dev'))
 .use(require('cors')())
 .use(bodyParser.json())
