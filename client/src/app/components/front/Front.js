@@ -132,7 +132,7 @@ export default class Front extends React.Component {
                 <li>View matching candidates, sorted by score</li>
                 <li>Contact matches, and matches contact you</li>
                 <li>Your post is be promoted to matching users</li>
-                <li>$50/30d</li>
+                <li>$99/30d</li>
               </ul>
             </div>
             <div className="jp-col">

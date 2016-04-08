@@ -22,7 +22,7 @@ export default class CreateJob extends React.Component {
     return (
       <MUI.Dialog
         bodyStyle={{overflow: 'visible'}}
-        title="Post Job ($50 for 30 days)"
+        title="Post Job ($99 for 30 days)"
         modal={true}
         open={this.state.open}
         actions={[
@@ -36,7 +36,7 @@ export default class CreateJob extends React.Component {
             ref="stripe"
             token={this.onToken}
             stripeKey="<nconf:stripe:public>"
-            amount={5000}>
+            amount={9900}>
             <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
           </StripeCheckout>
 

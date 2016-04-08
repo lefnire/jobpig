@@ -46,7 +46,7 @@ export default class Employer extends React.Component {
     return (
       <div className="padded">
         <div className="empty-text">
-          <h2>Post a Job ($50 for 30 days)</h2>
+          <h2>Post a Job ($99 for 30 days)</h2>
           <ul>
             <li>Click "Post Job" in the top right corner.</li>
             {/*<li>Statistics on you job posting.</li>*/}
