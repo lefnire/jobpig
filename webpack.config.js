@@ -96,6 +96,8 @@ let config = {
       test: /\.css$/,
       loader: "style!css" // "style-loader!css-loader?importLoaders=1"
     }, {
+      test: /\.scss$/, loaders: ["style", "css", "sass"]
+    }, {
       test: /\.(png|woff|woff2|eot|ttf|svg)$/,
       loader: 'url-loader' //'url-loader?limit=100000'
     }]

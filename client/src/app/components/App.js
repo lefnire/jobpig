@@ -56,7 +56,7 @@ export default class App extends React.Component {
       }[this.location] || 'Jobpig';
 
     return (
-      <div>
+      <div className="app">
         <AppBar
           title={title}
           onLeftIconButtonTouchTap={()=>this.setState({navOpen: !this.state.navOpen})}

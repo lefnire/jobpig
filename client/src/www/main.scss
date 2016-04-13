@@ -1,0 +1,167 @@
+html {
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0px;
+}
+
+.jumbotron {
+  border-radius: 0px !important;
+  background-color: #272D4E;
+}
+
+.footer {
+  text-align: center;
+  color: white;
+  /*margin-top: 200px;*/
+  /*margin-top: 20px;*/
+  margin-bottom: 0px;
+
+  li {
+    list-style: none;
+
+    a {
+      color: white;
+      /*text-decoration: none;*/
+    }
+  }
+}
+
+.app {
+  .padded {
+    margin: 25px;
+    /*padding:20px;*/
+  }
+  .Select-menu-outer {
+    z-index: 1600 !important; /* Otherwise we'll click underlying form-fields from Material-UI, which has z-index=1500 */
+  }
+
+  .job-title {
+    text-decoration: none;
+  }
+
+  .empty-text {
+    font-size: 1.2em;
+    line-height: 1.5;
+  }
+
+}
+
+.frontpage {
+
+  .top-jumbo {
+    .tagline {
+      margin: 16px auto 0 auto;
+      text-align: center;
+      max-width: 575px;
+      @media (min-width: 800px) {
+        margin-top: 32px;
+      }
+    }
+  }
+
+  .login {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .title {
+    @media (min-width: 800px) {
+      font-size: 56px;
+    }
+  }
+
+  .title, .subtitle {
+    /*font-family: 'Special Elite', cursive;*/
+    color: white;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    line-height: 28px;
+    padding-top: 19px;
+    margin-bottom: 13px;
+    letter-spacing: 0;
+    @media (min-width: 800px) {
+      font-size: 24px;
+      line-height: 32px;
+      padding-top: 16px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .pig {
+    position: absolute;
+    top: 10px;
+    @media (max-width: 1024px) {
+      width: 20%;
+    }
+  }
+
+  @-webkit-keyframes flashing-button {
+    0% {
+      background-color: green;
+    }
+    50% {
+      background-color: #414B82;
+    }
+    100% {
+      background-color: green;
+    }
+  }
+
+  .flashing-button {
+    -webkit-animation-name: flashing-button;
+    -webkit-animation-duration: 900ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+  }
+
+  .jp-content {
+    //padding-right: 20px;
+    //padding-left: 20px;
+    font-size: 1.2em;
+
+    .jp-role {
+      background-color: #eee;
+      padding: 5px;
+      color: #414B82
+    }
+
+    .sample-scores {
+      ul {
+        list-style: none;
+        .score-up {
+          font-weight: bold;
+          color: green;
+        }
+        .score-down {
+          font-weight: bold;
+          color: red;
+        }
+      }
+    }
+
+    .static-modal .modal {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      bottom: auto;
+      z-index: 1;
+      display: block;
+    }
+  }
+  .employers {
+    margin-top: 20px;
+    padding-top: 20px;
+    background-color: #414B82;
+    .jp-content {
+      color: white;
+    }
+  }
+}

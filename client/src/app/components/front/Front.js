@@ -44,152 +44,158 @@ export default class Front extends React.Component {
     let job = this.state.jobs[0];
 
     return (
-      <div>
+      <Grid fluid={true} className="frontpage">
 
         {/* Github Ribbon (interfering with the pig)
           <a href="https://github.com/lefnire/jobpig"><img style={{position: 'absolute', top: 0, left: 0, border: 0}} src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" /></a>
         */}
 
-        <Jumbotron className='root'>
-          <div className='tagline' >
-            <h1 className='front-title'>Jobpig</h1>
-            <h2 className='front-subtitle'>Rate Jobs, Find Matches</h2>
-          </div>
-          <img src="Pig.png" className='pig' />
-        </Jumbotron>
-
-        <div className='front'>
-          <div className="jp-row">
-            <div className="jp-col">
-                <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
-                  {job ? (
-                    <Modal.Header>
-                      <MUI.CardHeader
-                        title={job.title}
-                        subtitle={<span><u>{job.company}</u> | <u>{job.location}</u></span>}
-                        avatar={job.avatar}
-                      />
-                      <br/>
-                      <div>{job.description}</div>
-                    </Modal.Header>
-                  ) : (
-                      <h5>This was sample content, register for the real deal.</h5>
-                  )}
-
-                  {job ? (
-                    <Modal.Footer>
-                      <MUI.FloatingActionButton onTouchTap={() => this.score(job, 1)} className={_.isEmpty(scores) ? 'flashing-button' : ''}>
-                        <MUI.FontIcon className="material-icons">thumb_up</MUI.FontIcon>
-                      </MUI.FloatingActionButton>
-                      &nbsp;&nbsp;
-                      <MUI.FloatingActionButton onTouchTap={() => this.score(job, -1)}>
-                        <MUI.FontIcon className="material-icons">thumb_down</MUI.FontIcon>
-                      </MUI.FloatingActionButton>
-                    </Modal.Footer>
-                  ) : (
-                    <Modal.Footer>
-                      <MUI.RaisedButton onTouchTap={() => this.refs.auth.open()} primary={true} label="Register" />
-                    </Modal.Footer>
-                  )}
-                </MUI.Paper>
+        <Row>
+          <Jumbotron className='top-jumbo'>
+            <div className='tagline' >
+              <h1 className='title'>Jobpig</h1>
+              <h2 className='subtitle'>Rate Jobs, Find Matches</h2>
             </div>
-            <div className="jp-col jp-content">
-              <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-              <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-              {_.isEmpty(scores) ? null : (
-                <Modal.Body>
+            <img src="Pig.png" className='pig' />
+          </Jumbotron>
+        </Row>
+
+        <Row>
+          <Col xs={12} md={6}>
+            <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+              {job ? (
+                <Modal.Header>
                   <MUI.CardHeader
-                    title='You'
-                    subtitle='Full-stack JavaScript Developer'
-                    avatar="/sample-avatars/person.jpg"
+                    title={job.title}
+                    subtitle={<span><u>{job.company}</u> | <u>{job.location}</u></span>}
+                    avatar={job.avatar}
                   />
-                  {_.isEmpty(scores) ? (
-                    <p>(Click one of those thumbs to see what we mean)</p>
-                  ) : (
-                    <div className="sample-scores">
+                  <br/>
+                  <div>{job.description}</div>
+                </Modal.Header>
+              ) : (
+                  <h5>This was sample content, register for the real deal.</h5>
+              )}
+
+              {job ? (
+                <Modal.Footer>
+                  <MUI.FloatingActionButton onTouchTap={() => this.score(job, 1)} className={_.isEmpty(scores) ? 'flashing-button' : ''}>
+                    <MUI.FontIcon className="material-icons">thumb_up</MUI.FontIcon>
+                  </MUI.FloatingActionButton>
+                  &nbsp;&nbsp;
+                  <MUI.FloatingActionButton onTouchTap={() => this.score(job, -1)}>
+                    <MUI.FontIcon className="material-icons">thumb_down</MUI.FontIcon>
+                  </MUI.FloatingActionButton>
+                </Modal.Footer>
+              ) : (
+                <Modal.Footer>
+                  <MUI.RaisedButton onTouchTap={() => this.refs.auth.open()} primary={true} label="Register" />
+                </Modal.Footer>
+              )}
+            </MUI.Paper>
+          </Col>
+          <Col xs={12} md={6} className="jp-content">
+            <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+            {_.isEmpty(scores) ? null : (
+              <Modal.Body>
+                <MUI.CardHeader
+                  title='You'
+                  subtitle='Full-stack JavaScript Developer'
+                  avatar="/sample-avatars/person.jpg"
+                />
+                {_.isEmpty(scores) ? (
+                  <p>(Click one of those thumbs to see what we mean)</p>
+                ) : (
+                  <Row className="sample-scores">
+                    <Col md={6} xs={6}>
                       <ul>
                         {_(scores).map((v,k) => ({k,v})).filter(i => i.v > 0).map(i => (
-                          <li key={i.k} className='sample-score-up'>+{i.v} {i.k}</li>
+                          <li key={i.k} className='score-up'>+{i.v} {i.k}</li>
                         )).value()}
                       </ul>
+                    </Col>
+                    <Col md={6} xs={6}>
                       <ul>
                         {_(scores).map((v,k) => ({k,v})).filter(i => i.v < 0).map(i => (
-                          <li key={i.k} className='sample-score-down'>{i.v} {i.k}</li>
+                          <li key={i.k} className='score-down'>{i.v} {i.k}</li>
                         )).value()}
                       </ul>
-                    </div>
-                  )}
+                    </Col>
+                  </Row>
+                )}
+              </Modal.Body>
+            )}
+          </Col>
+        </Row>
+
+        <Row className="employers">
+          <Col xs={12} md={6} className="jp-content">
+            <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
+            <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
+            <ul>
+              <li>View matching candidates, sorted by score</li>
+              <li>Contact matches, and matches contact you</li>
+              <li>Your post is be promoted to matching users</li>
+              <li>$99/30d</li>
+            </ul>
+          </Col>
+          <Col xs={12} md={6}>
+            <div className="static-modal">
+              <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+                <Modal.Header>
+                  <Modal.Title>My Job Post</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
+                  <hr/>
+                  <h4>Candidate Matches</h4>
+
+                  <ListGroup>
+                    <ListGroupItem style={{display: 'flex'}}>
+                      <div style={{flex:2}}>
+                        <MUI.CardHeader
+                          title="Mrs. Candidate"
+                          subtitle="Full-stack JavaScript Developer"
+                          avatar="/sample-avatars/person.jpg"
+                        />
+                      </div>
+                      <div style={{flex: 1}} >
+                        <ul style={{listStyle: 'none', padding: 0}}>
+                          <li className="sample-score-up">+3 JavaScript</li>
+                          <li className="sample-score-up">+3 Full-time</li>
+                          <li className="sample-score-up">+3 San Francisco</li>
+                        </ul>
+                        <MUI.RaisedButton label="Contact" />
+                      </div>
+                    </ListGroupItem>
+                    <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
+                    <ListGroupItem header="Candidate 3">...</ListGroupItem>
+                  </ListGroup>
+
+                  <MUI.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
                 </Modal.Body>
-              )}
+              </MUI.Paper>
             </div>
-          </div>
+          </Col>
+        </Row>
 
-          <div className="jp-row jp-row-2">
-            <div className="jp-col jp-content">
-              <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
-              <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
-              <ul>
-                <li>View matching candidates, sorted by score</li>
-                <li>Contact matches, and matches contact you</li>
-                <li>Your post is be promoted to matching users</li>
-                <li>$99/30d</li>
-              </ul>
-            </div>
-            <div className="jp-col">
-              <div className="static-modal">
-                <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
-                  <Modal.Header>
-                    <Modal.Title>My Job Post</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
-                    <hr/>
-                    <h4>Candidate Matches</h4>
-
-                    <ListGroup>
-                      <ListGroupItem style={{display: 'flex'}}>
-                        <div style={{flex:2}}>
-                          <MUI.CardHeader
-                            title="Mrs. Candidate"
-                            subtitle="Full-stack JavaScript Developer"
-                            avatar="/sample-avatars/person.jpg"
-                          />
-                        </div>
-                        <div style={{flex: 1}} >
-                          <ul style={{listStyle: 'none', padding: 0}}>
-                            <li className="sample-score-up">+3 JavaScript</li>
-                            <li className="sample-score-up">+3 Full-time</li>
-                            <li className="sample-score-up">+3 San Francisco</li>
-                          </ul>
-                          <MUI.RaisedButton label="Contact" />
-                        </div>
-                      </ListGroupItem>
-                      <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
-                      <ListGroupItem header="Candidate 3">...</ListGroupItem>
-                    </ListGroup>
-
-                    <MUI.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
-                  </Modal.Body>
-                </MUI.Paper>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <Footer />
+        <Row>
+          <Footer />
+        </Row>
 
         <Auth ref='auth' />
 
         <div className='login'>
           <MUI.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
         </div>
-      </div>
+      </Grid>
     );
   }
 }
 
 let allJobs = [{
-  title: 'Seeking Senior JavaScript Developer',
+  title: 'Seeking Senior JavaScript Dev',
   company: 'Company, Inc',
   location: 'San Francisco, CA',
   avatar: '/sample-avatars/biz0.jpg',
