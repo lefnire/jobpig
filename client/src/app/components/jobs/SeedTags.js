@@ -67,7 +67,8 @@ export default class SeedTags extends React.Component {
         ) : (
           <Card>
             <CardText>
-              <h4>Suggest a Tag</h4>
+              {/*<h4>Suggest a Tag</h4>*/}
+              <p>If JP has most your tags save a few, suggest them here. If it's missing most of your industry, <a href="https://cctaxonomy.com/#/16" target="_blank">add them here</a> instead</p>
               <Formsy.Form
                 ref="form"
                 onValid={() => this.setState({canSubmit: true})}
