@@ -179,7 +179,7 @@ export default class Profile extends React.Component{
               <fui.FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
 
               <MUI.RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
-              <a style={{cursor:'pointer', color: 'red', marginLeft: 15}} onClick={()=>this.refs.delete.open()}>Delete account</a>
+              <a className="destroy-link" onClick={()=>this.refs.delete.open()}>Delete account</a>
 
             </Formsy.Form>
           </MUI.CardText>
@@ -196,6 +196,7 @@ export default class Profile extends React.Component{
               )}
             </MUI.List>
             <MUI.RaisedButton label="Seed More Tags" onTouchTap={this._seedTags} />
+            <a className="destroy-link" onClick={this._reset}>Reset Tags</a>
           </MUI.CardText>
         </MUI.Card>
 
@@ -217,6 +218,12 @@ export default class Profile extends React.Component{
 
   _removeTag = id => {
     _fetch(`user/tags/${id}`, {method:"DELETE"}).then(this._refresh);
+  };
+
+  _reset = () => {
+    if (!confirm('Are you sure you want to delete all your scores?'))
+      return;
+    _fetch('user/tags/reset', {method: "POST"}).then(this._refresh);
   };
 
   _seedTags = () => this.refs.seed.open();

@@ -53,6 +53,10 @@ exports.activate = (req, res, next) => {
   })
 };
 
+exports.resetTags = (req, res, next) => {
+  db.UserTag.destroy({where:{user_id: req.user.id}}).then(res.send({})).catch(next);
+}
+
 exports.forgotPassword = (req, res, next) => {
   let email = req.body.email;
   db.User.findOne({where: {email, verified: true}}).then(user => {

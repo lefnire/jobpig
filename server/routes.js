@@ -15,6 +15,7 @@ router.post('/payments', ensureAuth, payments.validate);
 
 router.get('/user', ensureAuth, user.get);
 router.delete('/user', ensureAuth, user.delete);
+router.post('/user/tags/reset', ensureAuth, user.resetTags);
 router.put('/user/tags/:id', ensureAuth, user.override);
 router.delete('/user/tags/:id', ensureAuth, user.override);
 router.put('/user', ensureAuth, user.updateProfile);

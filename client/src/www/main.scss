@@ -48,6 +48,11 @@ body {
     line-height: 1.5;
   }
 
+  .destroy-link {
+    cursor: pointer;
+    color: red;
+    margin-left: 15px;
+  }
 }
 
 .frontpage {
