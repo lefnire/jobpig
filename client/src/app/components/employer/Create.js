@@ -127,8 +127,9 @@ export default class CreateJob extends React.Component {
   close = () => this.setState({open: false});
 
   submitForm = body => {
-    body.location = this.state.location.label;
-    body.tags = _.map(this.state.tags, 'label');
+    let {location, tags} = this.state;
+    body.location = location && location.label;
+    body.tags = tags && _.map(tags, 'label');
     _fetch('jobs', {method:"POST", body})
     .then(created => {
       // they had free jobs (coupons)
