@@ -27,6 +27,8 @@ let Meta = sequelize.define('meta', {
           DELETE FROM jobs WHERE
             (user_id IS NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '7 days') OR
             (user_id IS NOT NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '30 days');
+          -- Reclaim long-sent, but not spent, coupons
+          UPDATE coupons SET sent = false WHERE updated_at < CURRENT_TIMESTAMP - INTERVAL '30 days';
         `).then(() =>
           //FIXME require here, circular reference models.js/adaptors.js
           skipScrape ? Promise.resolve() : require('../lib/adaptors').refresh()
