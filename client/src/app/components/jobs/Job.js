@@ -10,7 +10,8 @@ import {
   ActionThumbUp,
   ActionLabel,
   ActionSchedule,
-  ImageRemoveRedEye
+  ImageRemoveRedEye,
+  EditorInsertChart
 } from 'material-ui/lib/svg-icons';
 import {_fetch, constants} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
@@ -125,9 +126,12 @@ export default class Job extends Component {
         {items.map((item, i) => (
           <MUI.ListItem key={i} primaryText={item.text} leftIcon={item.icon} />
         ))}
-        {!job.views? null: (
-          <MUI.ListItem primaryText={job.views + ' Views'} leftIcon={<ImageRemoveRedEye tooltip="Views" />} />
-        )}
+        {this.props.isEmployer? (
+          <MUI.ListItem
+            primaryText={`${job.views} Views, ${job.likes} Likes, ${job.dislikes} Dislikes`}
+            leftIcon={<EditorInsertChart tooltip="Views" />}
+          />
+        ): null}
       </span>
     );
   }

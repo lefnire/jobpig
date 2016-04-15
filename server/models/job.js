@@ -15,7 +15,12 @@ let Job = sequelize.define('jobs', {
   key: {type:Sequelize.STRING, allowNull:false, unique:true},
   title: {type:Sequelize.STRING, allowNull:false},
   url: {type:Sequelize.STRING, allowNull:false},
-  pending: {type: Sequelize.BOOLEAN, defaultValue: false}
+  pending: {type: Sequelize.BOOLEAN, defaultValue: false},
+
+  // Stats
+  likes: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},
+  dislikes: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 0},
+  views: {type: Sequelize.INTEGER, allowNull: false, defaultValue: 0}
 }, {
   classMethods: {
     filterJobs(user, status) {
@@ -50,7 +55,15 @@ let Job = sequelize.define('jobs', {
           user_id: user.id,
           limit: status === FILTERS.MATCH ? 1 : 50
         },
-      });
+      }).then(jobs => {
+        // Update statistics
+        if (status === FILTERS.MATCH && jobs[0]) {
+          sequelize.query(`UPDATE jobs SET views = views + 1 WHERE id = :id`, {
+            replacements: {id: jobs[0].id}
+          });
+        }
+        return Promise.resolve(jobs);
+      })
     },
     findMine(user){
       return sequelize.query(`
@@ -172,19 +185,25 @@ let Job = sequelize.define('jobs', {
       if (!score)
         return setStatus;
 
+      let stat = {[FILTERS.DISLIKED]: 'dislikes', [FILTERS.LIKED]: 'likes'}[status];
+
       return Promise.all([
         // Status
         setStatus,
 
-        // Tags
+        // Tags & Stats
         sequelize.query(`
           -- Bulk create any missing user_tags
           INSERT INTO user_tags (user_id, tag_id, score, locked, created_at, updated_at)
           SELECT :user_id, t.tag_id, 0, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
           FROM (SELECT tag_id FROM job_tags WHERE job_id=:job_id EXCEPT SELECT tag_id FROM user_tags WHERE user_id=:user_id) t;
+
           -- Then increment their score
           UPDATE user_tags SET score=score+:score
-          WHERE tag_id IN (SELECT tag_id FROM job_tags WHERE job_id=:job_id) AND user_id=:user_id AND locked<>true
+          WHERE tag_id IN (SELECT tag_id FROM job_tags WHERE job_id=:job_id) AND user_id=:user_id AND locked<>true;
+
+          -- Update stats
+          ${stat? `UPDATE jobs SET ${stat} = ${stat} + 1 WHERE id = :job_id;`: ''}
         `, {replacements: {user_id, job_id, score}})
       ]);
     }

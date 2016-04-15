@@ -1,5 +1,7 @@
 import React from 'react';
-import MUI from 'material-ui';
+import {
+  RaisedButton
+} from 'material-ui';
 import CreateJob from './Create';
 import Job from '../jobs/Job';
 import _ from 'lodash';
@@ -27,6 +29,8 @@ export default class Employer extends React.Component {
       //description: `Post your job here. Users will find you if their preferences match your job's attributes; and vice versa. $50 for 30days, and your post will be promoted to matching users!`,
       //description: `Seeking Full-time JavaScript and Ruby on Rails developer to join our awesome San Francisco office!`,
       views: 25,
+      likes: 10,
+      dislikes: 5,
       tags: [
         {text: "Your Company", type: TAG_TYPES.COMPANY},
         {text: "San Francisco, CA", type: TAG_TYPES.LOCATION},
@@ -55,12 +59,12 @@ export default class Employer extends React.Component {
           </h2>
 
           <ul>
-            <li>Click "Post Job" in the top right corner.</li>
-            {/*<li>Statistics on you job posting.</li>*/}
-            <li>View & contact candidates who match your job.</li>
-            <li>Your job will have higher view priority for searchers.</li>
+            <li>View / contact candidates who match your listing, sorted by score</li>
+            <li>Higher listing display priority for searchers</li>
+            <li>Listing analytics</li>
             {/*<li>Jobs will have bold coloring to ensure that your job stands out to candidates.</li>*/}
           </ul>
+          <RaisedButton label="Post Job" primary={true} onTouchTap={()=> global.jobpig.createJob.open()} />
         </div>
         <br/>
         <Job job={fakeJob} style={{opacity:0.5}} isEmployer={true} />
