@@ -37,7 +37,10 @@ let Job = sequelize.define('jobs', {
         WHERE j.pending <> TRUE
         GROUP BY j.id, uj.note, uj.status
         HAVING COALESCE(uj.status, :match) = :status AND COALESCE(SUM(ut.score),0)>-75
-        ORDER BY score DESC, length(j.description) DESC, j.created_at DESC -- length(desc) to hide some of the less hydrated posts until we can get to that
+        ORDER BY score DESC,
+          j.user_id::BOOLEAN ASC, -- (NULLS LAST) show custom jobs first
+          -- length(j.description) DESC, -- show "fuller" jobs first; TODO fix hydration
+          j.created_at DESC
         LIMIT :limit;
       `, {
         type: sequelize.QueryTypes.SELECT,
