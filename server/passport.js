@@ -1,5 +1,4 @@
 'use strict';
-
 const passport = require('passport');
 const nconf = require('nconf');
 const User = require('./models').User;
@@ -7,24 +6,41 @@ const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const mail = require('./lib/mail');
+const Coupon = require('./models').Coupon;
 
-exports.setup = function (app) {
+const deny = (err, code) => ({status: code || 403, message: err.message || err});
+
+exports.setup = app => {
   app.use(passport.initialize());
   passport.use(User.createStrategy());
 
   var localOpts = {session:false, failWithError:true};
-  app.post('/register', function (req, res, next) {
-    if (req.body.password != req.body.confirmPassword)
-      return next({status:403, message:'Password does not match Confirm Password'});
+  app.post('/register', (req, res, next) => {
+    let password = req.body.password,
+      email = req.body.email,
+      coupon = req.body.coupon;
 
-    if (req.body.password.length < 8)
-      return next({status:403, message:'Password should be at least 8 characters.'});
+    if (password !== req.body.confirmPassword)
+      return next(deny('Password does not match Confirm Password'));
 
-    User.register({
-      email: req.body.email,
-      pic: 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(req.body.email).digest("hex")
-    }, req.body.password, function (err, _user) {
-      if (err) return next({status: 403, message: err.message || err});
+    if (password.length < 8)
+      return next(deny('Password should be at least 8 characters.'));
+
+    let pic = 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(email).digest("hex");
+    let userObj = {email, pic};
+
+    let p = Promise.resolve();
+    if (coupon) p = Coupon.validate(coupon).then(found => {
+      if (!found)
+        throw deny("Coupon code invalid", 400); // have to throw to break promise chain
+      userObj.free_jobs = found.value;
+      coupon = found;
+    });
+    p.then(() => new Promise((resolve, reject) =>
+      User.register(userObj, password, (err, _user) => err? reject(deny(err)) : resolve(_user))
+    )).then(_user => {
+      coupon && coupon.destroy(); // invalidate applied coupons
+
       passport.authenticate('local', localOpts)(req, res, () => {
         res.json({token: sign(_user)});
       });
@@ -38,7 +54,7 @@ exports.setup = function (app) {
         text: `Verify your Jobpig account by clicking this link: ${link}`,
         html: `Verify your Jobpig account by clicking this link: <a href="${link}">${link}</a>`
       });
-    });
+    }).catch(next);
   });
 
   app.post('/login', passport.authenticate('local', localOpts), function(req, res){

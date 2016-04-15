@@ -3,14 +3,14 @@ import MUI from 'material-ui';
 import CreateJob from './Create';
 import Job from '../jobs/Job';
 import _ from 'lodash';
-import {_fetch, constants} from '../../helpers';
+import {_fetch, constants, me} from '../../helpers';
 const {TAG_TYPES} = constants;
 
 export default class Employer extends React.Component {
   constructor(){
     super();
     this.state = {jobs: []};
-    this._fetchMine();
+    this._refresh();
   }
 
   renderJobs = () => {
@@ -20,6 +20,8 @@ export default class Employer extends React.Component {
   };
 
   renderEmpty = () => {
+    let {free_jobs} = this.state;
+
     let fakeJob = {
       title: 'Your Job Title',
       //description: `Post your job here. Users will find you if their preferences match your job's attributes; and vice versa. $50 for 30days, and your post will be promoted to matching users!`,
@@ -46,7 +48,12 @@ export default class Employer extends React.Component {
     return (
       <div className="padded">
         <div className="empty-text">
-          <h2>Post a Job ($99 for 30 days)</h2>
+          <h2>
+            Post a Job&nbsp;
+            <span style={{textDecoration: free_jobs ? 'line-through' : ''}}>($99 for 30 days)</span>&nbsp;
+            {free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b> : null}
+          </h2>
+
           <ul>
             <li>Click "Post Job" in the top right corner.</li>
             {/*<li>Statistics on you job posting.</li>*/}
@@ -66,13 +73,19 @@ export default class Employer extends React.Component {
 
     return (
       <div>
-        <CreateJob ref={c => global.jobpig.createJob = c} onCreate={this._fetchMine} />
+        <CreateJob ref={c => global.jobpig.createJob = c} onCreate={this._refresh} free_jobs={this.state.free_jobs} />
         {isEmpty? this.renderEmpty() : this.renderJobs()}
       </div>
     )
   }
 
-  _fetchMine = () => {
-    _fetch('jobs/mine', {method: "GET"}).then(jobs => this.setState({jobs}));
+  _refresh = () => {
+    Promise.all([
+      _fetch('jobs/mine', {method: "GET"}),
+      me()
+    ]).then(vals => this.setState({
+      jobs: vals[0],
+      free_jobs: vals[1].free_jobs
+    }));
   }
 }

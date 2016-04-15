@@ -19,10 +19,15 @@ export default class CreateJob extends React.Component {
   }
 
   render() {
+    let {free_jobs} = this.props;
+
+    let title = free_jobs ? `${free_jobs} Free Post${free_jobs>1? 's': ''}`
+      : 'Post a Job ($99 for 30 days)';
+
     return (
       <MUI.Dialog
         bodyStyle={{overflow: 'visible'}}
-        title="Post Job ($99 for 30 days)"
+        title={title}
         modal={true}
         open={this.state.open}
         actions={[
@@ -126,6 +131,9 @@ export default class CreateJob extends React.Component {
     body.tags = _.map(this.state.tags, 'label');
     _fetch('jobs', {method:"POST", body})
     .then(created => {
+      // they had free jobs (coupons)
+      if (created.pending === false)
+        return this._posted();
       this.job_id = created.id;
       this.refs.stripe.onClick()
     })
@@ -135,13 +143,14 @@ export default class CreateJob extends React.Component {
   onToken = token => {
     // POST server/payments {token: token}
     _fetch('payments', {method: "POST", body:{token, job_id: this.job_id}})
-    .then(()  => {
-      goog_report_conversion();
-      global.jobpig.alerts.alert('Payment success, posting job now.');
-      this.close();
-      this.props.onCreate();
-      this.job_id = null;
-    })
-    .catch(error => this.setState({error}));
+    .then(() => this._posted()).catch(error => this.setState({error}));
   };
+
+  _posted() {
+    goog_report_conversion();
+    global.jobpig.alerts.alert('Payment success, posting job now.');
+    this.close();
+    this.props.onCreate();
+    this.job_id = null;
+  }
 }

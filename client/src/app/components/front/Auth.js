@@ -86,7 +86,7 @@ class Register extends React.Component{
         ref="form"
         onValid={() => this.setState({canSubmit: true})}
         onInvalid={() => this.setState({canSubmit: false})}
-        onValidSubmit={this.submitForm}>
+        onValidSubmit={this.submit}>
 
         {this.props.action === AUTH_ACTIONS.POST_JOB && (
           <p>Register first (required for listing management, and for candidates to contact you). You'll be redirected post your job after.</p>
@@ -122,7 +122,9 @@ class Register extends React.Component{
     )
   }
 
-  submitForm = (body) => {
+  submit = body => {
+    let coupon = this.props.coupon;
+    if (coupon) _.assign(body, {coupon});
     _fetch('register', {method:"POST", body})
       .then(json => {
         let {action} = this.props;
@@ -158,7 +160,7 @@ export default class Auth extends React.Component {
             <Login />
           </MUI.Tab>
           <MUI.Tab label="Register">
-            <Register action={this.state.action}/>
+            <Register action={this.state.action} coupon={this.props.coupon} />
           </MUI.Tab>
         </MUI.Tabs>
       </MUI.Dialog>

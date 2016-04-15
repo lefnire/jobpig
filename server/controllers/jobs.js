@@ -22,9 +22,15 @@ exports.list = function(req, res, next){
 
 exports.create = function(req, res, next) {
   // FIXME add some pre-validators here so it doesn't get through
-  db.Job.addCustom(req.user.id, req.body)
-    .then(job => res.send(job))
-    .catch(next);
+  let body = req.body,
+    user = req.user;
+  body.pending = !(user.free_jobs > 0);
+  let p = [db.Job.addCustom(req.user.id, body)];
+  if (user.free_jobs) {
+    user.free_jobs--;
+    p.push(user.save());
+  }
+  Promise.all(p).then(vals => res.json(vals[0])).catch(next);
 }
 
 exports.addNote = function(req, res, next){

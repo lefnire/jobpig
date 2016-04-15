@@ -17,7 +17,7 @@ exports.send = data => new Promise((resolve, reject) => {
     html: email.text
   });
 
-  if (nconf.get('NODE_ENV') === 'test' && !exports.testEmail)
+  if (nconf.get('NODE_ENV') !== 'production' && !exports.testEmail)
     return resolve();
   transporter.sendMail(email, (err, info) => {
     if (err) {

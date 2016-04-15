@@ -23,9 +23,9 @@ let Meta = sequelize.define('meta', {
         return sequelize.query(`
           -- Update cron
           UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron';
-          -- And prune old listings (10d for scraped, 30d for sponsored)
+          -- And prune old listings (7d for scraped, 30d for sponsored)
           DELETE FROM jobs WHERE
-            (user_id IS NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '10 days') OR
+            (user_id IS NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '7 days') OR
             (user_id IS NOT NULL AND created_at < CURRENT_TIMESTAMP - INTERVAL '30 days');
         `).then(() =>
           //FIXME require here, circular reference models.js/adaptors.js

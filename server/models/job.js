@@ -153,7 +153,7 @@ let Job = sequelize.define('jobs', {
           user_id,
           source: 'jobpig',
           url: job.url || 'http://jobpigapp.com/jobs/' + key,
-          pending: true // Important - this is set to true after they've paid
+          pending: job.pending // Set to true after they've paid; false if they have free jobs (coupons)
         }).value();
       return this.bulkCreateWithTags([job])
         .then(() => Job.findOne({where:{key}}));

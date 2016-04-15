@@ -42,6 +42,8 @@ export default class Front extends React.Component {
   render(){
     let {scores} = this.state;
     let job = this.state.jobs[0];
+    let coupon = /coupon=([^&]*)/.exec(location.search);
+    coupon = coupon && coupon[1];
 
     return (
       <Grid fluid={true} className="frontpage">
@@ -137,7 +139,14 @@ export default class Front extends React.Component {
               <li>View matching candidates, sorted by score</li>
               <li>Contact matches, and matches contact you</li>
               <li>Your post is be promoted to matching users</li>
-              <li>$99/30d</li>
+              <li>{coupon ? (
+                  <span>
+                    <span style={{textDecoration: 'line-through'}}>$99/30d</span> First post free!
+                  </span>
+                ) : (
+                  <span>$99/30d</span>
+                )
+              }</li>
             </ul>
           </Col>
           <Col xs={12} md={6}>
@@ -184,7 +193,7 @@ export default class Front extends React.Component {
           <Footer />
         </Row>
 
-        <Auth ref='auth' />
+        <Auth ref='auth' coupon={coupon} />
 
         <div className='login'>
           <MUI.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />

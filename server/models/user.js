@@ -14,7 +14,8 @@ let User = sequelize.define('users', _.defaults({
   fullname: Sequelize.STRING,
   pic: {type:Sequelize.STRING, validate:{isUrl:true}},
   bio: Sequelize.TEXT,
-  company: Sequelize.STRING
+  company: Sequelize.STRING,
+  free_jobs: {type: Sequelize.INTEGER, defaultValue: 0} // coupon-applied free job postings
 }, defaultUserSchema));
 passportLocalSequelize.attachToUser(User, {
   usernameField: 'email',

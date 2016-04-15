@@ -22,6 +22,7 @@ const Tag = require('./tag');
 const User = require('./user');
 const UserJob = require('./user_job');
 const UserTag = require('./user_tag')
+const Coupon = require('./coupon');
 
 // Jobs have tags
 Tag.belongsToMany(Job, {through: 'job_tags'});
@@ -69,5 +70,6 @@ module.exports = {
   Message,
   Meta,
   Payment,
+  Coupon,
   initDb
 };
