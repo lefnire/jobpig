@@ -62,7 +62,42 @@ export default class Front extends React.Component {
           </Jumbotron>
         </Row>
 
-        <Row>
+        <Row className="searchers">
+          <Col xs={12} md={6} className="jp-content">
+            <div>
+              <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+              <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+              {_.isEmpty(scores) ? <small>(Click a thumb to see sample)</small> : (
+                <Modal.Body>
+                  <MUI.CardHeader
+                    title='You'
+                    subtitle='Full-stack JavaScript Developer'
+                    avatar="/sample-avatars/person.jpg"
+                  />
+                  {_.isEmpty(scores) ? (
+                    <p>(Click one of those thumbs to see what we mean)</p>
+                  ) : (
+                    <Row className="sample-scores">
+                      <Col md={6} xs={6}>
+                        <ul>
+                          {_(scores).map((v,k) => ({k,v})).filter(i => i.v > 0).map(i => (
+                            <li key={i.k} className='score-up'>+{i.v} {i.k}</li>
+                          )).value()}
+                        </ul>
+                      </Col>
+                      <Col md={6} xs={6}>
+                        <ul>
+                          {_(scores).map((v,k) => ({k,v})).filter(i => i.v < 0).map(i => (
+                            <li key={i.k} className='score-down'>{i.v} {i.k}</li>
+                          )).value()}
+                        </ul>
+                      </Col>
+                    </Row>
+                  )}
+                </Modal.Body>
+              )}
+            </div>
+          </Col>
           <Col xs={12} md={6}>
             <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
               {job ? (
@@ -96,59 +131,9 @@ export default class Front extends React.Component {
               )}
             </MUI.Paper>
           </Col>
-          <Col xs={12} md={6} className="jp-content">
-            <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-            {_.isEmpty(scores) ? <small>(Click a thumb to see sample)</small> : (
-              <Modal.Body>
-                <MUI.CardHeader
-                  title='You'
-                  subtitle='Full-stack JavaScript Developer'
-                  avatar="/sample-avatars/person.jpg"
-                />
-                {_.isEmpty(scores) ? (
-                  <p>(Click one of those thumbs to see what we mean)</p>
-                ) : (
-                  <Row className="sample-scores">
-                    <Col md={6} xs={6}>
-                      <ul>
-                        {_(scores).map((v,k) => ({k,v})).filter(i => i.v > 0).map(i => (
-                          <li key={i.k} className='score-up'>+{i.v} {i.k}</li>
-                        )).value()}
-                      </ul>
-                    </Col>
-                    <Col md={6} xs={6}>
-                      <ul>
-                        {_(scores).map((v,k) => ({k,v})).filter(i => i.v < 0).map(i => (
-                          <li key={i.k} className='score-down'>{i.v} {i.k}</li>
-                        )).value()}
-                      </ul>
-                    </Col>
-                  </Row>
-                )}
-              </Modal.Body>
-            )}
-          </Col>
         </Row>
 
         <Row className="employers">
-          <Col xs={12} md={6} className="jp-content">
-            <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
-            <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
-            <ul>
-              <li>View / contact candidates who match your listing, sorted by score</li>
-              <li>Higher listing display priority for searchers</li>
-              <li>Listing analytics</li>
-              <li>{coupon ? (
-                  <span>
-                    <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> First post free!
-                  </span>
-                ) : (
-                  <span>$99 for 30 days</span>
-                )
-              }</li>
-            </ul>
-          </Col>
           <Col xs={12} md={6}>
             <div className="static-modal">
               <MUI.Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
@@ -161,22 +146,24 @@ export default class Front extends React.Component {
                   <h4>Candidate Matches</h4>
 
                   <ListGroup>
-                    <ListGroupItem style={{display: 'flex'}}>
-                      <div style={{flex:2}}>
-                        <MUI.CardHeader
-                          title="Mrs. Candidate"
-                          subtitle="Full-stack JavaScript Developer"
-                          avatar="/sample-avatars/person.jpg"
-                        />
-                      </div>
-                      <div style={{flex: 1}} >
-                        <ul style={{listStyle: 'none', padding: 0}}>
-                          <li className="sample-score-up">+3 JavaScript</li>
-                          <li className="sample-score-up">+3 Full-time</li>
-                          <li className="sample-score-up">+3 San Francisco</li>
-                        </ul>
-                        <MUI.RaisedButton label="Contact" />
-                      </div>
+                    <ListGroupItem>
+                      <Row>
+                        <Col md={7} xs={7}>
+                          <MUI.CardHeader
+                            title="Mrs. Candidate"
+                            subtitle="Full-stack JavaScript Developer"
+                            avatar="/sample-avatars/person.jpg"
+                          />
+                        </Col>
+                        <Col md={5} xs={5}>
+                          <ul style={{listStyle: 'none', padding: 0}}>
+                            <li className="sample-score-up">+3 JavaScript</li>
+                            <li className="sample-score-up">+3 Full-time</li>
+                            <li className="sample-score-up">+3 San Francisco</li>
+                          </ul>
+                          <MUI.RaisedButton label="Contact" />
+                        </Col>
+                      </Row>
                     </ListGroupItem>
                     <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
                     <ListGroupItem header="Candidate 3">...</ListGroupItem>
@@ -185,6 +172,25 @@ export default class Front extends React.Component {
                   <MUI.RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} label="Post a Job" />
                 </Modal.Body>
               </MUI.Paper>
+            </div>
+          </Col>
+          <Col xs={12} md={6} className="jp-content">
+            <div>
+              <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
+              <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
+              <ul>
+                <li>View / contact candidates who match your listing, sorted by score</li>
+                <li>Higher listing display priority for searchers</li>
+                <li>Listing analytics</li>
+                <li>{coupon ? (
+                  <span>
+                      <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> First post free!
+                    </span>
+                  ) : (
+                    <span>$99 for 30 days</span>
+                  )
+                }</li>
+              </ul>
             </div>
           </Col>
         </Row>

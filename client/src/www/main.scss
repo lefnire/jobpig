@@ -126,10 +126,19 @@ body {
     -webkit-animation-timing-function: ease-in-out;
   }
 
+  .searchers.row, .employers.row {
+    //display: flex;
+    //flex-direction: column;
+    //align-items: center;
+  }
+
   .jp-content {
-    //padding-right: 20px;
-    //padding-left: 20px;
     font-size: 1.2em;
+    line-height: 1.5;
+
+    @media (min-width: 700px) {
+      padding: 0px 30px;
+    }
 
     .jp-role {
       background-color: #eee;
