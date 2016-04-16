@@ -4,6 +4,8 @@ global.jobpig = {
   env: "<nconf:NODE_ENV>"
 };
 
+const isProd = jobpig.env === 'production';
+
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
@@ -89,7 +91,8 @@ export const filterOptions = (allowCreate, text='Add') => (options, filter, curr
 
 // Setup google analytics, defer
 export const setupGoogle = () => {
-  if (jobpig.env !== 'production') return;
+  if (!isProd)
+    return window.ga = _.noop;
   _.defer(() => {
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -99,4 +102,8 @@ export const setupGoogle = () => {
     ga('create','<nconf:ga_tracking_id>', 'auto');
     ga('send', 'pageview');
   });
+};
+
+export const _ga = {
+  event: () => isProd && ga && ga.apply(null, ['send', 'event'].concat(arguments))
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import MUI from 'material-ui';
 import _ from 'lodash';
-import {login, logout, _fetch, constants} from '../../helpers';
+import {login, logout, _fetch, constants, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Error from '../Error';
@@ -127,6 +127,7 @@ class Register extends React.Component{
     if (coupon) _.assign(body, {coupon});
     _fetch('register', {method:"POST", body})
       .then(json => {
+        _ga.event(['acquisition', 'register']);
         let {action} = this.props;
         action = action === AUTH_ACTIONS.POST_JOB ? action : AUTH_ACTIONS.REGISTER;
         login(json.token, action);

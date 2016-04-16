@@ -1,7 +1,7 @@
 import React from 'react';
 import MUI from 'material-ui';
 import _ from 'lodash';
-import {_fetch, getTags, constants, filterOptions} from '../../helpers';
+import {_fetch, getTags, constants, filterOptions, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import Select from 'react-select';
@@ -148,7 +148,7 @@ export default class CreateJob extends React.Component {
   };
 
   _posted() {
-    goog_report_conversion();
+    _ga.event(['revenue','purchase']);
     global.jobpig.alerts.alert('Payment success, posting job now.');
     this.close();
     this.props.onCreate();
