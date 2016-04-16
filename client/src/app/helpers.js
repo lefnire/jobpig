@@ -1,6 +1,8 @@
 import fetch from 'isomorphic-fetch';
 
-global.jobpig = {};
+global.jobpig = {
+  env: "<nconf:NODE_ENV>"
+};
 
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
@@ -83,4 +85,18 @@ export const filterOptions = (allowCreate, text='Add') => (options, filter, curr
       : [{label: `${text} ${filter}`, value: filter, create: true}]
     ).slice(0,50)
     .value();
+};
+
+// Setup google analytics, defer
+export const setupGoogle = () => {
+  if (jobpig.env !== 'production') return;
+  _.defer(() => {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create','<nconf:ga_tracking_id>', 'auto');
+    ga('send', 'pageview');
+  });
 };

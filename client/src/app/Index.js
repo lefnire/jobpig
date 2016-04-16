@@ -2,7 +2,7 @@ require("../www/main.scss");
 require("../../../node_modules/react-select/dist/react-select.min.css");
 
 // Custom
-import {API_URL} from './helpers';
+import {API_URL, setupGoogle} from './helpers';
 import fetch from 'isomorphic-fetch';
 import Alerts from './components/Alerts';
 import url from 'url';
@@ -83,13 +83,4 @@ ReactDOM.render(<Main/>, document.getElementById('app'));
 // This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
 fetch(API_URL + '/jobs/cron');
 
-// Setup google analytics, defer
-window.setTimeout(function setupGoogleAnalytics(){
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create','<nconf:ga_tracking_id>', 'auto');
-  ga('send', 'pageview');
-});
+setupGoogle();

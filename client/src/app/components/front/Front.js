@@ -99,7 +99,7 @@ export default class Front extends React.Component {
           <Col xs={12} md={6} className="jp-content">
             <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
             <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-            {_.isEmpty(scores) ? null : (
+            {_.isEmpty(scores) ? <small>(Click a thumb to see sample)</small> : (
               <Modal.Body>
                 <MUI.CardHeader
                   title='You'
