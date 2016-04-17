@@ -88,4 +88,9 @@ exports.delete = (req, res, next) => {
       .catch(err => next(err));
   }
   return res.send({status: 400, message: "Confirmation required"})
-}
+};
+
+exports.postShare = (req, res, next) => {
+  req.user.free_jobs++;
+  return req.user.save().then(saved => res.json(saved)).catch(next);
+};

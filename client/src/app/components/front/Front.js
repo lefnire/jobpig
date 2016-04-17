@@ -182,14 +182,7 @@ export default class Front extends React.Component {
                 <li>View / contact candidates who match your listing, sorted by score</li>
                 <li>Higher listing display priority for searchers</li>
                 <li>Listing analytics</li>
-                <li>{coupon ? (
-                  <span>
-                      <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> First post free!
-                    </span>
-                  ) : (
-                    <span>$99 for 30 days</span>
-                  )
-                }</li>
+                <li><span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!</li>
               </ul>
             </div>
           </Col>

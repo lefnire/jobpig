@@ -1,6 +1,10 @@
 import React from 'react';
 import {
-  RaisedButton
+  RaisedButton,
+  Card,
+  CardText,
+  CardTitle,
+  CardHeader,
 } from 'material-ui';
 import CreateJob from './Create';
 import Job from '../jobs/Job';
@@ -8,12 +12,51 @@ import _ from 'lodash';
 import {_fetch, constants, me} from '../../helpers';
 const {TAG_TYPES} = constants;
 
+me().then(profile => {
+  //http://www.addthis.com/academy/the-addthis_share-variable/
+  window.addthis_share = {
+    url: `https://jobpigapp.com?uid=${profile.id}`,
+    title: `Just posted on on Jobpig, a matchmaking job board.`,
+    //description: "My Description"
+  };
+});
+
 export default class Employer extends React.Component {
   constructor(){
     super();
     this.state = {jobs: []};
     this._refresh();
   }
+
+  componentWillMount() {
+    this._setupAddthis();
+  }
+
+  componentWillUnmount() {
+    this._teardownAddthis();
+  }
+
+  _setupAddthis = () => {
+    // Hacky callback for post-social-share. Started using AddThis callbacks (http://www.addthis.com/academy/addthis-javascript-events/),
+    // but there's no solution for "after shared" or even "share window closed"; only "share window opened" (addthis.menu.share).
+    // My solution uses http://stackoverflow.com/a/6341534/362790 & http://stackoverflow.com/a/31752385/362790
+    if (typeof addthis === 'undefined') return;
+    let shareWindow, timer;
+    window._open = window.open;
+    window.open = (url,name,params) => {
+      clearInterval(timer);
+      shareWindow = window._open(url,name,params); // you can store names also
+      timer = setInterval(() => {
+        if (!(shareWindow && shareWindow.closed)) return;
+        _fetch('user/share/post', {method: "POST"}).then(profile => this.setState({free_jobs: profile.free_jobs}));
+        clearInterval(timer);
+      }, 750);
+    };
+  };
+  _teardownAddthis = () => {
+    window.open = window._open;
+    delete window._open;
+  };
 
   renderJobs = () => {
     return this.state.jobs.map((job, i) => (
@@ -51,22 +94,29 @@ export default class Employer extends React.Component {
 
     return (
       <div className="padded">
-        <div className="empty-text">
-          <h2>
-            Post a Job&nbsp;
-            <span style={{textDecoration: free_jobs ? 'line-through' : ''}}>($99 for 30 days)</span>&nbsp;
-            {free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b> : null}
-          </h2>
-
-          <ul>
-            <li>View / contact candidates who match your listing, sorted by score</li>
-            <li>Higher listing display priority for searchers</li>
-            <li>Listing analytics</li>
-            {/*<li>Jobs will have bold coloring to ensure that your job stands out to candidates.</li>*/}
-          </ul>
-          <RaisedButton label="Post Job" primary={true} onTouchTap={()=> global.jobpig.createJob.open()} />
-        </div>
+        <Card>
+          <CardHeader>
+            <RaisedButton label="Post Job" primary={true} onTouchTap={()=> global.jobpig.createJob.open()} />
+          </CardHeader>
+          <CardText>
+            <ul className="empty-text">
+              <li>View / contact candidates who match your listing, sorted by score</li>
+              <li>Higher listing display priority for searchers</li>
+              <li>Listing analytics</li>
+              <li>
+                <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
+                {
+                  free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
+                    : <b>Free post with social share</b>
+                }
+                {/* Go to www.addthis.com/dashboard to customize your tools */}
+                <div className="addthis_sharing_toolbox"></div>
+              </li>
+            </ul>
+          </CardText>
+        </Card>
         <br/>
+
         <Job job={fakeJob} style={{opacity:0.5}} isEmployer={true} />
       </div>
     );
