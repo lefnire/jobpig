@@ -12,20 +12,19 @@ import _ from 'lodash';
 import {_fetch, constants, me, _ga} from '../../helpers';
 const {TAG_TYPES} = constants;
 
-me().then(profile => {
-  //http://www.addthis.com/academy/the-addthis_share-variable/
-  window.addthis_share = {
-    url: `https://jobpigapp.com?uid=${profile.id}`,
-    title: `Just posted on on Jobpig, a matchmaking job board.`,
-    //description: "My Description"
-  };
-});
-
 export default class Employer extends React.Component {
   constructor(){
     super();
     this.state = {jobs: []};
     this._refresh();
+    me().then(profile => {
+      //http://www.addthis.com/academy/the-addthis_share-variable/
+      window.addthis_share = {
+        url: `https://jobpigapp.com?uid=${profile.id}`,
+        title: `Just posted on on Jobpig, a matchmaking job board.`,
+        //description: "My Description"
+      };
+    });
   }
 
   componentWillMount() {
