@@ -4,7 +4,7 @@ import Auth from './Auth';
 import Footer from '../Footer';
 import _ from 'lodash';
 import {Colors, Typography} from 'material-ui/lib/styles';
-import {constants} from '../../helpers';
+import {constants, _ga} from '../../helpers';
 const {AUTH_ACTIONS} = constants;
 
 import {
@@ -28,6 +28,10 @@ export default class Front extends React.Component {
   }
 
   score = (job, score) => {
+    if (!this.scored) {
+      _ga.event('engagement', 'sample-thumb');
+      this.scored = true;
+    }
     let {scores} = this.state;
     job.tags.concat(job.location).concat(job.company).forEach(t => {
       if (!scores[t]) scores[t] = 0;

@@ -127,10 +127,10 @@ class Register extends React.Component{
     if (coupon) _.assign(body, {coupon});
     _fetch('register', {method:"POST", body})
       .then(json => {
-        _ga.event(['acquisition', 'register']);
+        _ga.event('acquisition', 'register');
         let {action} = this.props;
         action = action === AUTH_ACTIONS.POST_JOB ? action : AUTH_ACTIONS.REGISTER;
-        login(json.token, action);
+        _.defer(() => login(json.token, action)); // ensure _ga goes through
       })
       .catch(error => this.setState({error}))
   }
@@ -169,7 +169,13 @@ export default class Auth extends React.Component {
 
   }
 
-  open = (action=AUTH_ACTIONS.LOGIN) => this.setState({action, open: true});
-  close = () => this.setState({open: false});
+  open = (action=AUTH_ACTIONS.LOGIN) => {
+    _ga.pageview('modal:auth');
+    this.setState({action, open: true});
+  };
+  close = () => {
+    _ga.pageview('');
+    this.setState({open: false})
+  };
 
 }

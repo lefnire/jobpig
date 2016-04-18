@@ -4,13 +4,14 @@ global.jobpig = {
   env: "<nconf:NODE_ENV>"
 };
 
-const isProd = jobpig.env === 'production';
-
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
+// On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
+// This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
+fetch(API_URL + '/jobs/cron');
 
 export function login(token, action) {
   window.localStorage.setItem('jwt', token);
@@ -89,21 +90,30 @@ export const filterOptions = (allowCreate, text='Add') => (options, filter, curr
     .value();
 };
 
-// Setup google analytics, defer
+// Setup google analytics
+let ga_ready = false;
 export const setupGoogle = () => {
-  if (!isProd)
-    return window.ga = _.noop;
-  _.defer(() => {
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  if (jobpig.env !== 'production') return;
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    ga('create','<nconf:ga_tracking_id>', 'auto');
-    ga('send', 'pageview');
-  });
+  ga('create','<nconf:ga_tracking_id>', 'auto');
+  ga_ready = true;
+  //ga('send', 'pageview'); // handled in Index.js#onUpdate
 };
 
 export const _ga = {
-  event: () => isProd && ga && ga.apply(null, ['send', 'event'].concat(arguments))
+  event: (category, action, label, value) => {
+    if (!ga_ready) return;
+    value? ga('send', 'event', category, action, label, value)
+    : label? ga('send', 'event', category, action, label)
+    : ga('send', 'event', category, action);
+  },
+  pageview: page => {
+    if (!ga_ready) return;
+    page = page || /#\/(.*?)\?/.exec(location.hash)[1]; // FIXME find better solution
+    ga('send', 'pageview', page);
+  }
 };

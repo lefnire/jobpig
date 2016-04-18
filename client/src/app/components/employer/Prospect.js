@@ -1,6 +1,7 @@
 import React from 'react';
 import MUI from 'material-ui';
 import _ from 'lodash';
+import {_ga} from '../../helpers';
 import Contact from './Contact';
 
 export default class Prospect extends React.Component {
@@ -28,5 +29,5 @@ export default class Prospect extends React.Component {
     </div>
   }
 
-  _handleTouchTap = () => this.refs.contact.handleOpen();
+  _handleTouchTap = () => this.refs.contact.open();
 }

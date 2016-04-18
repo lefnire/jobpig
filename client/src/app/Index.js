@@ -2,10 +2,8 @@ require("../www/main.scss");
 require("../../../node_modules/react-select/dist/react-select.min.css");
 
 // Custom
-import {API_URL, setupGoogle} from './helpers';
-import fetch from 'isomorphic-fetch';
-import Alerts from './components/Alerts';
-import url from 'url';
+import {API_URL, setupGoogle, _ga} from './helpers';
+setupGoogle();
 
 // React
 import React, {Component} from 'react';
@@ -20,6 +18,7 @@ import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 // React-Router
 import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
+import Alerts from './components/Alerts';
 import App from './components/App';
 import Front from './components/front/Front';
 import ResetPassword from './components/front/ResetPassword';
@@ -72,15 +71,10 @@ class Main extends Component {
   onUpdate = () => {
     // FIXME this.state is always null at this point, what's going on?
     // this.refs.flash.onRoute(this.state.location)
+    _ga.pageview();
     let query = _.fromPairs(window.location.search.slice(1).split('&').map(i => i.split('=')));
     global.jobpig.alerts.flash({query});
   };
 };
 
 ReactDOM.render(<Main/>, document.getElementById('app'));
-
-// On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
-// This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
-fetch(API_URL + '/jobs/cron');
-
-setupGoogle();

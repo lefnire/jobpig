@@ -1,7 +1,7 @@
 import React from 'react';
 import MUI from 'material-ui';
 import _ from 'lodash';
-import {_fetch} from '../../helpers';
+import {_fetch, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 
@@ -16,7 +16,7 @@ export default class Contact extends React.Component {
 
   render() {
     const actions = [
-      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.handleClose}/>,
+      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
       <MUI.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={() => this.refs.form.submit()}/>,
     ];
 
@@ -26,7 +26,7 @@ export default class Contact extends React.Component {
         actions={actions}
         modal={false}
         open={this.state.open}
-        onRequestClose={this.handleClose}
+        onRequestClose={this.close}
       >
         <MUI.ClearFix>
           <Formsy.Form
@@ -42,12 +42,19 @@ export default class Contact extends React.Component {
     );
   }
 
-  handleOpen = () => this.setState({open: true});
-  handleClose = () => this.setState({open: false});
+  open = () => {
+    _ga.pageview('modal:contact-prospect');
+    this.setState({open: true});
+  };
+  close = () => {
+    _ga.pageview();
+    this.setState({open: false});
+  };
+
   submitForm = (body) => {
     _fetch(`messages/contact/${this.props.prospect.id}`, {method:"POST", body}).then(() => {
       global.jobpig.alerts.alert('Message sent.');
-      this.handleClose();
+      this.close();
     }).catch(global.jobpig.alerts.alert);
   }
 }

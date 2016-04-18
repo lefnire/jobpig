@@ -9,7 +9,7 @@ import {
 import CreateJob from './Create';
 import Job from '../jobs/Job';
 import _ from 'lodash';
-import {_fetch, constants, me} from '../../helpers';
+import {_fetch, constants, me, _ga} from '../../helpers';
 const {TAG_TYPES} = constants;
 
 me().then(profile => {
@@ -41,7 +41,8 @@ export default class Employer extends React.Component {
     // but there's no solution for "after shared" or even "share window closed"; only "share window opened" (addthis.menu.share).
     // My solution uses http://stackoverflow.com/a/6341534/362790 & http://stackoverflow.com/a/31752385/362790
     if (typeof addthis === 'undefined') return;
-    let shareWindow, timer;
+    let shareWindow, timer, service;
+    addthis.addEventListener('addthis.menu.share', evt => service = evt.data.service);
     window._open = window.open;
     window.open = (url,name,params) => {
       clearInterval(timer);
@@ -49,6 +50,7 @@ export default class Employer extends React.Component {
       timer = setInterval(() => {
         if (!(shareWindow && shareWindow.closed)) return;
         _fetch('user/share/post', {method: "POST"}).then(profile => this.setState({free_jobs: profile.free_jobs}));
+        _ga.event('engagement', 'share', service);
         clearInterval(timer);
       }, 750);
     };

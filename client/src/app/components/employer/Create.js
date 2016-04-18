@@ -123,8 +123,14 @@ export default class CreateJob extends React.Component {
   }
   // /FIXME -----------------
 
-  open = () => this.setState({open: true});
-  close = () => this.setState({open: false});
+  open = () => {
+    _ga.pageview('modal:create-job');
+    this.setState({open: true});
+  };
+  close = () => {
+    _ga.pageview();
+    this.setState({open: false});
+  };
 
   submitForm = body => {
     let {location, tags} = this.state;
@@ -148,7 +154,7 @@ export default class CreateJob extends React.Component {
   };
 
   _posted() {
-    _ga.event(['revenue','purchase']);
+    _ga.event('revenue','purchase');
     global.jobpig.alerts.alert('Payment success, posting job now.');
     this.close();
     this.props.onCreate();
