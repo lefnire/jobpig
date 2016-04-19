@@ -26,7 +26,7 @@ exports.setup = app => {
     if (password.length < 8)
       return next(deny('Password should be at least 8 characters.'));
 
-    let pic = 'http://www.gravatar.com/avatar/' + crypto.createHash('md5').update(email).digest("hex");
+    let pic = 'https://www.gravatar.com/avatar/' + crypto.createHash('md5').update(email).digest("hex");
     let userObj = {email, pic};
 
     let p = Promise.resolve();
