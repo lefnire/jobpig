@@ -14,12 +14,15 @@ const prod = nconf.get('NODE_ENV') === 'production';
 const buildPath = path.resolve(__dirname, 'client/build');
 const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
+const entries = prod? [] : ['webpack/hot/dev-server', 'webpack/hot/only-dev-server'];
+
 let config = {
   //Entry points to the project
-  entry: (prod ? [] :
-    ['webpack/hot/dev-server',
-    'webpack/hot/only-dev-server'])
-    .concat(path.join(__dirname, 'client/src/app/Index')),
+  entry: {
+    app: entries.concat(path.join(__dirname, 'client/src/app/Index')),
+    blog: entries.concat(path.join(__dirname, 'client/src/blog/Index'))
+  },
+
   //Config options on how to interpret requires imports
   resolve: { // FIXME remove?
     //When require, do not have to add these extensions to file's name
@@ -31,7 +34,7 @@ let config = {
   //output config
   output: {
     path: buildPath,    //Path of output file
-    filename: 'app.js'  //Name of output file
+    filename: "[name].js"
   },
   plugins: [
     // Clean up first // FIXME remove?

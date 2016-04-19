@@ -179,3 +179,20 @@ body {
     }
   }
 }
+
+.blog {
+  .pig {
+    position: relative;
+    width: 45px;
+    top: inherit;
+  }
+
+  h3 {
+    background-color: #eee;
+  }
+
+  //.content {
+  //  font-size: 1.2em;
+  //  line-height: 1.5;
+  //}
+}
