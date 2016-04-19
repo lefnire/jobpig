@@ -10,6 +10,7 @@ import CreateJob from './Create';
 import Job from '../jobs/Job';
 import _ from 'lodash';
 import {_fetch, constants, me, _ga} from '../../helpers';
+import load from 'load-script';
 const {TAG_TYPES} = constants;
 
 export default class Employer extends React.Component {
@@ -17,6 +18,7 @@ export default class Employer extends React.Component {
     super();
     this.state = {jobs: []};
     this._refresh();
+
     me().then(profile => {
       //http://www.addthis.com/academy/the-addthis_share-variable/
       window.addthis_share = {
@@ -39,24 +41,30 @@ export default class Employer extends React.Component {
     // Hacky callback for post-social-share. Started using AddThis callbacks (http://www.addthis.com/academy/addthis-javascript-events/),
     // but there's no solution for "after shared" or even "share window closed"; only "share window opened" (addthis.menu.share).
     // My solution uses http://stackoverflow.com/a/6341534/362790 & http://stackoverflow.com/a/31752385/362790
-    if (typeof addthis === 'undefined') return;
-    let shareWindow, timer, service;
-    addthis.addEventListener('addthis.menu.share', evt => service = evt.data.service);
+    // Also, this breaks when addthis loaded from index.html script tag
+
+    let shareWindow, service;
     window._open = window.open;
     window.open = (url,name,params) => {
-      clearInterval(timer);
+      clearInterval(this.timer);
       shareWindow = window._open(url,name,params); // you can store names also
-      timer = setInterval(() => {
+      this.timer = setInterval(() => {
         if (!(shareWindow && shareWindow.closed)) return;
         _fetch('user/share/post', {method: "POST"}).then(profile => this.setState({free_jobs: profile.free_jobs}));
         _ga.event('engagement', 'share', service);
-        clearInterval(timer);
+        clearInterval(this.timer);
       }, 750);
     };
+    // Go to www.addthis.com/dashboard to customize your tools
+    load('https://s7.addthis.com/js/300/addthis_widget.js#pubid=lefnire', (err, script) => {
+      if (err) throw err;
+      addthis.addEventListener('addthis.menu.share', evt => service = evt.data.service);
+      this.forceUpdate();
+    });
   };
   _teardownAddthis = () => {
+    clearInterval(this.timer);
     window.open = window._open;
-    delete window._open;
   };
 
   renderJobs = () => {
