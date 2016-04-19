@@ -20,7 +20,9 @@ body {
 /* -- Front -- */
 
 .root {
-  background-color: #272D4E;
+  background-color: #0C457D;
+  padding-top: 300px;
+  padding-bottom: 400px;
 }
 
 .tagline {
@@ -36,8 +38,9 @@ body {
 
 .login {
   position: absolute;
-  right:10px;
-  top:10px;
+  right:30px;
+  top:40px;
+
 }
 
 .front-title, .front-subtitle {
@@ -69,7 +72,7 @@ body {
   }
 
   .front-title {
-    font-size: 56px;
+    font-size: 50px !important;
   }
 
   .front-subtitle {
@@ -163,7 +166,7 @@ body {
 }
 
 .footer {
-  background-color: #272D4E;
+  background-color: #0C457D;
   text-align: center;
   color: white;
   /*margin-top: 200px;*/

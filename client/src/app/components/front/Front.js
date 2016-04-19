@@ -53,6 +53,9 @@ export default class Front extends React.Component {
         <Jumbotron className='root'>
           <div className='tagline' >
             <h1 className='front-title'>Jobpig</h1>
+            <div className='login'>
+              <mui.RaisedButton label='Rate Jobs, Find Matches' backgroundColor="#7EB530" onTouchTap={()=>this.refs.auth.open()} />
+            </div>
             <h2 className='front-subtitle'>Rate Jobs, Find Matches</h2>
           </div>
           <img src="Pig.png" className='pig' />
@@ -180,7 +183,7 @@ export default class Front extends React.Component {
         <Auth ref='auth' />
 
         <div className='login'>
-          <mui.RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()} />
+          <mui.RaisedButton label='Login / Register' backgroundColor="#7EB530" onTouchTap={()=>this.refs.auth.open()} />
         </div>
       </div>
     );
