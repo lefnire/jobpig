@@ -10,7 +10,6 @@ import {
   IconMenu,
   IconButton,
   MenuItem,
-  ClearFix,
   Card,
   CardHeader,
   CardText,
@@ -18,9 +17,11 @@ import {
   List,
   RaisedButton,
 } from 'material-ui';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import {NavigationMoreVert} from 'material-ui/svg-icons';
 import Formsy from 'formsy-react'
-import fui from 'formsy-material-ui';
+import {
+  FormsyText
+} from 'formsy-material-ui/lib';
 import update from 'react-addons-update';
 import SeedTags from './jobs/SeedTags';
 
@@ -47,7 +48,7 @@ class DeleteAccount extends React.Component {
       <Dialog
         title="Delete account"
         actions={actions}
-        modal={false}
+        autoScrollBodyContent={true}
         open={this.state.open}
         onRequestClose={this.close}
       >
@@ -58,7 +59,7 @@ class DeleteAccount extends React.Component {
           onValidSubmit={this.submit}
         >
           <p>Confirm deletion by typing "DELETE" in the input below and submitting.</p>
-          <fui.FormsyText
+          <FormsyText
             name='confirm'
             required
             fullWidth={true}
@@ -81,7 +82,7 @@ export default class TagEdit extends React.Component {
 
   render() {
     let {tag} = this.state;
-    if (!tag) return null;
+    if (!tag) return <div></div>;
     let {locked, score} = tag.user_tags;
     let actions = [
       <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
@@ -89,7 +90,13 @@ export default class TagEdit extends React.Component {
     ];
     //modal={false}
     return (
-      <Dialog title="Edit Tag" actions={actions} open={this.state.open} onRequestClose={this.close}>
+      <Dialog
+        title="Edit Tag"
+        actions={actions}
+        open={this.state.open}
+        onRequestClose={this.close}
+        autoScrollBodyContent={true}
+      >
         <TextField
           type='number'
           autofocus={true}
@@ -156,7 +163,7 @@ export default class Profile extends React.Component{
         )}
         rightIconButton={(
           <IconMenu iconButtonElement={
-            <IconButton><MoreVertIcon /></IconButton>
+            <IconButton><NavigationMoreVert /></IconButton>
           }>
             <MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</MenuItem>
             <MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</MenuItem>
@@ -173,8 +180,7 @@ export default class Profile extends React.Component{
     let tags = this.state.profile.tags;
 
     return (
-      <ClearFix>
-
+      <div>
         <TagEdit selected={this.state.selected} ref="dialog" onSubmit={this._refresh} />
         <SeedTags onSeed={this._refresh} ref="seed" />
 
@@ -188,12 +194,12 @@ export default class Profile extends React.Component{
               onInvalid={() => this.setState({canSubmit: false})}
               onValidSubmit={this._submitProfile}>
 
-              <fui.FormsyText name='fullname' required hintText="Full Name" value={profile.fullname} fullWidth={true}/>
-              <fui.FormsyText name='pic' hintText="Photo URL" value={profile.pic} fullWidth={true} validations="isUrl" validationError={isUrl} />
-              <fui.FormsyText name='linkedin_url' hintText="LinkedIn URL" value={profile.linkedin_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
-              <fui.FormsyText name='github_url' hintText="Github URL" value={profile.github_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
-              <fui.FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
-              <fui.FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
+              <FormsyText name='fullname' required hintText="Full Name" value={profile.fullname} fullWidth={true}/>
+              <FormsyText name='pic' hintText="Photo URL" value={profile.pic} fullWidth={true} validations="isUrl" validationError={isUrl} />
+              <FormsyText name='linkedin_url' hintText="LinkedIn URL" value={profile.linkedin_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <FormsyText name='github_url' hintText="Github URL" value={profile.github_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
+              <FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
 
               <RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
               <a className="destroy-link" onClick={()=>this.refs.delete.open()}>Delete account</a>
@@ -218,7 +224,7 @@ export default class Profile extends React.Component{
         </Card>
 
         <DeleteAccount ref="delete" />
-      </ClearFix>
+      </div>
     )
   }
 

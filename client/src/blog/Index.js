@@ -8,8 +8,8 @@ import {Router, Route, IndexRoute, Link, hashHistory} from 'react-router';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
-import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {
   FontIcon,
   FlatButton,
@@ -19,12 +19,13 @@ import {
   CardTitle,
   AppBar,
 } from 'material-ui';
-const myTheme = {
+
+const myTheme = getMuiTheme({
   palette: {
     accent1Color: '#414B82',
     primary1Color: '#272D4E'
   }
-};
+});
 
 // Other
 import {
@@ -141,18 +142,17 @@ class Home extends React.Component {
   }
 }
 
-@ThemeDecorator(ThemeManager.getMuiTheme(myTheme))
 class Main extends Component {
   render() {
     return (
-      <div>
+      <MuiThemeProvider muiTheme={myTheme}>
         <Router history={hashHistory}>
           <Route path="/" component={Blog}>
             <IndexRoute component={Home} />
             <Route path="/:id" component={Entry} />
           </Route>
         </Router>
-      </div>
+      </MuiThemeProvider>
     );
   }
 };

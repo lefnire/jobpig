@@ -7,7 +7,7 @@ import {
   ActionHome,
   ActionThumbUp,
   ActionCheckCircle
-} from 'material-ui/lib/svg-icons';
+} from 'material-ui/svg-icons';
 //import FontIcon from 'material-ui/lib/font-icon';
 import {
   Toolbar,
@@ -21,14 +21,14 @@ import {
   RaisedButton,
   IconButton,
   FlatButton,
-  LeftNav,
   AppBar,
   Divider,
   Menu,
   List,
-  ListItem
+  ListItem,
+  Drawer,
+  Subheader
 } from 'material-ui';
-import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
 import Footer from './Footer';
 import {me} from '../helpers';
@@ -62,26 +62,24 @@ export default class App extends React.Component {
           onLeftIconButtonTouchTap={()=>this.setState({navOpen: !this.state.navOpen})}
           iconElementRight={<RaisedButton label="Post Job" primary={true} onTouchTap={this._postJob} />}
         />
-        <LeftNav
+        <Drawer
           docked={false}
           width={200}
           open={this.state.navOpen}
           onRequestChange={navOpen => this.setState({navOpen})}
         >
-          <List subheader="Jobs">
-            <MenuItem onTouchTap={()=>this._goto('jobs/match')} leftIcon={<ActionHome />}>Matches</MenuItem>
-            <MenuItem onTouchTap={()=>this._goto('jobs/liked')} leftIcon={<ActionThumbUp />}>Liked</MenuItem>
-            <MenuItem onTouchTap={()=>this._goto('jobs/applied')} leftIcon={<ActionCheckCircle />}>Applied</MenuItem>
-          </List>
+          <Subheader>Jobs</Subheader>
+          <MenuItem onTouchTap={()=>this._goto('jobs/match')} leftIcon={<ActionHome />}>Matches</MenuItem>
+          <MenuItem onTouchTap={()=>this._goto('jobs/liked')} leftIcon={<ActionThumbUp />}>Liked</MenuItem>
+          <MenuItem onTouchTap={()=>this._goto('jobs/applied')} leftIcon={<ActionCheckCircle />}>Applied</MenuItem>
           <Divider />
-          <List subheader="Personal">
-            <MenuItem onTouchTap={()=>this._goto('profile')} leftIcon={<SocialPerson />}>Profile</MenuItem>
-            <MenuItem onTouchTap={()=>this._goto('messages')} leftIcon={<CommunicationEmail />}>Messages</MenuItem>
-            <MenuItem onTouchTap={()=>this._goto('employer')} leftIcon={<PlacesBusinessCenter />}>Employer</MenuItem>
-            <MenuItem onTouchTap={()=>this._goto('logout')} leftIcon={<ActionExitToApp />}>Logout</MenuItem>
-          </List>
+          <Subheader>Personal</Subheader>
+          <MenuItem onTouchTap={()=>this._goto('profile')} leftIcon={<SocialPerson />}>Profile</MenuItem>
+          <MenuItem onTouchTap={()=>this._goto('messages')} leftIcon={<CommunicationEmail />}>Messages</MenuItem>
+          <MenuItem onTouchTap={()=>this._goto('employer')} leftIcon={<PlacesBusinessCenter />}>Employer</MenuItem>
+          <MenuItem onTouchTap={()=>this._goto('logout')} leftIcon={<ActionExitToApp />}>Logout</MenuItem>
 
-        </LeftNav>
+        </Drawer>
 
         {this.props.children}
 

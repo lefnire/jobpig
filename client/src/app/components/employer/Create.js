@@ -2,12 +2,14 @@ import React from 'react';
 import {
   Dialog,
   FlatButton,
-  ClearFix,
 } from 'material-ui';
 import _ from 'lodash';
 import {_fetch, getTags, constants, filterOptions, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
-import fui from 'formsy-material-ui';
+import {
+  FormsyText,
+  FormsyCheckbox,
+} from 'formsy-material-ui/lib';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
 import Error from '../Error';
@@ -30,16 +32,14 @@ export default class CreateJob extends React.Component {
 
     return (
       <Dialog
-        bodyStyle={{overflow: 'visible'}}
+        autoScrollBodyContent={true}
         title={title}
-        modal={true}
         open={this.state.open}
         actions={[
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
           <FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         ]} >
 
-        <ClearFix>
 
           <StripeCheckout
             ref="stripe"
@@ -57,19 +57,19 @@ export default class CreateJob extends React.Component {
             onInvalid={() => this.setState({canSubmit: false})}
             onValidSubmit={this.submitForm}
           >
-            <fui.FormsyText
+            <FormsyText
               name='title'
               required
               hintText="*Job Title"
               fullWidth={true}
             />
-            <fui.FormsyText
+            <FormsyText
               name='company'
               required
               hintText="*Company"
               fullWidth={true}
             />
-            <fui.FormsyText
+            <FormsyText
               name='url'
               hintText="Job URL (optional)"
               fullWidth={true}
@@ -94,11 +94,11 @@ export default class CreateJob extends React.Component {
               noResultsText="Start typing"
               filterOptions={filterOptions(true)}
             />
-            <fui.FormsyCheckbox
+            <FormsyCheckbox
               name='remote'
               label="Remote"
             />
-            <fui.FormsyText
+            <FormsyText
               name='description'
               required
               hintText="*Job Description"
@@ -108,7 +108,6 @@ export default class CreateJob extends React.Component {
             />
 
           </Formsy.Form>
-        </ClearFix>
       </Dialog>
     )
   }
