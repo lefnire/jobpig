@@ -9,9 +9,7 @@ import {
 import _ from 'lodash';
 import {login, logout, _fetch, constants, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
-import {
-  FormsyText
-} from 'formsy-material-ui/lib';
+import fui from 'formsy-material-ui';
 import Error from '../Error';
 import update from 'react-addons-update';
 const {AUTH_ACTIONS} = constants;
@@ -34,7 +32,7 @@ class Login extends React.Component {
           onInvalid={() => this.setState({canSubmit: false})}
           onValidSubmit={this.submitForm}>
           <Error error={this.state.error} />
-          <FormsyText
+          <fui.FormsyText
             name='email'
             required
             hintText="Email Address"
@@ -42,13 +40,13 @@ class Login extends React.Component {
             validations="isEmail"
             validationError="Please enter a valid email address"
             type="email"/>
-          <FormsyText
+          <fui.FormsyText
             name="password"
             required
             hintText="Password"
             fullWidth={true}
             type="password"/>
-          <RaisedButton type="submit" label="Submit" primary={true} />
+          <RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
         </Formsy.Form>
         <div style={{marginTop: 10}}>
           <a onClick={() => this.setState({forgotPass: !this.state.forgotPass})} style={{cursor: 'pointer'}}>Forgot Password</a>
@@ -101,7 +99,7 @@ class Register extends React.Component{
         )}
 
         <Error error={this.state.error} />
-        <FormsyText
+        <fui.FormsyText
           name='email'
           required
           hintText="Email Address"
@@ -109,7 +107,7 @@ class Register extends React.Component{
           validations="isEmail"
           validationError="Please enter an email address"
           type="email"/>
-        <FormsyText
+        <fui.FormsyText
           name="password"
           required
           hintText="Password"
@@ -117,7 +115,7 @@ class Register extends React.Component{
           validationError="Password must be at least 8 characters"
           fullWidth={true}
           type="password"/>
-        <FormsyText
+        <fui.FormsyText
           name="confirmPassword"
           required
           validations="equalsField:password"
@@ -125,7 +123,7 @@ class Register extends React.Component{
           hintText="Confirm Password"
           fullWidth={true}
           type="password"/>
-        <RaisedButton primary={true} label='Submit' type='submit' />
+        <RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
       </Formsy.Form>
     )
   }
@@ -163,11 +161,7 @@ export default class Auth extends React.Component {
       [AUTH_ACTIONS.POST_JOB]: 1
     }[this.state.action];
     return (
-      <Dialog
-        actions={actions}
-        open={this.state.open}
-        autoScrollBodyContent={true}
-      >
+      <Dialog actions={actions} modal={true} open={this.state.open} >
         <Tabs initialSelectedIndex={initialTab}>
           <Tab label="Login">
             <Login />

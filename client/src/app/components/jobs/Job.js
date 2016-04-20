@@ -23,7 +23,7 @@ import {
   ActionSchedule,
   ImageRemoveRedEye,
   EditorInsertChart
-} from 'material-ui/svg-icons';
+} from 'material-ui/lib/svg-icons';
 import {_fetch, constants} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
 

@@ -13,8 +13,8 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); //Needed for onTouchTap, Can go away when react 1.0 release. Seehttps://github.com/zilverline/react-tap-event-plugin
 window.React = React; //Needed for React Developer Tools
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 // React-Router
 import {Router, Route, Redirect, IndexRedirect, hashHistory} from 'react-router';
@@ -28,44 +28,43 @@ import Messages from './components/Messages'
 import Profile from './components/Profile';
 import {loggedIn, logout} from './helpers';
 
-const myTheme = getMuiTheme({
+const myTheme = {
   palette: {
-    accent1Color: '#414b82',
-    primary1Color: '#272d4e'
+    accent1Color: '#414B82',
+    primary1Color: '#272D4E'
   }
-});
+};
 
+@ThemeDecorator(ThemeManager.getMuiTheme(myTheme))
 class Main extends Component {
   render() {
     return (
-      <MuiThemeProvider muiTheme={myTheme}>
-        <div>
-          <Alerts ref={c => global.jobpig.alerts = c} />
-          <Router history={hashHistory} onUpdate={this.onUpdate}>
-            {loggedIn() ? (
-              <Route path="/"
-                component={App}
-                onUpdate={() => window.scrollTo(0, 0)}
-              >
-                <Route path="jobs/:filter" component={Jobs} />
-                <Route path="employer" component={Employer} />
-                <Route path="profile" component={Profile} />
-                <Route path="logout" onEnter={logout} />
-                <Route path="messages" component={Messages} />
-                <IndexRedirect to="jobs/match" />
-                <Redirect path="*" to="jobs/match"/>
-              </Route>
-            ) : (
-              <Route onEnter={this.onEnter}>
-                <Route path="/" component={Front} />
-                <Route path="/reset-password" component={ResetPassword} />
-                <Route path="logout" />
-                <Redirect path="*" to="/" />
-              </Route>
-            )}
-          </Router>
-        </div>
-      </MuiThemeProvider>
+      <div>
+        <Alerts ref={c => global.jobpig.alerts = c} />
+        <Router history={hashHistory} onUpdate={this.onUpdate}>
+          {loggedIn() ? (
+            <Route path="/"
+              component={App}
+              onUpdate={() => window.scrollTo(0, 0)}
+            >
+              <Route path="jobs/:filter" component={Jobs} />
+              <Route path="employer" component={Employer} />
+              <Route path="profile" component={Profile} />
+              <Route path="logout" onEnter={logout} />
+              <Route path="messages" component={Messages} />
+              <IndexRedirect to="jobs/match" />
+              <Redirect path="*" to="jobs/match"/>
+            </Route>
+          ) : (
+            <Route onEnter={this.onEnter}>
+              <Route path="/" component={Front} />
+              <Route path="/reset-password" component={ResetPassword} />
+              <Route path="logout" />
+              <Redirect path="*" to="/" />
+            </Route>
+          )}
+        </Router>
+      </div>
     );
   }
 

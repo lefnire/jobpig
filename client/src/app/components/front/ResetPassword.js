@@ -6,9 +6,7 @@ import {
   CardText,
 } from 'material-ui';
 import Formsy from 'formsy-react'
-import {
-  FormsyText
-} from 'formsy-material-ui/lib';
+import fui from 'formsy-material-ui';
 import {_fetch} from '../../helpers';
 import Error from '../Error';
 
@@ -33,7 +31,7 @@ export default class ResetPassword extends React.Component {
               onInvalid={() => this.setState({canSubmit: false})}
               onValidSubmit={this.submitForm}>
               <Error error={this.state.error} />
-              <FormsyText
+              <fui.FormsyText
                 name="password"
                 required
                 hintText="New Password"
@@ -41,7 +39,7 @@ export default class ResetPassword extends React.Component {
                 validationError="Password must be at least 3 characters"
                 fullWidth={true}
                 type="password"/>
-              <FormsyText
+              <fui.FormsyText
                 name="confirmPassword"
                 required
                 validations="equalsField:password"

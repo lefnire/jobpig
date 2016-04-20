@@ -104,9 +104,9 @@ export default class Employer extends React.Component {
     return (
       <div className="padded">
         <Card>
-          <CardText>
+          <CardHeader>
             <RaisedButton label="Post Job" primary={true} onTouchTap={()=> global.jobpig.createJob.open()} />
-          </CardText>
+          </CardHeader>
           <CardText>
             <ul className="empty-text">
               <li>View / contact candidates who match your listing, sorted by score</li>
