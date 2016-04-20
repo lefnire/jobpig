@@ -28,7 +28,7 @@ export default class Contact extends React.Component {
       <Dialog
         title="Contact"
         actions={actions}
-        modal={false}
+        autoScrollBodyContent={true}
         open={this.state.open}
         onRequestClose={this.close}
       >

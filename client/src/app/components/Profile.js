@@ -47,7 +47,7 @@ class DeleteAccount extends React.Component {
       <Dialog
         title="Delete account"
         actions={actions}
-        modal={false}
+        autoScrollBodyContent={true}
         open={this.state.open}
         onRequestClose={this.close}
       >
@@ -89,7 +89,13 @@ export default class TagEdit extends React.Component {
     ];
     //modal={false}
     return (
-      <Dialog title="Edit Tag" actions={actions} open={this.state.open} onRequestClose={this.close}>
+      <Dialog
+        title="Edit Tag"
+        actions={actions}
+        open={this.state.open}
+        onRequestClose={this.close}
+        autoScrollBodyContent={true}
+      >
         <TextField
           type='number'
           autofocus={true}

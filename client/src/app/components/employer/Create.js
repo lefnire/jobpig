@@ -30,9 +30,8 @@ export default class CreateJob extends React.Component {
 
     return (
       <Dialog
-        bodyStyle={{overflow: 'visible'}}
+        autoScrollBodyContent={true}
         title={title}
-        modal={true}
         open={this.state.open}
         actions={[
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,

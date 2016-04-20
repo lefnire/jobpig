@@ -53,9 +53,8 @@ export default class SeedTags extends React.Component {
     // Select.Async#menuContainerStyle={{zIndex:1600}} may be necessary (Dialog's is 1500)
     return (
       <Dialog title="Seed Tags"
-        bodyStyle={{overflow: 'visible'}}
         actions={actions}
-        modal={false}
+        autoScrollBodyContent={true}
         open={open}
         onRequestClose={this.close}>
 

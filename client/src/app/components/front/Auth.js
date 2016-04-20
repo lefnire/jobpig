@@ -161,7 +161,11 @@ export default class Auth extends React.Component {
       [AUTH_ACTIONS.POST_JOB]: 1
     }[this.state.action];
     return (
-      <Dialog actions={actions} modal={true} open={this.state.open} >
+      <Dialog
+        actions={actions}
+        autoScrollBodyContent={true}
+        open={this.state.open}
+      >
         <Tabs initialSelectedIndex={initialTab}>
           <Tab label="Login">
             <Login />
