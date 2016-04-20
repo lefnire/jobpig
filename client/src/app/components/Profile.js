@@ -1,6 +1,23 @@
 import React from 'react';
 import {API_URL, _fetch, logout} from '../helpers';
-import MUI from 'material-ui';
+import {
+  FlatButton,
+  Dialog,
+  TextField,
+  Checkbox,
+  ListItem,
+  FontIcon,
+  IconMenu,
+  IconButton,
+  MenuItem,
+  ClearFix,
+  Card,
+  CardHeader,
+  CardText,
+  CardTitle,
+  List,
+  RaisedButton,
+} from 'material-ui';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
@@ -22,12 +39,12 @@ class DeleteAccount extends React.Component {
 
   render(){
     const actions = [
-      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
-      <MUI.FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit() }
+      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
+      <FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit() }
       />,
     ];
     return (
-      <MUI.Dialog
+      <Dialog
         title="Delete account"
         actions={actions}
         modal={false}
@@ -48,7 +65,7 @@ class DeleteAccount extends React.Component {
             validations="equals:DELETE"
             type="email"/>
         </Formsy.Form>
-      </MUI.Dialog>
+      </Dialog>
     );
   }
 }
@@ -67,13 +84,13 @@ export default class TagEdit extends React.Component {
     if (!tag) return null;
     let {locked, score} = tag.user_tags;
     let actions = [
-      <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
-      <MUI.FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={this._submit}/>,
+      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
+      <FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={this._submit}/>,
     ];
     //modal={false}
     return (
-      <MUI.Dialog title="Edit Tag" actions={actions} open={this.state.open} onRequestClose={this.close}>
-        <MUI.TextField
+      <Dialog title="Edit Tag" actions={actions} open={this.state.open} onRequestClose={this.close}>
+        <TextField
           type='number'
           autofocus={true}
           fullWidth={true}
@@ -81,12 +98,12 @@ export default class TagEdit extends React.Component {
           onChange={this._changeScore}
           floatingLabelText="Manually enter a score"
         />
-        <MUI.Checkbox
+        <Checkbox
           label="Lock tag to score (won't be effected when thumbing)."
           onCheck={this._changeLock}
           checked={locked}
         />
-      </MUI.Dialog>
+      </Dialog>
     );
   }
 
@@ -128,22 +145,22 @@ export default class Profile extends React.Component{
   renderTag = tag => {
     let {score, locked} = tag.user_tags;
     return (
-      <MUI.ListItem key={tag.id}
+      <ListItem key={tag.id}
         primaryText={(
           <div>
             <span style={{fontWeight:'bold', color: score > 0 ? 'green' : 'red'}}>
-              {locked && <MUI.FontIcon className="material-icons">lock_outline</MUI.FontIcon>}
+              {locked && <FontIcon className="material-icons">lock_outline</FontIcon>}
               {score > 0 ? '+' : ''}{score}
             </span> {tag.text}
           </div>
         )}
         rightIconButton={(
-          <MUI.IconMenu iconButtonElement={
-            <MUI.IconButton><MoreVertIcon /></MUI.IconButton>
+          <IconMenu iconButtonElement={
+            <IconButton><MoreVertIcon /></IconButton>
           }>
-            <MUI.MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</MUI.MenuItem>
-            <MUI.MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</MUI.MenuItem>
-          </MUI.IconMenu>
+            <MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</MenuItem>
+            <MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</MenuItem>
+          </IconMenu>
         )}
       />
     );
@@ -156,14 +173,14 @@ export default class Profile extends React.Component{
     let tags = this.state.profile.tags;
 
     return (
-      <MUI.ClearFix>
+      <ClearFix>
 
         <TagEdit selected={this.state.selected} ref="dialog" onSubmit={this._refresh} />
         <SeedTags onSeed={this._refresh} ref="seed" />
 
-        <MUI.Card>
-          <MUI.CardHeader avatar={profile.pic} />
-          <MUI.CardText>
+        <Card>
+          <CardHeader avatar={profile.pic} />
+          <CardText>
 
             <Formsy.Form
               ref="form"
@@ -178,30 +195,30 @@ export default class Profile extends React.Component{
               <fui.FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
               <fui.FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
 
-              <MUI.RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
+              <RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
               <a className="destroy-link" onClick={()=>this.refs.delete.open()}>Delete account</a>
 
             </Formsy.Form>
-          </MUI.CardText>
-        </MUI.Card>
+          </CardText>
+        </Card>
 
-        <MUI.Card>
-          <MUI.CardTitle title='Scores' subtitle="Check to lock an attribute, meaning it won't be counted against in scoring" />
-          <MUI.CardText>
-            <MUI.List>
+        <Card>
+          <CardTitle title='Scores' subtitle="Check to lock an attribute, meaning it won't be counted against in scoring" />
+          <CardText>
+            <List>
               {tags.length ? tags.map(this.renderTag) : (
-                <MUI.ListItem primaryText={(
+                <ListItem primaryText={(
                   <div>No tag scores yet, click below head to <a href="/#/match">matches</a>.</div>
                 )} />
               )}
-            </MUI.List>
-            <MUI.RaisedButton label="Seed More Tags" onTouchTap={this._seedTags} />
+            </List>
+            <RaisedButton label="Seed More Tags" onTouchTap={this._seedTags} />
             <a className="destroy-link" onClick={this._reset}>Reset Tags</a>
-          </MUI.CardText>
-        </MUI.Card>
+          </CardText>
+        </Card>
 
         <DeleteAccount ref="delete" />
-      </MUI.ClearFix>
+      </ClearFix>
     )
   }
 

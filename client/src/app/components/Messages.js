@@ -1,5 +1,13 @@
 import React from 'react';
-import MUI from 'material-ui';
+import {
+  CardHeader,
+  Card,
+  CardText,
+  CardTitle,
+  IconButton,
+  CardActions,
+  FlatButton,
+} from 'material-ui';
 import _ from 'lodash';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
@@ -12,7 +20,7 @@ class Reply extends React.Component {
     let {sender, reply} = this.props;
     if (!reply) return null;
     return (
-      <MUI.CardHeader
+      <CardHeader
         title={sender.email}
         subtitle={reply.body}
         avatar={sender.pic} />
@@ -34,13 +42,13 @@ export default class Messages extends React.Component {
   renderEmpty(){
     return (
       <div className="padded">
-        <MUI.Card>
-          <MUI.CardText>
+        <Card>
+          <CardText>
             <p className="empty-text">
               Here you'll find messages when you've been contacted. Employers and searchers can contact each other via employer-posted jobs.
             </p>
-          </MUI.CardText>
-        </MUI.Card>
+          </CardText>
+        </Card>
       </div>
     );
   }
@@ -49,44 +57,44 @@ export default class Messages extends React.Component {
     return (
       <div>
         {this.state.messages.map(message => (
-          <MUI.Card key={message.id} style={{margin:40}}>
-            <MUI.CardTitle title={
+          <Card key={message.id} style={{margin:40}}>
+            <CardTitle title={
               <span>
                 {message.subject}
                 {message.user_id !== this.state.user.id ? null :
-                <MUI.IconButton iconClassName="material-icons" tooltip="You sent this">forward</MUI.IconButton>}
+                <IconButton iconClassName="material-icons" tooltip="You sent this">forward</IconButton>}
               </span>
             }/>
-            <MUI.CardHeader
+            <CardHeader
               title={message.users[message.user_id].email}
               subtitle={message.body}
               avatar={message.users[message.user_id].pic}
             />
             { message.replies && message.replies.map(reply => <Reply key={reply.id} sender={message.users[reply.user_id]} reply={reply} />) }
-            <MUI.CardActions>
-              <MUI.FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
-              <MUI.FlatButton label="Delete" onTouchTap={() => this.remove(message)} />
-            </MUI.CardActions>
+            <CardActions>
+              <FlatButton label="Reply" onTouchTap={() => this.toggleReply(message)} />
+              <FlatButton label="Delete" onTouchTap={() => this.remove(message)} />
+            </CardActions>
 
             { message.showReply ?
-              <MUI.Card style={{margin:20}}>
-                <MUI.CardText>
-                  <MUI.TextField
+              <Card style={{margin:20}}>
+                <CardText>
+                  <TextField
                     ref="response"
                     hintText="Reply to sender"
                     multiLine={true}
                     rows={2}
                   />
-                </MUI.CardText>
-                <MUI.CardActions>
-                  <MUI.FlatButton label="Send" onTouchTap={() => this.send(message)} />
-                  <MUI.FlatButton label="Cancel" onTouchTap={() => this.toggleReply(message)} />
-                </MUI.CardActions>
-              </MUI.Card>
+                </CardText>
+                <CardActions>
+                  <FlatButton label="Send" onTouchTap={() => this.send(message)} />
+                  <FlatButton label="Cancel" onTouchTap={() => this.toggleReply(message)} />
+                </CardActions>
+              </Card>
               : null
             }
 
-          </MUI.Card>
+          </Card>
         ))}
       </div>
     );

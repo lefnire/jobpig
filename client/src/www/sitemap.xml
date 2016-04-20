@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://jobpigapp.com/</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+
+    <url>
+        <loc>https://jobpigapp.com/blog.html</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://jobpigapp.com/blog.html#/0</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://jobpigapp.com/blog.html#/1</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://jobpigapp.com/blog.html#/2</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>https://jobpigapp.com/blog.html#/3</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+</urlset>

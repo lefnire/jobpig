@@ -1,5 +1,7 @@
 import React from 'react';
-import MUI from 'material-ui';
+import {
+  Snackbar
+} from 'material-ui';
 
 export default class Alerts extends React.Component {
   constructor(props) {
@@ -9,7 +11,7 @@ export default class Alerts extends React.Component {
 
   render() {
     return (
-      <MUI.Snackbar
+      <Snackbar
         open={this.state.open}
         message={this.state.message}
         autoHideDuration={6000}

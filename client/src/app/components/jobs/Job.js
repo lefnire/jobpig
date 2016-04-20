@@ -1,5 +1,16 @@
 import React, {Component} from 'react';
-import MUI from 'material-ui';
+import {
+  Card,
+  CardTitle,
+  Paper,
+  TextField,
+  FlatButton,
+  CardActions,
+  CardText,
+  FloatingActionButton,
+  FontIcon,
+  ListItem,
+} from 'material-ui';
 import _ from 'lodash';
 import Prospect from '../employer/Prospect';
 import {
@@ -42,8 +53,8 @@ export default class Job extends Component {
 
     return (
       <div style={styles.card} className={isInList? 'padded': ''}>
-        <MUI.Card>
-          <MUI.CardTitle
+        <Card>
+          <CardTitle
             title={<a className="job-title" href={job.url} target='_blank'>{job.title}</a>}
             subtitle={this._meta(job)}
             actAsExpander={isInList}
@@ -52,34 +63,34 @@ export default class Job extends Component {
           {isEmployer? null: (
             <div>
               {editing ?
-                <MUI.Paper zDepth={2} style={{padding:5}}>
-                  <MUI.TextField
+                <Paper zDepth={2} style={{padding:5}}>
+                  <TextField
                     ref='noteRef'
                     hintText="Add personal comments here."
                     defaultValue={job.note}
                     fullWidth={true}
                     multiLine={true} />
-                  <MUI.FlatButton label="Save" onTouchTap={this._saveNote} />&nbsp;
-                  <MUI.FlatButton label="Cancel" onTouchTap={() => this.setState({editing: false})} />
-                </MUI.Paper>
-                : job.note && <MUI.Paper zDepth={2} style={{padding: 5}}>
+                  <FlatButton label="Save" onTouchTap={this._saveNote} />&nbsp;
+                  <FlatButton label="Cancel" onTouchTap={() => this.setState({editing: false})} />
+                </Paper>
+                : job.note && <Paper zDepth={2} style={{padding: 5}}>
                   <p>{job.note}</p>
-                </MUI.Paper>
+                </Paper>
               }
               {isEmployer? null : (
-                <MUI.CardActions>{
+                <CardActions>{
                   (!isMatch ? [
-                    <MUI.FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
+                    <FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
                   ] : []).concat(
-                    <MUI.FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
-                    <MUI.FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
-                    <MUI.FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
+                    <FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
+                    <FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
+                    <FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
                   )
-                }</MUI.CardActions>
+                }</CardActions>
               )}
             </div>
           )}
-          <MUI.CardText
+          <CardText
             style={{background:'#f8f8f8'}}
             expandable={isInList}
             ref={c => isInList && c && c.setState({expanded: false})}
@@ -91,19 +102,19 @@ export default class Job extends Component {
                 {job.users.map(u => <Prospect key={u.id} prospect={u} />)}
               </div>
             )}
-          </MUI.CardText>
+          </CardText>
 
           {!isMatch? null : (
-            <MUI.CardActions style={{position:'fixed', right:20, bottom: 20}}>
-              <MUI.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
-                <MUI.FontIcon className="material-icons">thumb_up</MUI.FontIcon>
-              </MUI.FloatingActionButton>
-              <MUI.FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.DISLIKED)}>
-                <MUI.FontIcon className="material-icons">thumb_down</MUI.FontIcon>
-              </MUI.FloatingActionButton>
-            </MUI.CardActions>
+            <CardActions style={{position:'fixed', right:20, bottom: 20}}>
+              <FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.LIKED)}>
+                <FontIcon className="material-icons">thumb_up</FontIcon>
+              </FloatingActionButton>
+              <FloatingActionButton onTouchTap={() => this._setStatus(FILTERS.DISLIKED)}>
+                <FontIcon className="material-icons">thumb_down</FontIcon>
+              </FloatingActionButton>
+            </CardActions>
           )}
-        </MUI.Card>
+        </Card>
 
       </div>
     );
@@ -124,10 +135,10 @@ export default class Job extends Component {
     return (
       <span>
         {items.map((item, i) => (
-          <MUI.ListItem key={i} primaryText={item.text} leftIcon={item.icon} />
+          <ListItem key={i} primaryText={item.text} leftIcon={item.icon} />
         ))}
         {this.props.isEmployer? (
-          <MUI.ListItem
+          <ListItem
             primaryText={`${job.views} Views, ${job.likes} Likes, ${job.dislikes} Dislikes`}
             leftIcon={<EditorInsertChart tooltip="Views" />}
           />

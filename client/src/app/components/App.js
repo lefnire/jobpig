@@ -9,7 +9,7 @@ import {
   ActionCheckCircle
 } from 'material-ui/lib/svg-icons';
 //import FontIcon from 'material-ui/lib/font-icon';
-import MUI, {
+import {
   Toolbar,
   ToolbarGroup,
   DropDownMenu,

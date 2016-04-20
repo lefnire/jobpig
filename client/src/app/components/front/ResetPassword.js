@@ -1,5 +1,10 @@
 import React from 'react';
-import MUI from 'material-ui';
+import {
+  AppBar,
+  Card,
+  CardHeader,
+  CardText,
+} from 'material-ui';
 import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import {_fetch} from '../../helpers';
@@ -16,10 +21,10 @@ export default class ResetPassword extends React.Component {
     let {query} = this.props.location;
     return (
       <div>
-        <MUI.AppBar title="Jobpig Password Reset" />
-        <MUI.Card>
-          <MUI.CardHeader title={"Reset Password for " + query.email} />
-          <MUI.CardText>
+        <AppBar title="Jobpig Password Reset" />
+        <Card>
+          <CardHeader title={"Reset Password for " + query.email} />
+          <CardText>
             <Formsy.Form
               ref="form"
               onValid={() => this.setState({canSubmit: true})}
@@ -42,11 +47,11 @@ export default class ResetPassword extends React.Component {
                 hintText="Confirm Password"
                 fullWidth={true}
                 type="password"/>
-              <MUI.RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+              <RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
             </Formsy.Form>
 
-          </MUI.CardText>
-        </MUI.Card>
+          </CardText>
+        </Card>
       </div>
     );
   }

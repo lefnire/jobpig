@@ -1,5 +1,9 @@
 import React from 'react';
-import MUI from 'material-ui';
+import {
+  Dialog,
+  FlatButton,
+  ClearFix,
+} from 'material-ui';
 import _ from 'lodash';
 import {_fetch, getTags, constants, filterOptions, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
@@ -25,17 +29,17 @@ export default class CreateJob extends React.Component {
       : 'Post a Job ($99 for 30 days)';
 
     return (
-      <MUI.Dialog
+      <Dialog
         bodyStyle={{overflow: 'visible'}}
         title={title}
         modal={true}
         open={this.state.open}
         actions={[
-          <MUI.FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
-          <MUI.FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
+          <FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         ]} >
 
-        <MUI.ClearFix>
+        <ClearFix>
 
           <StripeCheckout
             ref="stripe"
@@ -104,8 +108,8 @@ export default class CreateJob extends React.Component {
             />
 
           </Formsy.Form>
-        </MUI.ClearFix>
-      </MUI.Dialog>
+        </ClearFix>
+      </Dialog>
     )
   }
 

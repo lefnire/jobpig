@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
-import MUI from 'material-ui';
+import {
+  Card,
+  CardText,
+  CircularProgress,
+} from 'material-ui';
 import _ from 'lodash';
 import Job from './Job';
 import SeedTags from './SeedTags'
@@ -32,19 +36,19 @@ export default class Jobs extends Component {
 
     let emptySection = (
       <div className="padded">
-        <MUI.Card>
+        <Card>
           {filter === 'liked'?
-            <MUI.CardText>
+            <CardText>
               <p className="empty-text">Your liked page will be filled with jobs that you have liked. You can use this page to keep track of jobs you
               are interested in. Once you have applied to a job, click on the "APPLIED" button, and your job will
               be moved over to the "APPLIED" page.</p>
-            </MUI.CardText>
+            </CardText>
           : filter === 'disliked'?
-            <MUI.CardText className="empty-text">
+            <CardText className="empty-text">
               <p style={styles.empty}>This page is frankly really stupid. If you are dumb and made mistate by hitting disliked you can come here and change your mind about a disliked job and like it.</p>
-            </MUI.CardText>
+            </CardText>
           :
-            <MUI.CardText>
+            <CardText>
               <div className="empty-text">
                 <p>Your applied job page will be filled with jobs that you have applied to.
                 Use this page to follow up with jobs you have applied to. You can make notes
@@ -56,16 +60,16 @@ export default class Jobs extends Component {
                   <li>Jim asked to have my profile page available and ready to show the company on the call.</li>
                 </ul>
               </div>
-            </MUI.CardText>
+            </CardText>
           }
-          </MUI.Card>
+          </Card>
       </div>
     );
 
     return (
       <div>
         <SeedTags onSeed={() => this._fetchJobs()} auto={true} />
-        {fetching? <MUI.CircularProgress mode="indeterminate" size={1.5} />
+        {fetching? <CircularProgress mode="indeterminate" size={1.5} />
           : isEmpty? emptySection
           : this.state.jobs.map(job =>
             <Job job={job} key={job.id} onSetStatus={() => this._fetchJobs()} />
