@@ -28,7 +28,6 @@ import {
   List,
   ListItem
 } from 'material-ui';
-import { Colors } from 'material-ui/lib/styles';
 import _ from 'lodash';
 import Footer from './Footer';
 import {me} from '../helpers';

@@ -2,12 +2,13 @@ import React from 'react';
 import {
   FlatButton,
   Dialog,
-  ClearFix,
 } from 'material-ui';
 import _ from 'lodash';
 import {_fetch, _ga} from '../../helpers';
 import Formsy from 'formsy-react'
-import fui from 'formsy-material-ui';
+import {
+  FormsyText
+} from 'formsy-material-ui';
 
 export default class Contact extends React.Component {
   constructor(props) {
@@ -32,16 +33,14 @@ export default class Contact extends React.Component {
         open={this.state.open}
         onRequestClose={this.close}
       >
-        <ClearFix>
-          <Formsy.Form
-          ref="form"
-          onValid={() => this.setState({canSubmit: true})}
-          onInvalid={() => this.setState({canSubmit: false})}
-          onValidSubmit={this.submitForm}>
-            <fui.FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
-            <fui.FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
-          </Formsy.Form>
-        </ClearFix>
+        <Formsy.Form
+        ref="form"
+        onValid={() => this.setState({canSubmit: true})}
+        onInvalid={() => this.setState({canSubmit: false})}
+        onValidSubmit={this.submitForm}>
+          <FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
+          <FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
+        </Formsy.Form>
       </Dialog>
     );
   }

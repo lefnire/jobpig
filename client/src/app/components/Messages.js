@@ -13,7 +13,6 @@ import Formsy from 'formsy-react'
 import fui from 'formsy-material-ui';
 import {_fetch, me} from '../helpers';
 import Footer from './Footer';
-import { Colors } from 'material-ui/lib/styles';
 
 class Reply extends React.Component {
   render() {

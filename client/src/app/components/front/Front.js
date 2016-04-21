@@ -9,7 +9,6 @@ import {
 import Auth from './Auth';
 import Footer from '../Footer';
 import _ from 'lodash';
-import {Colors, Typography} from 'material-ui/lib/styles';
 import {constants, _ga} from '../../helpers';
 const {AUTH_ACTIONS} = constants;
 
