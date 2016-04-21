@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Dialog,
   FlatButton,
 } from 'material-ui';
 import _ from 'lodash';
@@ -14,6 +13,9 @@ import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
 import Error from '../Error';
 const {TAG_TYPES} = constants;
+import {
+  Modal
+} from 'react-bootstrap';
 
 export default class CreateJob extends React.Component {
   constructor(props) {
@@ -31,83 +33,83 @@ export default class CreateJob extends React.Component {
       : 'Post a Job ($99 for 30 days)';
 
     return (
-      <Dialog
-        autoScrollBodyContent={true}
-        title={title}
-        open={this.state.open}
-        actions={[
-          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
-          <FlatButton label="Submit" type="submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
-        ]}
-      >
-        <StripeCheckout
-          ref="stripe"
-          token={this.onToken}
-          stripeKey="<nconf:stripe:public>"
-          amount={9900}>
-          <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
-        </StripeCheckout>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" dialogClassName="full-modal">
+        <Modal.Header><Modal.Title>{title}</Modal.Title></Modal.Header>
+        <Modal.Body>
+          <StripeCheckout
+            ref="stripe"
+            token={this.onToken}
+            stripeKey="<nconf:stripe:public>"
+            amount={9900}>
+            <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
+          </StripeCheckout>
 
-        <Error error={this.state.error} />
+          <Error error={this.state.error} />
 
-        <Formsy.Form
-          ref="form"
-          onValid={() => this.setState({canSubmit: true})}
-          onInvalid={() => this.setState({canSubmit: false})}
-          onValidSubmit={this.submitForm}
-        >
-          <FormsyText
-            name='title'
-            required
-            hintText="*Job Title"
-            fullWidth={true}
-          />
-          <FormsyText
-            name='company'
-            required
-            hintText="*Company"
-            fullWidth={true}
-          />
-          <FormsyText
-            name='url'
-            hintText="Job URL (optional)"
-            fullWidth={true}
-            validations="isUrl"
-            validationError="Enter a valid URL"
+          <Formsy.Form
+            ref="form"
+            onValid={() => this.setState({canSubmit: true})}
+            onInvalid={() => this.setState({canSubmit: false})}
+            onValidSubmit={this.submitForm}
+          >
+            <FormsyText
+              name='title'
+              required
+              hintText="*Job Title"
+              fullWidth={true}
+            />
+            <FormsyText
+              name='company'
+              required
+              hintText="*Company"
+              fullWidth={true}
+            />
+            <FormsyText
+              name='url'
+              hintText="Job URL (optional)"
+              fullWidth={true}
+              validations="isUrl"
+              validationError="Enter a valid URL"
 
-          />
-          <Select.Async
-            placeholder="Tags"
-            multi={true}
-            value={this.state.tags}
-            loadOptions={() => getTags().then(options => ({options})) }
-            onChange={this.changeTags}
-            noResultsText="Start typing"
-            filterOptions={filterOptions(true)}
-          />
-          <Select.Async
-            placeholder="Location"
-            value={this.state.location}
-            loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
-            onChange={this.changeLocation}
-            noResultsText="Start typing"
-            filterOptions={filterOptions(true)}
-          />
-          <FormsyCheckbox
-            name='remote'
-            label="Remote"
-          />
-          <FormsyText
-            name='description'
-            required
-            hintText="*Job Description"
-            multiLine={true}
-            rows={3}
-            fullWidth={true}
-          />
+            />
+            <Select.Async
+              placeholder="Tags"
+              multi={true}
+              value={this.state.tags}
+              loadOptions={() => getTags().then(options => ({options})) }
+              onChange={this.changeTags}
+              noResultsText="Start typing"
+              filterOptions={filterOptions(true)}
+            />
+            <br/>
+            <Select.Async
+              placeholder="Location"
+              value={this.state.location}
+              loadOptions={() => getTags(TAG_TYPES.LOCATION).then(options => ({options})) }
+              onChange={this.changeLocation}
+              noResultsText="Start typing"
+              filterOptions={filterOptions(true)}
+            />
+            <FormsyCheckbox
+              name='remote'
+              label="Remote"
+            />
+            <FormsyText
+              name='description'
+              required
+              hintText="*Job Description"
+              multiLine={true}
+              rows={3}
+              fullWidth={true}
+            />
 
-        </Formsy.Form>
-      </Dialog>
+          </Formsy.Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>
+          <FlatButton label="Submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
+        </Modal.Footer>
+      </Modal>
     )
   }
 

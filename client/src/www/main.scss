@@ -30,6 +30,29 @@ body {
   }
 }
 
+.modal {
+  z-index: 1150;
+}
+@mixin full-modal {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+
+  .modal-content {
+    border: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+.modal-dialog {
+  .modal-content {
+    border-radius: 0px;
+    overflow-y: auto;
+  }
+  @media (max-width: 800px) { @include full-modal; }
+  &.full-modal { @include full-modal; }
+}
+
 .app {
   .padded {
     margin: 25px;

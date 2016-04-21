@@ -2,7 +2,6 @@ import React from 'react';
 import {API_URL, _fetch, logout} from '../helpers';
 import {
   FlatButton,
-  Dialog,
   TextField,
   Checkbox,
   ListItem,
@@ -24,6 +23,9 @@ import {
 } from 'formsy-material-ui';
 import update from 'react-addons-update';
 import SeedTags from './jobs/SeedTags';
+import {
+  Modal
+} from 'react-bootstrap';
 
 class DeleteAccount extends React.Component {
   constructor(){
@@ -40,33 +42,34 @@ class DeleteAccount extends React.Component {
 
   render(){
     const actions = [
-      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
-      <FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit() }
-      />,
+
     ];
     return (
-      <Dialog
-        title="Delete account"
-        actions={actions}
-        autoScrollBodyContent={true}
-        open={this.state.open}
-        onRequestClose={this.close}
-      >
-        <Formsy.Form
-          ref="form"
-          onValid={() => this.setState({canSubmit: true})}
-          onInvalid={() => this.setState({canSubmit: false})}
-          onValidSubmit={this.submit}
-        >
-          <p>Confirm deletion by typing "DELETE" in the input below and submitting.</p>
-          <FormsyText
-            name='confirm'
-            required
-            fullWidth={true}
-            validations="equals:DELETE"
-            type="email"/>
-        </Formsy.Form>
-      </Dialog>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+        <Modal.Header>
+          <Modal.Title>Delete Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formsy.Form
+            ref="form"
+            onValid={() => this.setState({canSubmit: true})}
+            onInvalid={() => this.setState({canSubmit: false})}
+            onValidSubmit={this.submit}
+          >
+            <p>Confirm deletion by typing "DELETE" in the input below and submitting.</p>
+            <FormsyText
+              name='confirm'
+              required
+              fullWidth={true}
+              validations="equals:DELETE"
+              type="email"/>
+          </Formsy.Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>
+          <FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }
@@ -84,33 +87,29 @@ export default class TagEdit extends React.Component {
     let {tag} = this.state;
     if (!tag) return null;
     let {locked, score} = tag.user_tags;
-    let actions = [
-      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
-      <FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={this._submit}/>,
-    ];
-    //modal={false}
     return (
-      <Dialog
-        title="Edit Tag"
-        actions={actions}
-        open={this.state.open}
-        onRequestClose={this.close}
-        autoScrollBodyContent={true}
-      >
-        <TextField
-          type='number'
-          autofocus={true}
-          fullWidth={true}
-          value={score}
-          onChange={this._changeScore}
-          floatingLabelText="Manually enter a score"
-        />
-        <Checkbox
-          label="Lock tag to score (won't be effected when thumbing)."
-          onCheck={this._changeLock}
-          checked={locked}
-        />
-      </Dialog>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+        <Modal.Header><Modal.Title>Edit Tag</Modal.Title></Modal.Header>
+        <Modal.Body>
+          <TextField
+            type='number'
+            autofocus={true}
+            fullWidth={true}
+            value={score}
+            onChange={this._changeScore}
+            floatingLabelText="Manually enter a score"
+          />
+          <Checkbox
+            label="Lock tag to score (won't be effected when thumbing)."
+            onCheck={this._changeLock}
+            checked={locked}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />
+          <FlatButton label="Submit" primary={true} onTouchTap={this._submit}/>
+        </Modal.Footer>
+      </Modal>
     );
   }
 
@@ -119,7 +118,6 @@ export default class TagEdit extends React.Component {
   }));
 
   _changeLock = e => {
-    debugger;
     this.setState(update(this.state, {
       tag: {user_tags: {locked: {$set: e.target.checked}}}
     }))

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import update from 'react-addons-update';
 import {
   FlatButton,
-  Dialog,
   MenuItem,
   RaisedButton,
   Card,
@@ -18,6 +17,9 @@ import _ from 'lodash';
 import {_fetch, getTags, me, constants, filterOptions} from '../../helpers';
 import Select from 'react-select';
 const {TAG_TYPES} = constants;
+import {
+  Modal
+} from 'react-bootstrap';
 
 export default class SeedTags extends React.Component {
   constructor() {
@@ -33,81 +35,76 @@ export default class SeedTags extends React.Component {
   render() {
     let {open, tags, suggestion} = this.state;
 
-    const actions = [
-      <FlatButton
-        label="Skip"
-        secondary={true}
-        onTouchTap={() => {
-          this._seedSkipped=true;
-          this.close();
-        }}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this._seedTags}
-      />,
-    ];
-
-    // Select.Async#menuContainerStyle={{zIndex:1600}} may be necessary (Dialog's is 1500)
     return (
-      <Dialog title="Seed Tags"
-        actions={actions}
-        autoScrollBodyContent={true}
-        open={open}
-        onRequestClose={this.close}>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+        <Modal.Header>
+          <Modal.Title>Seed Tags</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
 
-        {!suggestion? (
-          <div>
-            <p>You'll be thumbing your way to matches soon, but let's kickstart with a few must-haves. Try tags like <b>Python</b>, <b>San Francisco, CA</b>, <b>Full-time</b> or <b>Remote</b>.</p>
-            <p>Jobpig treats attributes equally (skills, location, company, commitment); they're all tags. Besides this seeding, you won't set search preferences - it learns.</p>
-          </div>
-        ) : (
-          <Card>
-            <CardText>
-              {/*<h4>Suggest a Tag</h4>*/}
-              <p>If JP has most your tags save a few, suggest them here. If it's missing most of your industry, <a href="https://cctaxonomy.com/#/16" target="_blank">add them here</a> instead</p>
-              <Formsy.Form
-                ref="form"
-                onValid={() => this.setState({canSubmit: true})}
-                onInvalid={() => this.setState({canSubmit: false})}
-                onValidSubmit={this.addSuggestion}>
-                <FormsyText
-                  name='label'
-                  required
-                  ref='suggest'
-                  value={suggestion.label}
-                  floatingLabelText='Tag (eg "Apache Hadoop")'
-                  fullWidth={true}
-                />
-                <FormsySelect
-                  name='type'
-                  required
-                  value={suggestion.type}
-                  floatingLabelText="Tag Type"
-                  fullWidth={true}
-                >
-                  <MenuItem value={TAG_TYPES.SKILL} primaryText="Skill" />
-                  <MenuItem value={TAG_TYPES.LOCATION} primaryText="Location" />
-                  <MenuItem value={TAG_TYPES.COMPANY} primaryText="Company" />
-                </FormsySelect>
-                <RaisedButton label="Add" type="submit" disabled={!this.state.canSubmit} />
-              </Formsy.Form>
-            </CardText>
-          </Card>
-        )}
+          {!suggestion? (
+            <div>
+              <p>You'll be thumbing your way to matches soon, but let's kickstart with a few must-haves. Try tags like <b>Python</b>, <b>San Francisco, CA</b>, <b>Full-time</b> or <b>Remote</b>.</p>
+              <p>Jobpig treats attributes equally (skills, location, company, commitment); they're all tags. Besides this seeding, you won't set search preferences - it learns.</p>
+            </div>
+          ) : (
+            <Card>
+              <CardText>
+                {/*<h4>Suggest a Tag</h4>*/}
+                <p>If JP has most your tags save a few, suggest them here. If it's missing most of your industry, <a href="https://cctaxonomy.com/#/16" target="_blank">add them here</a> instead</p>
+                <Formsy.Form
+                  ref="form"
+                  onValid={() => this.setState({canSubmit: true})}
+                  onInvalid={() => this.setState({canSubmit: false})}
+                  onValidSubmit={this.addSuggestion}>
+                  <FormsyText
+                    name='label'
+                    required
+                    ref='suggest'
+                    value={suggestion.label}
+                    floatingLabelText='Tag (eg "Apache Hadoop")'
+                    fullWidth={true}
+                  />
+                  <FormsySelect
+                    name='type'
+                    required
+                    value={suggestion.type}
+                    floatingLabelText="Tag Type"
+                    fullWidth={true}
+                  >
+                    <MenuItem value={TAG_TYPES.SKILL} primaryText="Skill" />
+                    <MenuItem value={TAG_TYPES.LOCATION} primaryText="Location" />
+                    <MenuItem value={TAG_TYPES.COMPANY} primaryText="Company" />
+                  </FormsySelect>
+                  <RaisedButton label="Add" type="submit" disabled={!this.state.canSubmit} />
+                </Formsy.Form>
+              </CardText>
+            </Card>
+          )}
 
-        <Select.Async
-          multi={true}
-          value={tags}
-          loadOptions={this.loadOptions}
-          onChange={this.changeTags}
-          noResultsText="Start typing"
-          filterOptions={filterOptions(true, 'Suggest')}
-        />
+          <Select.Async
+            multi={true}
+            value={tags}
+            loadOptions={this.loadOptions}
+            onChange={this.changeTags}
+            noResultsText="Start typing"
+            filterOptions={filterOptions(true, 'Suggest')}
+          />
+        </Modal.Body>
 
-      </Dialog>
+        <Modal.Footer>
+          <FlatButton
+            label="Skip"
+            secondary={true}
+            onTouchTap={() => {
+              this._seedSkipped=true;
+              this.close();
+            }}
+          />
+          <FlatButton label="Submit" primary={true} onTouchTap={this._seedTags} />
+        </Modal.Footer>
+
+      </Modal>
     );
   }
 

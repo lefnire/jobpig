@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   RaisedButton,
-  Dialog,
   Tabs,
   Tab,
   FlatButton
@@ -15,6 +14,10 @@ import {
 import Error from '../Error';
 import update from 'react-addons-update';
 const {AUTH_ACTIONS} = constants;
+
+import {
+  Modal
+} from 'react-bootstrap';
 
 class Login extends React.Component {
   constructor(){
@@ -154,29 +157,27 @@ export default class Auth extends React.Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
-    ];
     const initialTab = {
       [AUTH_ACTIONS.LOGIN]: 0,
       [AUTH_ACTIONS.REGISTER]: 1,
       [AUTH_ACTIONS.POST_JOB]: 1
     }[this.state.action];
     return (
-      <Dialog
-        actions={actions}
-        autoScrollBodyContent={true}
-        open={this.state.open}
-      >
-        <Tabs initialSelectedIndex={initialTab}>
-          <Tab label="Login">
-            <Login />
-          </Tab>
-          <Tab label="Register">
-            <Register action={this.state.action} coupon={this.props.coupon} />
-          </Tab>
-        </Tabs>
-      </Dialog>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+        <Modal.Body>
+          <Tabs initialSelectedIndex={initialTab}>
+            <Tab label="Login">
+              <Login />
+            </Tab>
+            <Tab label="Register">
+              <Register action={this.state.action} coupon={this.props.coupon} />
+            </Tab>
+          </Tabs>
+        </Modal.Body>
+        <Modal.Footer>
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
+        </Modal.Footer>
+      </Modal>
     );
 
   }

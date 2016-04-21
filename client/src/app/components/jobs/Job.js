@@ -44,13 +44,6 @@ export default class Job extends Component {
       card: _.defaults({}, style, isInList && {marginBottom: 20})
     };
 
-    window.setTimeout(() => { // FIXME This is bad, but using ref + componentDidMount isn't calling every render???
-      if (editing) return this.refs.noteRef.focus();
-    });
-
-    // Test tag issues: jobs have multiple companies, locations, etc. Remove after a while
-    //if (_.reduce([2,3,4], (m,type) => m && _.filter(job.tags, {type}).length>1, true)) debugger;
-
     return (
       <div style={styles.card} className={isInList? 'padded': ''}>
         <Card>
@@ -65,7 +58,7 @@ export default class Job extends Component {
               {editing ?
                 <Paper zDepth={2} style={{padding:5}}>
                   <TextField
-                    ref='noteRef'
+                    ref={c => c && c.focus()}
                     hintText="Add personal comments here."
                     defaultValue={job.note}
                     fullWidth={true}

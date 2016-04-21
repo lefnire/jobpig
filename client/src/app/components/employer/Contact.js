@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   FlatButton,
-  Dialog,
 } from 'material-ui';
 import _ from 'lodash';
 import {_fetch, _ga} from '../../helpers';
@@ -9,6 +8,9 @@ import Formsy from 'formsy-react'
 import {
   FormsyText
 } from 'formsy-material-ui';
+import {
+  Modal
+} from 'react-bootstrap';
 
 export default class Contact extends React.Component {
   constructor(props) {
@@ -20,28 +22,27 @@ export default class Contact extends React.Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
-      <FlatButton label="Submit" primary={true} keyboardFocused={true} onTouchTap={() => this.refs.form.submit()}/>,
-    ];
-
     return (
-      <Dialog
-        title="Contact"
-        actions={actions}
-        autoScrollBodyContent={true}
-        open={this.state.open}
-        onRequestClose={this.close}
-      >
-        <Formsy.Form
-        ref="form"
-        onValid={() => this.setState({canSubmit: true})}
-        onInvalid={() => this.setState({canSubmit: false})}
-        onValidSubmit={this.submitForm}>
-          <FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
-          <FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
-        </Formsy.Form>
-      </Dialog>
+      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+        <Modal.Header>
+          <Modal.Title>Contact</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formsy.Form
+            ref="form"
+            onValid={() => this.setState({canSubmit: true})}
+            onInvalid={() => this.setState({canSubmit: false})}
+            onValidSubmit={this.submitForm}>
+            <FormsyText hintText="Subject" name="subject" required validationError="required" fullWidth={true}/>
+            <FormsyText hintText="Message" name="body" required validationError="required" fullWidth={true} multiLine={true} />
+          </Formsy.Form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>,
+          <FlatButton label="Submit" primary={true} onTouchTap={() => this.refs.form.submit()}/>,
+        </Modal.Footer>
+      </Modal>
     );
   }
 
