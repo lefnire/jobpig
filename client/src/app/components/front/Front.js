@@ -89,30 +89,28 @@ export default class Front extends React.Component {
               </FloatingActionButton>
             </Modal.Footer>
           </div>
-          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' style={{position: 'absolute', bottom: 35, left: 45, padding: '15px 30px'}}>Try It!</Button>
+          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' className='cta-button' style={{position: 'absolute', bottom: 35, left: 45}}>Try It!</Button>
         </div>
       );
     } else if (_.isEmpty(user.tags)) {
       content = <Seedtags noModal={true} onSeed={this.onSeed} />;
     } else if (this.state.scoreCt > 4) {
       content = (
-        <div>
-          <Modal.Header>
-            <CardHeader
-              title="This was a demo (with real content); you should register to continue, so that your preferences will be saved to the database!"
-            />
-          </Modal.Header>
-          <Modal.Footer>
-            <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
-          </Modal.Footer>
-        </div>
+        <Modal.Body>
+          <h4>Ok, you get the concept. Let's get your scores into the database so you don't lose progress, shall we?</h4>
+          <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
+        </Modal.Body>
       );
     } else {
       content = (
         <div>
           <Modal.Body>
             <h4><a href={job.url} target="_blank">{job.title}</a></h4>
-            <h5>Tags: {_.map(job.tags, 'text').join(', ')}</h5>
+            <p style={{wordWrap: 'break-word'}}>
+              {job.tags.map(t =>
+                <span className="demo-tag">{t.text}</span>
+              )}
+            </p>
 
             <p>{striptags(job.description).slice(0, 1024)}{job.description.length > 1024 && '...'}</p>
           </Modal.Body>
@@ -130,14 +128,14 @@ export default class Front extends React.Component {
     }
 
     return (
-      <Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+      <Paper zDepth={3} className="paper-modal">
         {content}
       </Paper>
     );
   };
 
   render() {
-    let {user} = this.state;
+    let {user, viewScores} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
 
@@ -160,36 +158,35 @@ export default class Front extends React.Component {
 
         <Row className="searchers">
           <Col xs={12} md={6} className="jp-content">
-            {_.get(user, 'tags[0]') ? (
-              <Modal.Body>
-                <CardHeader
-                  title='You'
-                  subtitle='Description of your professional role'
-                  avatar="/sample-avatars/person.jpg"
-                />
-                <Row className="sample-scores">
-                  <Col md={6} xs={6}>
-                    <ul>
-                      {user.tags.filter(t => t.score > 0).map(tag => (
-                        <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
-                      ))}
-                    </ul>
-                  </Col>
-                  <Col md={6} xs={6}>
-                    <ul>
-                      {user.tags.filter(t => t.score < 0).map(tag => (
-                        <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
-                      ))}
-                    </ul>
-                  </Col>
-                </Row>
-              </Modal.Body>
-            ) : (
-              <div>
-                <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-                <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>,
-                  <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-              </div>
+            <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>,
+              <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+            {_.get(user, 'tags[0]') && (
+              viewScores ? (
+                <Modal.Body>
+                  <CardHeader
+                    title='You'
+                    subtitle='Description of your professional role'
+                    avatar="/sample-avatars/person.jpg"
+                  />
+                  <Row className="sample-scores">
+                    <Col md={6} xs={6}>
+                      <ul>
+                        {user.tags.filter(t => t.score > 0).map(tag => (
+                          <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
+                        ))}
+                      </ul>
+                    </Col>
+                    <Col md={6} xs={6}>
+                      <ul>
+                        {user.tags.filter(t => t.score < 0).map(tag => (
+                          <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
+                        ))}
+                      </ul>
+                    </Col>
+                  </Row>
+                </Modal.Body>
+              ) : <Button onClick={()=>this.setState({viewScores:true})}>View Your Scores</Button>
             )}
           </Col>
           <Col xs={12} md={6}>
@@ -200,7 +197,7 @@ export default class Front extends React.Component {
         <Row className="employers">
           <Col xs={12} md={6}>
             <div className="static-modal">
-              <Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+              <Paper zDepth={3} className="paper-modal">
                 <Modal.Header>
                   <Modal.Title>My Job Post</Modal.Title>
                 </Modal.Header>
@@ -233,9 +230,10 @@ export default class Front extends React.Component {
                     <ListGroupItem header="Candidate 3">...</ListGroupItem>
                   </ListGroup>
 
-                  <RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}
-                                label="Post a Job"/>
                 </Modal.Body>
+                <Modal.Footer>
+                  <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
+                </Modal.Footer>
               </Paper>
             </div>
           </Col>
