@@ -16,7 +16,20 @@ let User = sequelize.define('users', _.defaults({
   bio: Sequelize.TEXT,
   company: Sequelize.STRING,
   free_jobs: {type: Sequelize.INTEGER, defaultValue: 0} // coupon-applied free job postings
-}, defaultUserSchema));
+}, defaultUserSchema), {
+  classMethods: {
+    persistAnon(user_id, anon) {
+      return Promise.all([
+        sequelize.model('user_tags').bulkCreate(anon.tags.map(t => ({
+          user_id,
+          tag_id: t.id,
+          score: t.score,
+        }))),
+        sequelize.model('user_jobs').bulkCreate(_.map(anon.jobs, (status,job_id) => ({job_id, user_id, status}))),
+      ]);
+    }
+  }
+});
 passportLocalSequelize.attachToUser(User, {
   usernameField: 'email',
   usernameLowerCase: true,

@@ -18,8 +18,9 @@ let Meta = sequelize.define('meta', {
       return Meta.needsCron().then(val => {
         if (!val)
           return Promise.resolve();
-        console.log('Refreshing jobs....');
+
         // Update cron, delete stale jobs
+        console.log('Refreshing jobs....');
         return sequelize.query(`
           -- Update cron
           UPDATE meta SET val=CURRENT_TIMESTAMP WHERE key='cron';

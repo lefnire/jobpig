@@ -131,25 +131,6 @@ body {
     }
   }
 
-  @-webkit-keyframes flashing-button {
-    0% {
-      background-color: green;
-    }
-    50% {
-      background-color: #414B82;
-    }
-    100% {
-      background-color: green;
-    }
-  }
-
-  .flashing-button {
-    -webkit-animation-name: flashing-button;
-    -webkit-animation-duration: 900ms;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: ease-in-out;
-  }
-
   .searchers.row, .employers.row {
     //display: flex;
     //flex-direction: column;

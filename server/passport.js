@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const mail = require('./lib/mail');
 const Coupon = require('./models').Coupon;
+const moment = require('moment');
+
+let anons = {};
 
 const deny = (err, code) => ({status: code || 403, message: err.message || err});
 
@@ -45,6 +48,13 @@ exports.setup = app => {
         res.json({token: sign(_user)});
       });
 
+      // They were playing with sample jobs on front-page
+      let anon_id = req.headers['x-access-anon'];
+      if (anon_id) {
+        User.persistAnon(_user.id, anons[anon_id]);
+        delete anons[anon_id];
+      }
+
       // Send acct activation email
       let link = nconf.get('urls:' + nconf.get('NODE_ENV') + ':server') +
         `/user/activate?email=${_user.email}&key=${_user.activationKey}`;
@@ -55,6 +65,20 @@ exports.setup = app => {
         html: `Verify your Jobpig account by clicking this link: <a href="${link}">${link}</a>`
       });
     }).catch(next);
+  });
+
+  app.post('/register/anon', (req, res, next) => {
+    let id = +new Date;
+    anons[id] = {id, anon: true, tags: [], jobs: {}};
+    res.json(anons[id]);
+
+    // Cleanup old job-browsing sessions previous users left behind
+    _.each(anons, anon => {
+      moment().diff(anon.id, 'minutes') > 30 && delete anons[anon.id];
+    });
+  });
+  app.delete('/register/anon', (req, res, next) => {
+    delete anons[req.headers['x-access-anon']];
   });
 
   app.post('/login', passport.authenticate('local', localOpts), function(req, res){
@@ -74,8 +98,13 @@ var sign = function(user) {
 exports.ensureAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
   var token = /*req.body.token || req.query.token ||*/ req.headers['x-access-token'];
-  if (!token)
-    return next({status:403, message: 'No token provided.'});
+  if (!token) {
+    if (!req.headers['x-access-anon'])
+      return next({status: 403, message: 'No token provided.'});
+    // Allow anonymous users limited functions
+    req.user = anons[req.headers['x-access-anon']];
+    return next();
+  }
   // decode token
   jwt.verify(token, nconf.get('secret'), (err, decoded) => {
     if (err)

@@ -4,6 +4,11 @@ global.jobpig = {
   env: "<nconf:NODE_ENV>"
 };
 
+let anon;
+export function setAnon(user) {
+  anon = user;
+}
+
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
@@ -42,6 +47,7 @@ export function loggedIn(){ return !!jwt }
 export function _fetch(url, opts={}) {
   opts = _.merge({headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}}, opts);
   if (jwt) opts.headers['x-access-token'] = jwt;
+  if (anon) opts.headers['x-access-anon'] = anon.id;
   if (opts.body) opts.body = JSON.stringify(opts.body);
   return fetch(`${API_URL}/${url}`, opts)
     .then(response => {

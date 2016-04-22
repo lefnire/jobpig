@@ -9,10 +9,10 @@ if (nconf.get('NODE_ENV') === 'production')
 require('./models');
 
 //Express
-const express = require('express'),
-  app = express(),
-  path = require('path'),
-  bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
 
 app
 //.use(favicon(__dirname + '/public/favicon.ico'));
@@ -23,7 +23,9 @@ app
 .use(bodyParser.urlencoded({ extended: false }))
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
-//.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false})); //fixme used only for linkedin redirect, can we remove this?
+
+// used for front-page sample; social auth
+//.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false}));
 
 require('./passport').setup(app);
 

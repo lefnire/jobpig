@@ -14,7 +14,7 @@ import {
   FormsySelect
 } from 'formsy-material-ui';
 import _ from 'lodash';
-import {_fetch, getTags, me, constants, filterOptions} from '../../helpers';
+import {_fetch, getTags, me, constants, filterOptions} from '../helpers';
 import Select from 'react-select';
 const {TAG_TYPES} = constants;
 import {
@@ -34,9 +34,10 @@ export default class SeedTags extends React.Component {
 
   render() {
     let {open, tags, suggestion} = this.state;
+    let modal = !this.props.noModal;
 
-    return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+    let content = (
+      <div>
         <Modal.Header>
           <Modal.Title>Seed Tags</Modal.Title>
         </Modal.Header>
@@ -44,8 +45,8 @@ export default class SeedTags extends React.Component {
 
           {!suggestion? (
             <div>
-              <p>You'll be thumbing your way to matches soon, but let's kickstart with a few must-haves. Try tags like <b>Python</b>, <b>San Francisco, CA</b>, <b>Full-time</b> or <b>Remote</b>.</p>
-              <p>Jobpig treats attributes equally (skills, location, company, commitment); they're all tags. Besides this seeding, you won't set search preferences - it learns.</p>
+              <p>You'll be thumbing your way to matches soon, but let's kickstart with a few must-haves. Try tags like <b>Python</b>, <b>San Francisco</b>, <b>Full-time</b> or <b>Remote</b>.</p>
+              {modal && <p>Jobpig treats attributes equally (skills, location, company, commitment); they're all tags. Besides this seeding, you won't set search preferences - it learns.</p>}
             </div>
           ) : (
             <Card>
@@ -93,19 +94,23 @@ export default class SeedTags extends React.Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <FlatButton
+          {modal && <FlatButton
             label="Skip"
             secondary={true}
             onTouchTap={() => {
               this._seedSkipped=true;
               this.close();
             }}
-          />
+          />}
           <FlatButton label="Submit" primary={true} onTouchTap={this._seedTags} />
         </Modal.Footer>
-
-      </Modal>
+      </div>
     );
+    return modal ? (
+      <Modal show={open} onHide={this.close} bsSize="large">
+        {content}
+      </Modal>
+    ) : content;
   }
 
   open = () => this.setState({open: true});
@@ -153,9 +158,9 @@ export default class SeedTags extends React.Component {
     let tags = this.state.tags.map(t =>
       _.assign({text: t.label}, t.create ? {type: t.type, create: true} : {id: t.value}
     ));
-    _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(() => {
+    _fetch('user/seed-tags', {method:"POST", body: {tags}}).then(res => {
       this.close();
-      this.props.onSeed();
+      this.props.onSeed(res);
     });
   };
 }

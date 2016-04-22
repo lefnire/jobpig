@@ -6,7 +6,7 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import Job from './Job';
-import SeedTags from './SeedTags'
+import SeedTags from '../SeedTags'
 import {_fetch, constants} from '../../helpers';
 const {FILTERS} = constants;
 

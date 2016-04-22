@@ -14,6 +14,12 @@ exports.mine = function(req, res, next){
 }
 
 exports.list = function(req, res, next){
+  if (req.user.anon) {
+    return db.Job.anonMatch(req.user)
+      .then(job => res.json(job))
+      .catch(next);
+  }
+
   let filter = FILTERS[req.params.filter.toUpperCase()];
   db.Job.filterJobs(req.user, filter)
     .then(jobs => res.send(jobs))
@@ -41,9 +47,16 @@ exports.addNote = function(req, res, next){
 
 exports.setStatus = function(req, res, next){
   let status = +req.params.status;
+  let user = req.user;
   if (!_.includes(_.values(FILTERS), status))
     return next({status: 400, message: 'Invalid status'});
-  db.Job.score(req.user.id, req.params.id, status)
+
+  if (user.anon) {
+    return db.Job.anonScore(user, req.params.id, status)
+      .then(job => res.json({job, user})).catch(next);
+  }
+
+  db.Job.score(user.id, req.params.id, status)
     .then(()=> res.send({})).catch(next);
 }
 

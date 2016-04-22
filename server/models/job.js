@@ -65,6 +65,50 @@ let Job = sequelize.define('jobs', {
         return Promise.resolve(jobs);
       })
     },
+    anonMatch(user) {
+      // FIXME is this safe? I'm casting to INT, which should mitigate SQL injection...
+      let values = user.tags.map(t => `(${+t.id}, ${+t.score})`).join(',');
+      let jids = _.keys(user.jobs);
+      if (_.isEmpty(jids)) jids = [0];
+      return sequelize.query(`
+        SELECT
+        j.*
+        ,json_agg(tags) tags
+        ,COALESCE(SUM(ut.score),0) score
+
+        FROM jobs j
+
+        LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+        LEFT JOIN (VALUES ${values}) AS ut (tag_id, score) ON ut.tag_id=jt.tag_id
+
+        WHERE j.pending <> TRUE AND j.id NOT IN (:jids)
+        GROUP BY j.id
+        HAVING COALESCE(SUM(ut.score),0)>-75
+        ORDER BY score DESC, j.created_at DESC
+        LIMIT 1;
+      `, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {jids}
+      }).then(jobs => Promise.resolve(jobs && jobs[0] || {}));
+    },
+    anonScore(user, job_id, status) {
+      return Job.findById(job_id, {
+        attributes: ['id'],
+        include: {model: Tag, attributes: ['id', 'text']}
+      }).then(job => {
+        let score = {[FILTERS.LIKED]: 1, [FILTERS.DISLIKED]: -1}[status];
+        job.tags.forEach(tag => {
+          let found = _.find(user.tags, {id: tag.id});
+          if (!found) {
+            found = {id: tag.id, score: 0, text: tag.text};
+            user.tags.push(found);
+          }
+          found.score += score;
+        });
+        user.jobs[job_id] = status;
+        return Job.anonMatch(user);
+      });
+    },
     findMine(user){
       return sequelize.query(`
         -- @see http://stackoverflow.com/a/27626358/362790

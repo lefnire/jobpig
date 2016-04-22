@@ -22,7 +22,7 @@ import {
   FormsyText
 } from 'formsy-material-ui';
 import update from 'react-addons-update';
-import SeedTags from './jobs/SeedTags';
+import SeedTags from './SeedTags';
 import {
   Modal
 } from 'react-bootstrap';

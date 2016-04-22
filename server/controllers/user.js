@@ -36,7 +36,14 @@ exports.updateProfile = (req, res, next) => {
 };
 
 exports.seedTags = (req, res, next) => {
-  db.Tag.seedTags(req.user.id, req.body.tags)
+  let tags = req.body.tags;
+  if (req.user.anon) {
+    tags.forEach(t => t.score = 25);
+    req.user.tags = tags;
+    return res.json(req.user);
+  }
+
+  db.Tag.seedTags(req.user.id, tags)
   .then(() => res.send({}))
   .catch(next);
 };
