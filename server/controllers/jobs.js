@@ -30,6 +30,11 @@ exports.create = function(req, res, next) {
   // FIXME add some pre-validators here so it doesn't get through
   let body = req.body,
     user = req.user;
+
+  if (user.anon) {
+    return db.Job.anonCandidates(body).then(o => res.json(o && o[0]? o[0].users : [])).catch(next);
+  }
+
   body.pending = !(user.free_jobs > 0);
   let p = [db.Job.addCustom(req.user.id, body)];
   if (user.free_jobs) {

@@ -12,6 +12,8 @@ import _ from 'lodash';
 import {constants, _ga, _fetch, setAnon} from '../../helpers';
 const {AUTH_ACTIONS, FILTERS} = constants;
 import Seedtags from '../SeedTags';
+import CreateJob from '../employer/Create';
+import Prospect from '../employer/Prospect';
 import {
   Grid,
   Row,
@@ -63,8 +65,6 @@ export default class Front extends React.Component {
     let {user, job} = this.state;
     let content;
 
-    console.log({user});
-
     if (!user) {
       content = (
         <div>
@@ -89,23 +89,17 @@ export default class Front extends React.Component {
               </FloatingActionButton>
             </Modal.Footer>
           </div>
-          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' style={{position: 'absolute', bottom: 35, left: 45, padding: '15px 30px'}}>Try It!</Button>
+          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' className='cta-button' style={{position: 'absolute', bottom: 35, left: 45}}>Try It!</Button>
         </div>
       );
     } else if (_.isEmpty(user.tags)) {
       content = <Seedtags noModal={true} onSeed={this.onSeed} />;
     } else if (this.state.scoreCt > 4) {
       content = (
-        <div>
-          <Modal.Header>
-            <CardHeader
-              title="This was a demo (with real content); you should register to continue, so that your preferences will be saved to the database!"
-            />
-          </Modal.Header>
-          <Modal.Footer>
-            <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
-          </Modal.Footer>
-        </div>
+        <Modal.Body>
+          <h4>Ok, you get the concept. Let's get your scores into the database so you don't lose progress, shall we?</h4>
+          <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
+        </Modal.Body>
       );
     } else {
       content = (
@@ -130,14 +124,81 @@ export default class Front extends React.Component {
     }
 
     return (
-      <Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
+      <Paper zDepth={3} className="paper-modal">
+        {content}
+      </Paper>
+    );
+  };
+
+  setCreating = () => {
+    this.registerAnon();
+    this.setState({creatingJob: true});
+  };
+
+  renderCreateJob = () => {
+    let {creatingJob, candidates} = this.state;
+    console.log({candidates});
+    let content;
+    if (creatingJob) {
+      content = (
+        <div>
+          <CreateJob demo={true} onSubmit={candidates => this.setState({candidates})}/>
+          {candidates && candidates.map(c => <Prospect prospect={c} key={c.id}/>)}
+        </div>
+      );
+    } else {
+      content = (
+        <div>
+          <div style={{opacity: .5}}>
+            <Modal.Header>
+              <Modal.Title>My Job Post</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
+              <hr/>
+              <h4>Candidate Matches</h4>
+
+              <ListGroup>
+                <ListGroupItem>
+                  <Row>
+                    <Col md={7} xs={7}>
+                      <CardHeader
+                        title="Mrs. Candidate"
+                        subtitle="Full-stack JavaScript Developer"
+                        avatar="/sample-avatars/person.jpg"
+                      />
+                    </Col>
+                    <Col md={5} xs={5}>
+                      <ul style={{listStyle: 'none', padding: 0}}>
+                        <li className="sample-score-up">+3 JavaScript</li>
+                        <li className="sample-score-up">+3 Full-time</li>
+                        <li className="sample-score-up">+3 San Francisco</li>
+                      </ul>
+                      <RaisedButton label="Contact"/>
+                    </Col>
+                  </Row>
+                </ListGroupItem>
+                <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
+                <ListGroupItem header="Candidate 3">...</ListGroupItem>
+              </ListGroup>
+            </Modal.Body>
+          </div>
+          <Modal.Footer>
+            {/*<Button bsStyle='success' bsSize='lg' className='cta-button' onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)} >Post a Job</Button>*/}
+            <Button bsStyle='success' bsSize='lg' className='cta-button' onClick={this.setCreating} >Post a Job</Button>
+          </Modal.Footer>
+        </div>
+      );
+    }
+    return (
+      <Paper zDepth={3} className='paper-modal'>
         {content}
       </Paper>
     );
   };
 
   render() {
-    let {user} = this.state;
+    let {user, viewScores} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
 
@@ -160,36 +221,35 @@ export default class Front extends React.Component {
 
         <Row className="searchers">
           <Col xs={12} md={6} className="jp-content">
-            {_.get(user, 'tags[0]') ? (
-              <Modal.Body>
-                <CardHeader
-                  title='You'
-                  subtitle='Description of your professional role'
-                  avatar="/sample-avatars/person.jpg"
-                />
-                <Row className="sample-scores">
-                  <Col md={6} xs={6}>
-                    <ul>
-                      {user.tags.filter(t => t.score > 0).map(tag => (
-                        <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
-                      ))}
-                    </ul>
-                  </Col>
-                  <Col md={6} xs={6}>
-                    <ul>
-                      {user.tags.filter(t => t.score < 0).map(tag => (
-                        <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
-                      ))}
-                    </ul>
-                  </Col>
-                </Row>
-              </Modal.Body>
-            ) : (
-              <div>
-                <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-                <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>,
-                  <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-              </div>
+            <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>,
+              <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+            {_.get(user, 'tags[0]') && (
+              viewScores ? (
+                <Modal.Body>
+                  <CardHeader
+                    title='You'
+                    subtitle='Description of your professional role'
+                    avatar="/sample-avatars/person.jpg"
+                  />
+                  <Row className="sample-scores">
+                    <Col md={6} xs={6}>
+                      <ul>
+                        {user.tags.filter(t => t.score > 0).map(tag => (
+                          <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
+                        ))}
+                      </ul>
+                    </Col>
+                    <Col md={6} xs={6}>
+                      <ul>
+                        {user.tags.filter(t => t.score < 0).map(tag => (
+                          <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
+                        ))}
+                      </ul>
+                    </Col>
+                  </Row>
+                </Modal.Body>
+              ) : <Button onClick={()=>this.setState({viewScores:true})}>View Your Scores</Button>
             )}
           </Col>
           <Col xs={12} md={6}>
@@ -199,45 +259,7 @@ export default class Front extends React.Component {
 
         <Row className="employers">
           <Col xs={12} md={6}>
-            <div className="static-modal">
-              <Paper zDepth={3} style={{margin: 10, padding: 10, border: '1px solid #999', borderRadius: 5}}>
-                <Modal.Header>
-                  <Modal.Title>My Job Post</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
-                  <hr/>
-                  <h4>Candidate Matches</h4>
-
-                  <ListGroup>
-                    <ListGroupItem>
-                      <Row>
-                        <Col md={7} xs={7}>
-                          <CardHeader
-                            title="Mrs. Candidate"
-                            subtitle="Full-stack JavaScript Developer"
-                            avatar="/sample-avatars/person.jpg"
-                          />
-                        </Col>
-                        <Col md={5} xs={5}>
-                          <ul style={{listStyle: 'none', padding: 0}}>
-                            <li className="sample-score-up">+3 JavaScript</li>
-                            <li className="sample-score-up">+3 Full-time</li>
-                            <li className="sample-score-up">+3 San Francisco</li>
-                          </ul>
-                          <RaisedButton label="Contact"/>
-                        </Col>
-                      </Row>
-                    </ListGroupItem>
-                    <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
-                    <ListGroupItem header="Candidate 3">...</ListGroupItem>
-                  </ListGroup>
-
-                  <RaisedButton primary={true} onTouchTap={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}
-                                label="Post a Job"/>
-                </Modal.Body>
-              </Paper>
-            </div>
+            {this.renderCreateJob()}
           </Col>
           <Col xs={12} md={6} className="jp-content">
             <div>

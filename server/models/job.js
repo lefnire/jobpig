@@ -143,6 +143,24 @@ let Job = sequelize.define('jobs', {
       `, {replacements:{user_id:user.id}, type:sequelize.QueryTypes.SELECT});
     },
 
+    anonCandidates(job){
+      debugger;
+      let tids = job.tags; // FIXME + location, remote, company
+      return sequelize.query(`
+        SELECT json_agg(_) users FROM (
+          SELECT COALESCE(SUM(user_tags.score),0) score, users.*, tags
+          FROM users
+          INNER JOIN user_tags ON user_tags.user_id=users.id AND user_tags.tag_id IN (:tids)
+          -- INNER JOIN job_tags ON job_tags.tag_id=user_tags.tag_id AND job_tags.job_id=jobs.id
+          INNER JOIN tags ON user_tags.tag_id=tags.id
+          GROUP BY users.id, tags.*
+          HAVING COALESCE(SUM(user_tags.score),0)>10
+          ORDER BY score DESC
+        ) _
+
+      `, {replacements:{tids}, type:sequelize.QueryTypes.SELECT});
+    },
+
     // Sequelize doesn't support bulkCreateWithAssociations, nor does it support bulkCreate while ignoring constraint
     // errors (duplicates) for Postgres. So we're doing some custom juju here
     bulkCreateWithTags(jobs) {
