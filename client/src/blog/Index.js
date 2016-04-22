@@ -45,10 +45,6 @@ let posts = _.times(4, i => {
 }).reverse();
 
 export default class Blog extends React.Component {
-  componentWillMount() {
-    _ga.pageview('/blog');
-  }
-
   render(){
     return (
       <Grid fluid={true} className="frontpage blog">
@@ -125,6 +121,7 @@ class Entry extends React.Component {
 class Home extends React.Component {
   componentWillMount() {
     document.title = "Jobpig Blog";
+    _ga.pageview('/blog');
   }
 
   render(){

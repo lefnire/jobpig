@@ -4,7 +4,7 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import {_fetch, getTags, constants, filterOptions, _ga} from '../../helpers';
-import Formsy from 'formsy-react'
+import Formsy from 'formsy-react';
 import {
   FormsyText,
   FormsyCheckbox

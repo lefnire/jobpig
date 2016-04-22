@@ -1,4 +1,5 @@
 import {l} from './helpers';
+import {Link} from 'react-router';
 
 let title = 'Best Tech Job Boards (+Remote)';
 let date = '2016-04-20';
@@ -7,6 +8,7 @@ let teaser = <p>There are hundreds, if not thousands, of online job boards - and
 
 let body = <div>
   {teaser}
+  <p>First, if you haven't read <Link to="/0">Find Tech Jobs</Link> yet, do so. You wanna try in-person networking first (if you can) and setup a strong LinkedIn profile. Then return here.</p>
   <h3>General</h3>
   <h4>The Good</h4>
   <ul>
@@ -66,7 +68,7 @@ let body = <div>
   </ul>
 
   <h3>Jobpig</h3>
-  <p>{l('Jobpig','https://jobpigapp.com')} is my favorite, but I'm biased. It aggregates the highest quality boards above, so you only have to look in one location. And instead of using search, you <em>rate</em> jobs (thumbs up/down, like Pandora) which teaches it your search preferences so it can find the best-matching posts. {l('Give it a shot!','https://jobpigapp.com')}</p>
+  <p>{l('Jobpig','https://jobpigapp.com')} is my favorite, but I'm biased. It aggregates the highest quality boards above, so you only have to look in one location. And instead of using search, you <em>rate</em> jobs (thumbs up/down, like Pandora) which teaches it your search preferences so it can find the best-matching posts. If you're a digital nomad, be sure to seed it with the "Remote" tag. {l('Give it a shot!','https://jobpigapp.com')}</p>
 </div>;
 
 export default {title, date, teaser, body};

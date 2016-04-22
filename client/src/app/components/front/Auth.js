@@ -175,7 +175,7 @@ export default class Auth extends React.Component {
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />,
+          <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />
         </Modal.Footer>
       </Modal>
     );
