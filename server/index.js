@@ -24,8 +24,8 @@ app
 .use(require('method-override')())
 //.use(require('connect-multiparty')())
 
-// used for front-page sample; social auth
-//.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false}));
+// used for social auth
+.use(require('express-session')({secret: nconf.get('secret'), resave:false, saveUninitialized:false}));
 
 require('./passport').setup(app);
 

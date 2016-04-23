@@ -6,7 +6,7 @@ import {
   FlatButton
 } from 'material-ui';
 import _ from 'lodash';
-import {login, logout, _fetch, constants, _ga} from '../../helpers';
+import {login, logout, _fetch, constants, _ga, gotoSocialAuth} from '../../helpers';
 import Formsy from 'formsy-react'
 import {
   FormsyText
@@ -156,6 +156,12 @@ export default class Auth extends React.Component {
     };
   }
 
+  componentWillMount() {
+    // Social login redirects to frontpage with ?jwt=xxx
+    let jwt = /jwt=([^&]*)/.exec(location.search);
+    if (jwt && jwt[1]) login(jwt[1]);
+  }
+
   render() {
     const initialTab = {
       [AUTH_ACTIONS.LOGIN]: 0,
@@ -175,6 +181,7 @@ export default class Auth extends React.Component {
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
+          <h5><a style={{float:'left'}} onClick={() => gotoSocialAuth('linkedin')} className='zocial linkedin'>LinkedIn</a></h5>
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />
         </Modal.Footer>
       </Modal>

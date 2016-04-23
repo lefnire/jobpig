@@ -1,4 +1,5 @@
 'use strict';
+const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const passport = require('passport');
 const nconf = require('nconf');
 const User = require('./models').User;
@@ -8,6 +9,7 @@ const crypto = require('crypto');
 const mail = require('./lib/mail');
 const Coupon = require('./models').Coupon;
 const moment = require('moment');
+const uuid = require('node-uuid').v4;
 
 let anons = {};
 
@@ -16,6 +18,8 @@ const deny = (err, code) => ({status: code || 403, message: err.message || err})
 exports.setup = app => {
   app.use(passport.initialize());
   passport.use(User.createStrategy());
+
+  setupLinkedin(app, passport);
 
   var localOpts = {session:false, failWithError:true};
   app.post('/register', (req, res, next) => {
@@ -49,10 +53,10 @@ exports.setup = app => {
       });
 
       // They were playing with sample jobs on front-page
-      let anon_id = req.headers['x-access-anon'];
-      if (anon_id) {
-        User.persistAnon(_user.id, anons[anon_id]);
-        delete anons[anon_id];
+      let anon = anons[req.headers['x-access-anon']];
+      if (anon) {
+        User.persistAnon(_user.id, anon);
+        delete anons[anon.id];
       }
 
       // Send acct activation email
@@ -68,13 +72,13 @@ exports.setup = app => {
   });
 
   app.post('/register/anon', (req, res, next) => {
-    let id = +new Date;
-    anons[id] = {id, anon: true, tags: [], jobs: {}};
+    let id = uuid();
+    anons[id] = {id, date: +new Date, anon: true, tags: [], jobs: {}};
     res.json(anons[id]);
 
     // Cleanup old job-browsing sessions previous users left behind
-    _.each(anons, anon => {
-      moment().diff(anon.id, 'minutes') > 30 && delete anons[anon.id];
+    _.each(anons, (anon) => {
+      moment().diff(anon.date, 'minutes') > 15 && delete anons[anon.id];
     });
   });
   app.delete('/register/anon', (req, res, next) => {
@@ -97,12 +101,13 @@ var sign = function(user) {
 
 exports.ensureAuth = function (req, res, next) {
   // check header or url parameters or post parameters for token
-  var token = /*req.body.token || req.query.token ||*/ req.headers['x-access-token'];
+  var token = req.headers['x-access-token'];
   if (!token) {
-    if (!req.headers['x-access-anon'])
+    let anon = anons[req.headers['x-access-anon']];
+    if (!anon)
       return next({status: 403, message: 'No token provided.'});
     // Allow anonymous users limited functions
-    req.user = anons[req.headers['x-access-anon']];
+    req.user = anon;
     return next();
   }
   // decode token
@@ -116,4 +121,62 @@ exports.ensureAuth = function (req, res, next) {
       next();
     });
   });
+};
+
+function setupLinkedin(app, passport) {
+  const redirectURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:client`);
+  const callbackURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:server`)+"/auth/linkedin/callback";
+
+  passport.serializeUser((user, done) => done(null, user));
+  passport.deserializeUser((user, done) => done(null, user));
+
+  passport.use(new LinkedInStrategy({
+    clientID: nconf.get('linkedin:key'),
+    clientSecret: nconf.get('linkedin:secret'),
+    callbackURL,
+    scope: ['r_emailaddress', 'r_basicprofile'],
+    //state: true, // we manually handle state, which we set to the anonymous-scoring id so we can persist that data
+    passReqToCallback: true
+  }, function (req, accessToken, refreshToken, profile, done) {
+    let p = profile._json;
+    User.findOne({where: {$or: {linkedin_id: p.id, email: p.emailAddress}}})
+    .then(found => {
+      if (found) return done(null, found);
+
+      // Note: fake password (uuid); we _need_ a local registration (email & password)
+      User.register({
+        email: p.emailAddress || `${p.id}@linkedin.com`,
+        linkedin_id: p.id,
+        linkedin_url: p.publicProfileUrl,
+        fullname: p.formattedName,
+        pic: p.pictureUrl,
+        bio: p.summary
+      }, uuid(), (err, created) => {
+        done(err, created && {id: created.id, email: created.email});
+
+        // Persist anonymous scoring
+        let anon = anons[req.query.state];
+        if (anon) {
+          User.persistAnon(created.id, anon);
+          delete anons[req.query.state];
+        }
+      });
+    }).catch(done);
+  }));
+
+  //app.get('/auth/linkedin', passport.authenticate('linkedin', {session: false}));
+  app.get('/auth/linkedin', (req, res, next) => {
+    passport.authenticate('linkedin', {
+      session: false,
+      state: req.query.anon || uuid()
+    })(req, res, next);
+  });
+
+  app.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
+    failureRedirect: redirectURL, // TODO handle failure
+    session: false
+  }), (req, res, next) => {
+    res.redirect(redirectURL + '?jwt=' + sign(req.user)); // FIXME insecure!!
+  });
+
 }

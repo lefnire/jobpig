@@ -1,7 +1,7 @@
 import {l} from './helpers';
 import {Link} from 'react-router';
 
-let title = 'Best Tech Job Boards (+Remote)';
+let title = 'Best Tech & Remote Job Boards';
 let date = '2016-04-20';
 
 let teaser = <p>There are hundreds, if not thousands, of online job boards - and many (most?) for tech. They vary in quality (by which I mean serious, well-paying employers). In this post I'll cover the best boards from my experience. I'll edit this post periodically, and eventually take comments so people can recommend their favorites / correct me.</p>;

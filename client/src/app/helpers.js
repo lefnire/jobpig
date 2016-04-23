@@ -8,6 +8,9 @@ let anon;
 export function setAnon(user) {
   anon = user;
 }
+export function gotoSocialAuth(network) {
+  window.location = `${API_URL}/auth/${network}${anon? '?anon=' + anon.id : ''}`;
+}
 
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
@@ -32,7 +35,9 @@ export function login(token, action) {
 
 export function logout() {
   localStorage.clear();
-  window.location = '/';
+  // HARD refresh (fact that it's not homepage will be handled by react-router). Need to ensure variables in this
+  // browsing session are cleared, /#/ stuff keeps this file loaded
+  location.reload(true); // window.location = '/';
 }
 
 // Handle initial "still logged in?" check on page load
