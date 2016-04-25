@@ -14,7 +14,7 @@ import {
   FormsySelect
 } from 'formsy-material-ui';
 import _ from 'lodash';
-import {_fetch, getTags, me, constants, filterOptions} from '../helpers';
+import {_fetch, getTags, me, constants, filterOptions, isSmall} from '../helpers';
 import Select from 'react-select';
 const {TAG_TYPES} = constants;
 import {
@@ -107,7 +107,7 @@ export default class SeedTags extends React.Component {
       </div>
     );
     return modal ? (
-      <Modal show={open} onHide={this.close} bsSize="large">
+      <Modal show={open} onHide={this.close} bsSize="large" animation={!isSmall}>
         {content}
       </Modal>
     ) : content;

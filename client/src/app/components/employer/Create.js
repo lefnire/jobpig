@@ -3,7 +3,7 @@ import {
   FlatButton,
 } from 'material-ui';
 import _ from 'lodash';
-import {_fetch, getTags, constants, filterOptions, _ga} from '../../helpers';
+import {_fetch, getTags, constants, filterOptions, _ga, isSmall} from '../../helpers';
 import Formsy from 'formsy-react';
 import {
   FormsyText,
@@ -33,7 +33,7 @@ export default class CreateJob extends React.Component {
       : 'Post a Job ($99 for 30 days)';
 
     return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large" dialogClassName="full-modal">
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" dialogClassName="full-modal"  animation={!isSmall}>
         <Modal.Header><Modal.Title>{title}</Modal.Title></Modal.Header>
         <Modal.Body>
           <StripeCheckout

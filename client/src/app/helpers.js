@@ -12,6 +12,8 @@ export function gotoSocialAuth(network) {
   window.location = `${API_URL}/auth/${network}${anon? '?anon=' + anon.id : ''}`;
 }
 
+export const isSmall = window.screen.height < 900;
+
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;

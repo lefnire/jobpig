@@ -1,5 +1,5 @@
 import React from 'react';
-import {API_URL, _fetch, logout} from '../helpers';
+import {API_URL, _fetch, logout, isSmall} from '../helpers';
 import {
   FlatButton,
   TextField,
@@ -45,7 +45,7 @@ class DeleteAccount extends React.Component {
 
     ];
     return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall}>
         <Modal.Header>
           <Modal.Title>Delete Account</Modal.Title>
         </Modal.Header>
@@ -88,7 +88,7 @@ export default class TagEdit extends React.Component {
     if (!tag) return null;
     let {locked, score} = tag.user_tags;
     return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall}>
         <Modal.Header><Modal.Title>Edit Tag</Modal.Title></Modal.Header>
         <Modal.Body>
           <TextField

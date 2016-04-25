@@ -6,7 +6,7 @@ import {
   FlatButton
 } from 'material-ui';
 import _ from 'lodash';
-import {login, logout, _fetch, constants, _ga, gotoSocialAuth} from '../../helpers';
+import {login, logout, _fetch, constants, _ga, gotoSocialAuth, isSmall} from '../../helpers';
 import Formsy from 'formsy-react'
 import {
   FormsyText
@@ -169,7 +169,7 @@ export default class Auth extends React.Component {
       [AUTH_ACTIONS.POST_JOB]: 1
     }[this.state.action];
     return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall}>
         <Modal.Body>
           <Tabs initialSelectedIndex={initialTab}>
             <Tab label="Login">

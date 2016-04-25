@@ -3,7 +3,7 @@ import {
   FlatButton,
 } from 'material-ui';
 import _ from 'lodash';
-import {_fetch, _ga} from '../../helpers';
+import {_fetch, _ga, isSmall} from '../../helpers';
 import Formsy from 'formsy-react'
 import {
   FormsyText
@@ -23,7 +23,7 @@ export default class Contact extends React.Component {
 
   render() {
     return (
-      <Modal show={this.state.open} onHide={this.close} bsSize="large">
+      <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall} >
         <Modal.Header>
           <Modal.Title>Contact</Modal.Title>
         </Modal.Header>
