@@ -23,7 +23,7 @@ export default class Employer extends React.Component {
       //http://www.addthis.com/academy/the-addthis_share-variable/
       window.addthis_share = {
         url: `https://jobpigapp.com?uid=${profile.id}`,
-        title: `Just posted on on Jobpig, a matchmaking job board.`,
+        title: `I'm posting a job on Jobpig, a candidate matchmaking tool!`,
         //description: "My Description"
       };
     });
