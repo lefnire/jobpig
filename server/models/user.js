@@ -9,6 +9,7 @@ let User = sequelize.define('users', _.defaults({
   email: {type:Sequelize.STRING, validate:{ isEmail:true }, unique:true, allowNull:false},
   linkedin_id: {type:Sequelize.STRING, unique:true},
   linkedin_url: {type:Sequelize.STRING, validate:{isUrl:true}},
+  facebook_id: {type:Sequelize.STRING, unique:true},
   twitter_url: {type:Sequelize.STRING, validate:{isUrl:true}},
   stackoverflow_url: {type:Sequelize.STRING, validate:{isUrl:true}},
   github_url: {type:Sequelize.STRING, validate:{isUrl:true}},

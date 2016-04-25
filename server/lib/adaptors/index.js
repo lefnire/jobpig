@@ -81,7 +81,7 @@ let adaptors = [
 
   // Then the rest
   'authenticjobs',
-  'frontenddevjob',
+  //'frontenddevjob', // FIXME temporarily offline?
   'github',
   //'gunio', // [deleted@7857574] not useful (unfrequented)
   //'hasjob', // mostly low-paying offshore jobs

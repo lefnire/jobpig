@@ -179,9 +179,14 @@ export default class Auth extends React.Component {
               <Register action={this.state.action} coupon={this.props.coupon} />
             </Tab>
           </Tabs>
+          <hr/>
+          <h3>Or Sign In With:</h3>
+          <ul className="list-inline">
+            <li><h3><a onClick={() => gotoSocialAuth('linkedin')}><i className='zocial linkedin icon' /></a></h3></li>
+            <li><h3><a onClick={() => gotoSocialAuth('facebook')}><i className='zocial facebook icon' /></a></h3></li>
+          </ul>
         </Modal.Body>
         <Modal.Footer>
-          <h5><a style={{float:'left'}} onClick={() => gotoSocialAuth('linkedin')} className='zocial linkedin'>LinkedIn</a></h5>
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close} />
         </Modal.Footer>
       </Modal>

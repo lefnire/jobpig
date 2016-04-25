@@ -1,5 +1,6 @@
 'use strict';
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const passport = require('passport');
 const nconf = require('nconf');
 const User = require('./models').User;
@@ -19,7 +20,12 @@ exports.setup = app => {
   app.use(passport.initialize());
   passport.use(User.createStrategy());
 
+  // For social-auth; can remove if those aren't in use
+  passport.serializeUser((user, done) => done(null, user));
+  passport.deserializeUser((user, done) => done(null, user));
+
   setupLinkedin(app, passport);
+  setupFacebook(app, passport);
 
   var localOpts = {session:false, failWithError:true};
   app.post('/register', (req, res, next) => {
@@ -127,9 +133,6 @@ function setupLinkedin(app, passport) {
   const redirectURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:client`);
   const callbackURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:server`)+"/auth/linkedin/callback";
 
-  passport.serializeUser((user, done) => done(null, user));
-  passport.deserializeUser((user, done) => done(null, user));
-
   passport.use(new LinkedInStrategy({
     clientID: nconf.get('linkedin:key'),
     clientSecret: nconf.get('linkedin:secret'),
@@ -178,5 +181,53 @@ function setupLinkedin(app, passport) {
   }), (req, res, next) => {
     res.redirect(redirectURL + '?jwt=' + sign(req.user)); // FIXME insecure!!
   });
+}
 
+function setupFacebook(app, passport) {
+  const redirectURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:client`);
+  const callbackURL = nconf.get(`urls:${nconf.get('NODE_ENV')}:server`)+"/auth/facebook/callback";
+  passport.use(new FacebookStrategy({
+      clientID: nconf.get('facebook:app_id'),
+      clientSecret: nconf.get('facebook:secret'),
+      callbackURL,
+      passReqToCallback: true,
+      profileFields: ['id', 'displayName', 'email']
+    },
+    function(req, accessToken, refreshToken, profile, done) {
+      let p = profile;
+      User.findOne({where: {$or: {facebook_id: p.id, email: p.email}}})
+        .then(found => {
+          if (found) return done(null, found);
+
+          // Note: fake password (uuid); we _need_ a local registration (email & password)
+          User.register({
+            email: p.email || `${p.id}@facebook.com`,
+            facebook_id: p.id,
+            fullname: p.displayName
+          }, uuid(), (err, created) => {
+            done(err, created && {id: created.id, email: created.email});
+
+            // Persist anonymous scoring
+            let anon = anons[req.session.anon];
+            if (anon) {
+              User.persistAnon(created.id, anon);
+              delete anons[req.query.state];
+              req.session.destroy();
+            }
+          });
+        }).catch(done);
+    }
+  ));
+
+  app.get('/auth/facebook', (req, res, next) => {
+    req.session.anon = req.query.anon;
+    passport.authenticate('facebook', {session: false})(req, res, next);
+  });
+
+  app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+    failureRedirect: redirectURL, // TODO handle failure
+    session: false
+  }), (req, res, next) => {
+    res.redirect(redirectURL + '?jwt=' + sign(req.user)); // FIXME insecure!!
+  });
 }

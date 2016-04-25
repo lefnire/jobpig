@@ -30,6 +30,14 @@ body {
   }
 }
 
+.social-auth-buttons {
+  clear: both;
+  h3 {
+    float: left;
+    margin-right: 5px;
+  }
+}
+
 .modal {
   z-index: 1150;
 }
