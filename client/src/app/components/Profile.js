@@ -16,11 +16,11 @@ import {
   List,
   RaisedButton,
 } from 'material-ui';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import {NavigationMoreVert} from 'material-ui/svg-icons';
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import update from 'react-addons-update';
 import SeedTags from './SeedTags';
 import {
@@ -85,7 +85,7 @@ export default class TagEdit extends React.Component {
 
   render() {
     let {tag} = this.state;
-    if (!tag) return null;
+    if (!tag) return <div></div>;
     let {locked, score} = tag.user_tags;
     return (
       <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall}>
@@ -161,7 +161,7 @@ export default class Profile extends React.Component{
         )}
         rightIconButton={(
           <IconMenu iconButtonElement={
-            <IconButton><MoreVertIcon /></IconButton>
+            <IconButton><NavigationMoreVert /></IconButton>
           }>
             <MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</MenuItem>
             <MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</MenuItem>
@@ -179,7 +179,6 @@ export default class Profile extends React.Component{
 
     return (
       <div>
-
         <TagEdit selected={this.state.selected} ref="dialog" onSubmit={this._refresh} />
         <SeedTags onSeed={this._refresh} ref="seed" />
 

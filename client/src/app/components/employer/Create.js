@@ -8,7 +8,7 @@ import Formsy from 'formsy-react';
 import {
   FormsyText,
   FormsyCheckbox
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
 import Error from '../Error';

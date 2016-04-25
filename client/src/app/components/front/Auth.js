@@ -10,7 +10,7 @@ import {login, logout, _fetch, constants, _ga, gotoSocialAuth, isSmall} from '..
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import Error from '../Error';
 import update from 'react-addons-update';
 const {AUTH_ACTIONS} = constants;
@@ -51,7 +51,7 @@ class Login extends React.Component {
             hintText="Password"
             fullWidth={true}
             type="password"/>
-          <RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
+          <RaisedButton type="submit" label="Submit" primary={true} />
         </Formsy.Form>
         <div style={{marginTop: 10}}>
           <a onClick={() => this.setState({forgotPass: !this.state.forgotPass})} style={{cursor: 'pointer'}}>Forgot Password</a>
@@ -128,7 +128,7 @@ class Register extends React.Component{
           hintText="Confirm Password"
           fullWidth={true}
           type="password"/>
-        <RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+        <RaisedButton primary={true} label='Submit' type='submit' />
       </Formsy.Form>
     )
   }

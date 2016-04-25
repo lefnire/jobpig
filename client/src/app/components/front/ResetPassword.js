@@ -8,7 +8,7 @@ import {
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import {_fetch} from '../../helpers';
 import Error from '../Error';
 
