@@ -1,4 +1,5 @@
 import React from 'react';
+import load from 'load-script';
 import {
   FlatButton,
 } from 'material-ui';
@@ -29,12 +30,18 @@ export default class CreateJob extends React.Component {
   render() {
     let {free_jobs} = this.props;
 
-    let title = free_jobs ? `${free_jobs} Free Post${free_jobs>1? 's': ''}`
-      : 'Post a Job ($99 for 30 days)';
-
     return (
       <Modal show={this.state.open} onHide={this.close} bsSize="large" dialogClassName="full-modal"  animation={!isSmall}>
-        <Modal.Header><Modal.Title>{title}</Modal.Title></Modal.Header>
+        <Modal.Header>
+          <Modal.Title>
+            <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
+            {
+              free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
+                : <b>Free post with social share</b>
+            }
+          </Modal.Title>
+          <div className="addthis_sharing_toolbox"></div>
+        </Modal.Header>
         <Modal.Body>
           <StripeCheckout
             ref="stripe"
@@ -113,7 +120,6 @@ export default class CreateJob extends React.Component {
     )
   }
 
-  // FIXME Temporary until react-select fixes allowCreate={true}
   changeLocation = location => {
     if (location.create)
       location.label = location.label.replace(/^Add /, '');
@@ -125,9 +131,9 @@ export default class CreateJob extends React.Component {
       entered.label = entered.label.replace(/^Add /, '');
     this.setState({tags});
   }
-  // /FIXME -----------------
 
   open = () => {
+    load('https://s7.addthis.com/js/300/addthis_widget.js#pubid=lefnire', _.noop);
     _ga.pageview('modal:create-job');
     this.setState({open: true});
   };

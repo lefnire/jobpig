@@ -18,15 +18,6 @@ export default class Employer extends React.Component {
     super();
     this.state = {jobs: []};
     this._refresh();
-
-    me().then(profile => {
-      //http://www.addthis.com/academy/the-addthis_share-variable/
-      window.addthis_share = {
-        url: `https://jobpigapp.com?uid=${profile.id}`,
-        title: `I'm posting a job on Jobpig, a candidate matchmaking tool!`,
-        //description: "My Description"
-      };
-    });
   }
 
   componentWillMount() {
@@ -59,7 +50,6 @@ export default class Employer extends React.Component {
     load('https://s7.addthis.com/js/300/addthis_widget.js#pubid=lefnire', (err, script) => {
       if (err) throw err;
       addthis.addEventListener('addthis.menu.share', evt => service = evt.data.service);
-      this.forceUpdate();
     });
   };
   _teardownAddthis = () => {
@@ -146,9 +136,16 @@ export default class Employer extends React.Component {
     Promise.all([
       _fetch('jobs/mine', {method: "GET"}),
       me()
-    ]).then(vals => this.setState({
-      jobs: vals[0],
-      free_jobs: vals[1].free_jobs
-    }));
+    ]).then(vals => {
+      this.setState({
+        jobs: vals[0],
+        free_jobs: vals[1].free_jobs
+      });
+      window.addthis_share = {
+        url: `https://jobpigapp.com?uid=${vals[1].id}`,
+        title: `I'm posting a job on Jobpig, a candidate matchmaking tool!`,
+        //description: "My Description"
+      };
+    });
   }
 }
