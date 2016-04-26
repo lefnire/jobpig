@@ -106,7 +106,7 @@ export default class Employer extends React.Component {
                 <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
                 {
                   free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
-                    : <b>Free post with social share</b>
+                    : <span><b>Free post per share</b> <small>(click a button below)</small></span>
                 }
                 {/* Go to www.addthis.com/dashboard to customize your tools */}
                 <div className="addthis_sharing_toolbox"></div>

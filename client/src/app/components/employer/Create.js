@@ -37,7 +37,7 @@ export default class CreateJob extends React.Component {
             <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
             {
               free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
-                : <b>Free post with social share</b>
+                : <span><b>Free post per share</b> <small>(click a button below)</small></span>
             }
           </Modal.Title>
           <div className="addthis_sharing_toolbox"></div>
@@ -89,6 +89,10 @@ export default class CreateJob extends React.Component {
               filterOptions={filterOptions(true)}
             />
             <br/>
+            <FormsyCheckbox
+              name='remote'
+              label="Remote"
+            />
             <Select.Async
               placeholder="Location"
               value={this.state.location}
@@ -96,10 +100,6 @@ export default class CreateJob extends React.Component {
               onChange={this.changeLocation}
               noResultsText="Start typing"
               filterOptions={filterOptions(true)}
-            />
-            <FormsyCheckbox
-              name='remote'
-              label="Remote"
             />
             <FormsyText
               name='description'
