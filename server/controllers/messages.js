@@ -13,7 +13,7 @@ exports.sent = (req, res, next) => {
 
 //TODO refactor contact & reply
 exports.contact = (req, res, next) => {
-  if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
+  //if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
   let to,
     subject = req.body.subject,
     body = req.body.body;
@@ -30,7 +30,7 @@ exports.contact = (req, res, next) => {
 };
 
 exports.reply = (req, res, next) => {
-  if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
+  //if (!req.user.verified) return next({status: 403, message: "Email not yet verified."});
   let to, thread;
   db.Message.findOne({where: {id: req.params.mid}})
   .then(message => {

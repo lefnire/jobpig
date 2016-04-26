@@ -66,8 +66,8 @@ exports.resetTags = (req, res, next) => {
 
 exports.forgotPassword = (req, res, next) => {
   let email = req.body.email;
-  db.User.findOne({where: {email, verified: true}}).then(user => {
-    if (!user) return next({status:403, message:"User not found or not verified"});
+  db.User.findOne({where: {email/*, verified: true*/}}).then(user => {
+    //if (!user) return next({status:403, message:"User not found or not verified"});
     db.User.setResetPasswordKey(email, (err, user) => {
       if (err) return next(err);
 
