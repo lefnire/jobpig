@@ -31,7 +31,7 @@ let body = <div>
   <h3>Remote</h3>
   <p>If you're looking for remote work - contract / freelance / digital nomad; or full-time remote W2 - here are tips.</p>
   <h4>The Good</h4>
-  <p>Firstly, see {l('NoDesk', 'http://nodesk.co/')} and {l('Awesome Remote Job', 'https://github.com/lukasz-madon/awesome-remote-job/')} - curated resources for remote workers, and lists of remote job boards. Afterwards decide:</p>
+  <p>Firstly, see {l('NoDesk', 'http://nodesk.co/')} and {l('Awesome Remote Job', 'https://github.com/lukasz-madon/awesome-remote-job/')} - curated resources for remote workers, and lists of remote job boards.</p>
 
     {/*
       No Fluff Jobs filter -> "remote"

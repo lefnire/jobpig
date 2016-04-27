@@ -9,7 +9,7 @@ let teaser = <p>A common question from aspiring digital nomads: "do I have to be
 let body = <div>
   {teaser}
 
-  <p>First, I don't just mean C++; I mean web & mobile development and design, graphic design, marketing - basically high tech... for a tech company... based in San Francisco. This compared to non-tech jobs like WWOOFing, ESL; and tech, but cut-rate competitive bits like photography, blogging, and book-writing. There'll be disagreement by well-paid professionals in fields I disparage. They're experts in their fields, so can find remote work easily. Tech has a lower barrier to entry for higher, faster yield; so this post is for readers <em>starting off</em>.</p>
+  <p>First, I don't just mean C++; I mean web & mobile development and design - maybe even graphic design, marketing... basically high tech, for a tech company, based in San Francisco. This compared to non-tech jobs like WWOOFing, ESL; and tech, but cut-rate competitive bits like photography, blogging, and book-writing. There'll be disagreement by well-paid professionals in fields I disparage. They're experts in their fields, so can find remote work easily. Tech has a lower barrier to entry for higher, faster yield; so this post is for readers <em>starting off</em>.</p>
 
   <p>As you're reading this, consider {l("one blogger's yearly travel cost", 'http://www.neverendingfootsteps.com/2016/02/16/how-much-does-it-cost-to-travel-the-world-for-a-year-my-2015-expenses/')} of $20k. Bear in mind she did it <em>on the cheap</em> (my own best-efforts were closer to $40k), so pad a bit.</p>
 
@@ -30,6 +30,8 @@ let body = <div>
     <li><b>eBook Publishing.</b> Similar to the above, this can make a lot of money... in the jackpot. If you're going to count on this revenue flow, be sure it's flowing first.</li>
     <li><b>Virtual Assistant / Customer Service.</b> {l('$16/h', 'http://www.payscale.com/research/US/Job=Virtual_Assistant/Hourly_Rate')}, and boy does it sound fun!</li>
   </ul>
+
+  <p>Before considering something new to pick up for remote work, consider rate/salary at {l('Payscale', 'http://www.payscale.com')} or {l('Glassdoor', 'https://www.glassdoor.com/Salaries/index.htm')}. Consider how flexibly you can <em>be</em> remote: Must you perma-locate? Must you learn the language? Get a degree / certification? Etc</p>
 
   <h4>Tech</h4>
   <p>Here's the thing about code - it's a lot easier than you think; you're psyching yourself out! I've read many accounts of waiter-gone-iOS-apps who put in 1-3 months' learning before cold-turkey. I've personally converted and coached code newbies, seeing 3 months as a standard turnaround; one month in cases where people dedicated 40h/wk learning. You don't need school ({l("don't do school!",'https://www.reddit.com/r/digitalnomad/comments/2zhlmt/what_kind_of_webdev_is_better_for_a_nomad/cpvqjxd')}), just dedication. A common starting web dev rate I see is $40/h 1099. {l('iOS Developer, $80k median','http://www.payscale.com/research/US/Job=iOS_Developer/Salary')}. That's double the best positions above! You're not limited by any factor save wifi (more than can be said for most remote jobs). You can hop countries as often as you want - you're working for home-based companies. It's the most liberating digital nomad arrangement.</p>
