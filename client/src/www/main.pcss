@@ -20,10 +20,10 @@ body {
   /*margin-top: 20px;*/
   margin-bottom: 0px;
 
-  li {
+  & li {
     list-style: none;
 
-    a {
+    & a {
       color: white;
       /*text-decoration: none;*/
     }
@@ -32,7 +32,7 @@ body {
 
 .social-auth-buttons {
   clear: both;
-  h3 {
+  & h3 {
     float: left;
     margin-right: 5px;
   }
@@ -41,45 +41,54 @@ body {
 .modal {
   z-index: 1150;
 }
-@mixin full-modal {
-  height: 100%;
-  width: 100%;
-  margin: 0px;
-
-  .modal-content {
-    border: 0;
-    height: 100%;
-    width: 100%;
-  }
-}
 .modal-dialog {
-  .modal-content {
+  & .modal-content {
     border-radius: 0px;
     overflow-y: auto;
   }
-  @media (max-width: 800px) { @include full-modal; }
-  &.full-modal { @include full-modal; }
+  @media (max-width: 800px) {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+
+    & .modal-content {
+      border: 0;
+      height: 100%;
+      width: 100%;
+    }
+  }
+  &.full-modal {
+     height: 100%;
+     width: 100%;
+     margin: 0px;
+
+     & .modal-content {
+       border: 0;
+       height: 100%;
+       width: 100%;
+     }
+   }
 }
 
 .app {
-  .padded {
+  & .padded {
     margin: 25px;
     /*padding:20px;*/
   }
-  .Select-menu-outer {
+  & .Select-menu-outer {
     z-index: 1600 !important; /* Otherwise we'll click underlying form-fields from Material-UI, which has z-index=1500 */
   }
 
-  .job-title {
+  & .job-title {
     text-decoration: none;
   }
 
-  .empty-text {
+  & .empty-text {
     font-size: 1.2em;
     line-height: 1.5;
   }
 
-  .destroy-link {
+  & .destroy-link {
     cursor: pointer;
     color: red;
     margin-left: 15px;
@@ -88,8 +97,8 @@ body {
 
 .frontpage {
 
-  .top-jumbo {
-    .tagline {
+  & .top-jumbo {
+    & .tagline {
       margin: 16px auto 0 auto;
       text-align: center;
       max-width: 575px;
@@ -99,24 +108,24 @@ body {
     }
   }
 
-  .login {
+  & .login {
     position: absolute;
     right: 10px;
     top: 10px;
   }
 
-  .title {
+  & .title {
     @media (min-width: 800px) {
       font-size: 56px;
     }
   }
 
-  .title, .subtitle {
+  & .title, & .subtitle {
     /*font-family: 'Special Elite', cursive;*/
     color: white;
   }
 
-  .subtitle {
+  & .subtitle {
     font-size: 20px;
     line-height: 28px;
     padding-top: 19px;
@@ -130,22 +139,22 @@ body {
     }
   }
 
-  .pig {
+  & .pig {
     position: absolute;
     top: 10px;
-    //left: 10px;
+    /*left: 10px;*/
     @media (max-width: 1024px) {
       width: 20%;
     }
   }
 
-  .searchers.row, .employers.row {
-    //display: flex;
-    //flex-direction: column;
-    //align-items: center;
+  & .searchers.row, & .employers.row {
+    /*display: flex;
+    flex-direction: column;
+    align-items: center;*/
   }
 
-  .jp-content {
+  & .jp-content {
     font-size: 1.2em;
     line-height: 1.5;
 
@@ -153,27 +162,27 @@ body {
       padding: 0px 30px;
     }
 
-    .jp-role {
+    & .jp-role {
       background-color: #eee;
       padding: 5px;
       color: #414B82
     }
 
-    .sample-scores {
-      ul {
+    & .sample-scores {
+      & ul {
         list-style: none;
-        .score-up {
+        & .score-up {
           font-weight: bold;
           color: green;
         }
-        .score-down {
+        & .score-down {
           font-weight: bold;
           color: red;
         }
       }
     }
 
-    .static-modal .modal {
+    & .static-modal .modal {
       position: relative;
       top: auto;
       right: auto;
@@ -183,23 +192,23 @@ body {
       display: block;
     }
   }
-  .employers {
+  & .employers {
     margin-top: 20px;
     padding-top: 20px;
     background-color: #414B82;
-    .jp-content {
+    & .jp-content {
       color: white;
     }
   }
-  .cta-button {
+  & .cta-button {
     padding: 15px 30px;
   }
-  .paper-modal {
+  & .paper-modal {
     margin: 10px;
     padding: 10px;
     border: 1px solid #999;
   }
-  .demo-tag {
+  & .demo-tag {
     margin-right: 5px;
     background-color: #eee;
     padding: 2px;
@@ -207,19 +216,19 @@ body {
   }
 }
 
-.blog {
-  .pig {
+& .blog {
+  & .pig {
     position: relative;
     width: 45px;
     top: inherit;
   }
 
-  h3 {
+  & h3 {
     background-color: #eee;
   }
 
-  //.content {
-  //  font-size: 1.2em;
-  //  line-height: 1.5;
-  //}
+  /*.content {
+    font-size: 1.2em;
+    line-height: 1.5;
+  }*/
 }

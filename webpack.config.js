@@ -99,6 +99,9 @@ let config = {
       test: /\.css$/,
       loader: "style!css" // "style-loader!css-loader?importLoaders=1"
     }, {
+      test: /\.pcss$/,
+      loader: "style-loader!css-loader!postcss-loader"
+    }, {
       test: /\.scss$/, loaders: ["style", "css", "sass"]
     }, {
       test: /\.(png|woff|woff2|eot|ttf|svg)$/,
@@ -109,6 +112,9 @@ let config = {
   eslint: {
     configFile: '.eslintrc' //Rules for eslint
   },
+  postcss: function () {
+    return [require('postcss-cssnext')()];
+  }
 };
 
 if (!prod) {

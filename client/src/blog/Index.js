@@ -1,4 +1,4 @@
-require("../www/main.scss");
+require("../www/main.pcss");
 
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';

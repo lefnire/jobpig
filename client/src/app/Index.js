@@ -1,4 +1,4 @@
-require("../www/main.scss");
+require("../www/main.pcss");
 require("../../../node_modules/react-select/dist/react-select.min.css");
 
 // Custom
