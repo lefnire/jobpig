@@ -9,7 +9,7 @@ import {
 import Auth from './Auth';
 import Footer from '../Footer';
 import _ from 'lodash';
-import {constants, _ga, _fetch, setAnon} from '../../helpers';
+import {constants, _ga, _fetch, setAnon, isSmall} from '../../helpers';
 const {AUTH_ACTIONS, FILTERS} = constants;
 import Seedtags from '../SeedTags';
 import {
@@ -31,10 +31,11 @@ export default class Front extends React.Component {
   }
 
   registerAnon = () => {
+    this.setState({user: {}}); // show 'seed tags' now; still loading from server
     window.onunload = () => _fetch('register/anon', {method: "DELETE"});
     _fetch('register/anon', {method: 'POST'}).then(user => {
       setAnon(user);
-      this.setState({user});
+      this.setState({user, viewScores: !isSmall});
     });
   };
 
@@ -62,8 +63,6 @@ export default class Front extends React.Component {
   renderJob = () => {
     let {user, job} = this.state;
     let content;
-
-    console.log({user});
 
     if (!user) {
       content = (
