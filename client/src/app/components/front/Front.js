@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   CardHeader,
+  CardText,
+  CardActions,
   Paper,
   FloatingActionButton,
   FontIcon,
@@ -66,18 +68,16 @@ export default class Front extends React.Component {
 
     if (!user) {
       content = (
-        <div>
+        <div style={{position: 'relative'}}>
           <div style={{opacity: .5}}>
-            <Modal.Header>
-              <CardHeader
-                title='Seeking Senior JavaScript Dev'
-                subtitle={<span><u>Company, Inc</u> | <u>San Francisco, CA</u></span>}
-                avatar='/sample-avatars/biz0.jpg'
-              />
-              <div>
-                <p>Come work here <u>full-time</u>! We use <u>React</u>, <u>Node.js</u>, and <u>Postgres</u>. PTO, 401k, great insurance.</p>
-              </div>
-            </Modal.Header>
+            <CardHeader
+              title='Seeking Senior JavaScript Dev'
+              subtitle={<span><u>Company, Inc</u> | <u>San Francisco, CA</u></span>}
+              avatar='/sample-avatars/biz0.jpg'
+            />
+            <CardText>
+              <p>Come work here <u>full-time</u>! We use <u>React</u>, <u>Node.js</u>, and <u>Postgres</u>. PTO, 401k, great insurance.</p>
+            </CardText>
             <Modal.Footer>
               <FloatingActionButton disabled={true}>
                 <FontIcon className="material-icons">thumb_up</FontIcon>
@@ -88,22 +88,22 @@ export default class Front extends React.Component {
               </FloatingActionButton>
             </Modal.Footer>
           </div>
-          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' className='cta-button' style={{position: 'absolute', bottom: 35, left: 45}}>Try It!</Button>
+          <Button onClick={this.registerAnon} bsSize='large' bsStyle='success' className='cta-button' style={{position: 'absolute', bottom: 10, left: 10}}>Try It!</Button>
         </div>
       );
     } else if (_.isEmpty(user.tags)) {
       content = <Seedtags noModal={true} onSeed={this.onSeed} />;
     } else if (this.state.scoreCt > 4) {
       content = (
-        <Modal.Body>
+        <CardText>
           <h4>Ok, you get the concept. Let's get your scores into the database so you don't lose progress, shall we?</h4>
           <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
-        </Modal.Body>
+        </CardText>
       );
     } else {
       content = (
         <div>
-          <Modal.Body>
+          <CardText>
             <h4><a href={job.url} target="_blank">{job.title}</a></h4>
             <p style={{wordWrap: 'break-word'}}>
               {job.tags.map(t =>
@@ -112,7 +112,7 @@ export default class Front extends React.Component {
             </p>
 
             <p>{striptags(job.description).slice(0, 1024)}{job.description.length > 1024 && '...'}</p>
-          </Modal.Body>
+          </CardText>
           <Modal.Footer>
             <FloatingActionButton onTouchTap={() => this.score(job.id, FILTERS.LIKED)}>
               <FontIcon className="material-icons">thumb_up</FontIcon>
@@ -137,38 +137,47 @@ export default class Front extends React.Component {
     let {user, viewScores} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
+    let isEmployer = this.props.location.pathname === '/employer';
 
     return (
-      <Grid fluid={true} className="frontpage">
+      <div className="frontpage">
 
         {/* Github Ribbon (interfering with the pig)
          <a href="https://github.com/lefnire/jobpig"><img style={{position: 'absolute', top: 0, left: 0, border: 0}} src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" /></a>
          */}
-
-        <Row>
-          <Jumbotron className='top-jumbo'>
-            <div className='tagline'>
-              <h1 className='title'>Jobpig</h1>
-              <h2 className='subtitle'>Rate Jobs, Find Matches</h2>
+        <div className="jp-nav">
+          <div>
+            <h1 className='title'>Jobpig</h1>
+            <div className="login">
+              <RaisedButton label='Login' onTouchTap={()=>this.refs.auth.open()}/>
             </div>
-            <img src="Pig.png" className='pig'/>
-          </Jumbotron>
-        </Row>
+          </div>
+        </div>
 
-        <Row className="searchers">
-          <Col xs={12} md={6} className="jp-content">
+        <div className="jumbo" style={{height: window.innerHeight}}>
+          <img src="Pig.png" className='pig'/>
+          <div className="jumbo-right">
+            <h2 className='subtitle'>
+              {false && isEmployer? 'Matchmade candidates' : 'Rate Jobs, Find Matches'}
+            </h2>
+
+            <Button bsStyle="success" bsSize="lg" className="get-started" onClick={() => this.refs.auth.open(isEmployer? AUTH_ACTIONS.POST_JOB : AUTH_ACTIONS.REGISTER)}>Get Started</Button>
+          </div>
+        </div>
+
+        <div className="searchers">
+          <div className="jp-content">
             <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>,
-              <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
             {_.get(user, 'tags[0]') && (
               viewScores ? (
-                <Modal.Body>
+                <div>
                   <CardHeader
                     title='You'
                     subtitle='Description of your professional role'
                     avatar="/sample-avatars/person.jpg"
                   />
-                  <Row className="sample-scores">
+                  <CardText className="sample-scores">
                     <Col md={6} xs={6}>
                       <ul>
                         {user.tags.filter(t => t.score > 0).map(tag => (
@@ -183,60 +192,57 @@ export default class Front extends React.Component {
                         ))}
                       </ul>
                     </Col>
-                  </Row>
-                </Modal.Body>
+                  </CardText>
+                </div>
               ) : <Button onClick={()=>this.setState({viewScores:true})}>View Your Scores</Button>
             )}
-          </Col>
-          <Col xs={12} md={6}>
+          </div>
+          <div>
             {this.renderJob()}
-          </Col>
-        </Row>
+          </div>
+        </div>
+        <div className="employers">
+          <div>
+            <Paper zDepth={3} className="paper-modal">
+              <Modal.Header>
+                <Modal.Title>My Job Post</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
+                <hr/>
+                <h4>Candidate Matches</h4>
 
-        <Row className="employers">
-          <Col xs={12} md={6}>
-            <div className="static-modal">
-              <Paper zDepth={3} className="paper-modal">
-                <Modal.Header>
-                  <Modal.Title>My Job Post</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
-                  <hr/>
-                  <h4>Candidate Matches</h4>
+                <ListGroup>
+                  <ListGroupItem>
+                    <Row>
+                      <Col md={7} xs={7}>
+                        <CardHeader
+                          title="Mrs. Candidate"
+                          subtitle="Full-stack JavaScript Developer"
+                          avatar="/sample-avatars/person.jpg"
+                        />
+                      </Col>
+                      <Col md={5} xs={5}>
+                        <ul style={{listStyle: 'none', padding: 0}}>
+                          <li className="sample-score-up">+3 JavaScript</li>
+                          <li className="sample-score-up">+3 Full-time</li>
+                          <li className="sample-score-up">+3 San Francisco</li>
+                        </ul>
+                        <RaisedButton label="Contact"/>
+                      </Col>
+                    </Row>
+                  </ListGroupItem>
+                  <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
+                  <ListGroupItem header="Candidate 3">...</ListGroupItem>
+                </ListGroup>
 
-                  <ListGroup>
-                    <ListGroupItem>
-                      <Row>
-                        <Col md={7} xs={7}>
-                          <CardHeader
-                            title="Mrs. Candidate"
-                            subtitle="Full-stack JavaScript Developer"
-                            avatar="/sample-avatars/person.jpg"
-                          />
-                        </Col>
-                        <Col md={5} xs={5}>
-                          <ul style={{listStyle: 'none', padding: 0}}>
-                            <li className="sample-score-up">+3 JavaScript</li>
-                            <li className="sample-score-up">+3 Full-time</li>
-                            <li className="sample-score-up">+3 San Francisco</li>
-                          </ul>
-                          <RaisedButton label="Contact"/>
-                        </Col>
-                      </Row>
-                    </ListGroupItem>
-                    <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
-                    <ListGroupItem header="Candidate 3">...</ListGroupItem>
-                  </ListGroup>
-
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
-                </Modal.Footer>
-              </Paper>
-            </div>
-          </Col>
-          <Col xs={12} md={6} className="jp-content">
+              </Modal.Body>
+              <Modal.Footer>
+                <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
+              </Modal.Footer>
+            </Paper>
+          </div>
+          <div className="jp-content">
             <div>
               <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
               <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
@@ -244,23 +250,18 @@ export default class Front extends React.Component {
                 <li>View / contact candidates who match your listing, sorted by score</li>
                 <li>Higher listing display priority for searchers</li>
                 <li>Listing analytics</li>
-                <li><span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!
+                <li>
+                  <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!
                 </li>
               </ul>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
-        <Row>
-          <Footer />
-        </Row>
+        <Footer />
 
         <Auth ref='auth' coupon={coupon}/>
-
-        <div className='login'>
-          <RaisedButton label='Login / Register' onTouchTap={()=>this.refs.auth.open()}/>
-        </div>
-      </Grid>
+      </div>
     );
   }
 }

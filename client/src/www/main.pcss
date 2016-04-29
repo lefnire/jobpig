@@ -8,16 +8,11 @@ body {
   margin: 0px;
 }
 
-.jumbotron {
-  border-radius: 0px !important;
-  background-color: #272D4E;
-}
-
 .footer {
+  background: linear-gradient(#0C5FA7, #21365F);
+  border-radius: 0px !important;
   text-align: center;
   color: white;
-  /*margin-top: 200px;*/
-  /*margin-top: 20px;*/
   margin-bottom: 0px;
 
   & li {
@@ -97,108 +92,122 @@ body {
 
 .frontpage {
 
-  & .top-jumbo {
-    & .tagline {
-      margin: 16px auto 0 auto;
-      text-align: center;
-      max-width: 575px;
-      @media (min-width: 800px) {
-        margin-top: 32px;
-      }
-    }
-  }
-
-  & .login {
+  & .jp-nav {
     position: absolute;
-    right: 10px;
-    top: 10px;
-  }
-
-  & .title {
-    @media (min-width: 800px) {
-      font-size: 56px;
+    top: 0px;
+    width: 100%;
+    margin: 0px;
+    & > div {
+      padding: 20px;
     }
-  }
-
-  & .title, & .subtitle {
-    /*font-family: 'Special Elite', cursive;*/
-    color: white;
-  }
-
-  & .subtitle {
-    font-size: 20px;
-    line-height: 28px;
-    padding-top: 19px;
-    margin-bottom: 13px;
-    letter-spacing: 0;
-    @media (min-width: 800px) {
-      font-size: 24px;
-      line-height: 32px;
-      padding-top: 16px;
-      margin-bottom: 12px;
+    & .login {
+      float: right;
     }
-  }
-
-  & .pig {
-    position: absolute;
-    top: 10px;
-    /*left: 10px;*/
-    @media (max-width: 1024px) {
-      width: 20%;
-    }
-  }
-
-  & .searchers.row, & .employers.row {
-    /*display: flex;
-    flex-direction: column;
-    align-items: center;*/
-  }
-
-  & .jp-content {
-    font-size: 1.2em;
-    line-height: 1.5;
-
-    @media (min-width: 700px) {
-      padding: 0px 30px;
-    }
-
-    & .jp-role {
-      background-color: #eee;
-      padding: 5px;
-      color: #414B82
-    }
-
-    & .sample-scores {
-      & ul {
-        list-style: none;
-        & .score-up {
-          font-weight: bold;
-          color: green;
-        }
-        & .score-down {
-          font-weight: bold;
-          color: red;
-        }
-      }
-    }
-
-    & .static-modal .modal {
-      position: relative;
-      top: auto;
-      right: auto;
-      left: auto;
-      bottom: auto;
-      z-index: 1;
-      display: block;
-    }
-  }
-  & .employers {
-    margin-top: 20px;
-    padding-top: 20px;
-    background-color: #414B82;
-    & .jp-content {
+    & .title {
       color: white;
+      margin: 0;
+      padding: 0;
+      float: left;
+      font-size: 32px !important;
+      @media (min-width: 800px) {
+        font-size: 56px;
+      }
     }
+  }
+
+  & .jumbo {
+    background: linear-gradient(#21365F, #0C5FA7);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+
+
+
+    @media (max-width: 700px) {
+      & > .pig {display: none;}
+    }
+
+    @media (max-width: 1024px) {
+      & > * { padding: 0; }
+      & .pig {
+        /*width: 20%;*/
+      }
+    }
+
+    & .jumbo-right {
+      display: flex;
+      flex-direction: column;
+      height: 267px;
+      justify-content: space-around;
+    }
+
+    & .get-started {
+      border-radius: 25px;
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    & .subtitle {
+      font-size: 3em;
+      font-weight: 700;
+      color: white;
+      /*font: 500 15px/20px "museo-sans-rounded",sans-serif;*/
+      /*font-family: 'Special Elite', cursive;*/
+      text-align: center;
+      line-height: 1.5;
+    }
+  }
+
+  & .searchers, & .employers {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 15px;
+
+    & > * {
+      flex: 1;
+      min-width: 300px;
+      padding: 15px;
+    }
+
+    & .jp-content {
+      font-size: 1.2em;
+      line-height: 1.5;
+
+      & .jp-role {
+        background-color: #eee;
+        padding: 5px;
+        color: #414B82
+      }
+
+      & .sample-scores {
+        & ul {
+          list-style: none;
+          & .score-up {
+            font-weight: bold;
+            color: green;
+          }
+          & .score-down {
+            font-weight: bold;
+            color: red;
+          }
+        }
+      }
+    }
+  }
+
+  & .searchers {
+    background-color: #F1F1F1;
+    color: #767676;
+  }
+
+  & .employers {
+    background-color: white;
+    color: #3C3C3C;
   }
   & .cta-button {
     padding: 15px 30px;
