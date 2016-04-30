@@ -9,7 +9,8 @@ body {
 }
 
 .footer {
-  background: linear-gradient(#0C5FA7, #21365F);
+  //background: linear-gradient(#0C5FA7, #21365F);
+  background-color: #272D4E;
   border-radius: 0px !important;
   text-align: center;
   color: white;
@@ -161,17 +162,14 @@ body {
   }
 
   & .searchers, & .employers {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: space-around;
     padding: 15px;
 
-    & > * {
-      flex: 1;
-      min-width: 300px;
+    & > div {
       padding: 15px;
+
+      display: inline-block;
+      vertical-align: middle;
+      float: none;
     }
 
     & .jp-content {
@@ -185,6 +183,9 @@ body {
       }
 
       & .sample-scores {
+        max-height: 300px;
+        overflow-y: scroll;
+
         & ul {
           list-style: none;
           & .score-up {
@@ -203,6 +204,9 @@ body {
   & .searchers {
     background-color: #F1F1F1;
     color: #767676;
+    & .jp-content .jp-role {
+      background-color: white;
+    }
   }
 
   & .employers {

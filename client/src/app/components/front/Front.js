@@ -97,7 +97,7 @@ export default class Front extends React.Component {
       content = (
         <CardText>
           <h4>Ok, you get the concept. Let's get your scores into the database so you don't lose progress, shall we?</h4>
-          <RaisedButton onTouchTap={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)} primary={true} label="Register"/>
+          <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)}>Register</Button>
         </CardText>
       );
     } else {
@@ -165,98 +165,102 @@ export default class Front extends React.Component {
           </div>
         </div>
 
-        <div className="searchers">
-          <div className="jp-content">
-            <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
-            <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
-            {_.get(user, 'tags[0]') && (
-              viewScores ? (
-                <div>
-                  <CardHeader
-                    title='You'
-                    subtitle='Description of your professional role'
-                    avatar="/sample-avatars/person.jpg"
-                  />
-                  <CardText className="sample-scores">
-                    <Col md={6} xs={6}>
-                      <ul>
-                        {user.tags.filter(t => t.score > 0).map(tag => (
-                          <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
-                        ))}
-                      </ul>
-                    </Col>
-                    <Col md={6} xs={6}>
-                      <ul>
-                        {user.tags.filter(t => t.score < 0).map(tag => (
-                          <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
-                        ))}
-                      </ul>
-                    </Col>
-                  </CardText>
-                </div>
-              ) : <Button onClick={()=>this.setState({viewScores:true})}>View Your Scores</Button>
-            )}
-          </div>
-          <div>
-            {this.renderJob()}
-          </div>
-        </div>
-        <div className="employers">
-          <div>
-            <Paper zDepth={3} className="paper-modal">
-              <Modal.Header>
-                <Modal.Title>My Job Post</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
-                <hr/>
-                <h4>Candidate Matches</h4>
+        <Grid fluid={true}>
+          <Row className="searchers">
+            <Col md={6} xs={12} className="jp-content">
+              <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>
+              <p>Thumbs teach Jobpig your search preferences; your list becomes custom-tailored to your preferred <u>skills</u>, <u>location</u>, <u>companies</u>, <u>commitment</u>, and <u>remote preference</u>.</p>
+              {_.get(user, 'tags[0]') && (
+                viewScores ? (
+                  <div>
+                    <CardHeader
+                      title='You'
+                      subtitle='Description of your professional role'
+                      avatar="/sample-avatars/person.jpg"
+                    />
+                    <CardText>
+                      <Row className="sample-scores">
+                        <Col md={6} xs={6}>
+                          <ul>
+                            {user.tags.filter(t => t.score > 0).map(tag => (
+                              <li key={tag.id} className='score-up'>+{tag.score} {tag.text}</li>
+                            ))}
+                          </ul>
+                        </Col>
+                        <Col md={6} xs={6}>
+                          <ul>
+                            {user.tags.filter(t => t.score < 0).map(tag => (
+                              <li key={tag.id} className='score-down'>{tag.score} {tag.text}</li>
+                            ))}
+                          </ul>
+                        </Col>
+                      </Row>
+                    </CardText>
+                  </div>
+                ) : <Button onClick={()=>this.setState({viewScores:true})}>View Your Scores</Button>
+              )}
+            </Col>
+            <Col md={6} xs={12}>
+              {this.renderJob()}
+            </Col>
+          </Row>
+          <Row className="employers">
+            <Col md={6} xs={12}>
+              <Paper zDepth={3} className="paper-modal">
+                <Modal.Header>
+                  <Modal.Title>My Job Post</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>My company is seeking a <u>full-time</u> <u>JavaScript</u> ninja in <u>San Francisco, CA</u></p>
+                  <hr/>
+                  <h4>Candidate Matches</h4>
 
-                <ListGroup>
-                  <ListGroupItem>
-                    <Row>
-                      <Col md={7} xs={7}>
-                        <CardHeader
-                          title="Mrs. Candidate"
-                          subtitle="Full-stack JavaScript Developer"
-                          avatar="/sample-avatars/person.jpg"
-                        />
-                      </Col>
-                      <Col md={5} xs={5}>
-                        <ul style={{listStyle: 'none', padding: 0}}>
-                          <li className="sample-score-up">+3 JavaScript</li>
-                          <li className="sample-score-up">+3 Full-time</li>
-                          <li className="sample-score-up">+3 San Francisco</li>
-                        </ul>
-                        <RaisedButton label="Contact"/>
-                      </Col>
-                    </Row>
-                  </ListGroupItem>
-                  <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
-                  <ListGroupItem header="Candidate 3">...</ListGroupItem>
-                </ListGroup>
+                  <ListGroup>
+                    <ListGroupItem>
+                      <Row>
+                        <Col md={7} xs={7}>
+                          <CardHeader
+                            title="Mrs. Candidate"
+                            subtitle="Full-stack JavaScript Developer"
+                            avatar="/sample-avatars/person.jpg"
+                          />
+                        </Col>
+                        <Col md={5} xs={5}>
+                          <ul style={{listStyle: 'none', padding: 0}}>
+                            <li className="sample-score-up">+3 JavaScript</li>
+                            <li className="sample-score-up">+3 Full-time</li>
+                            <li className="sample-score-up">+3 San Francisco</li>
+                          </ul>
+                          <RaisedButton label="Contact"/>
+                        </Col>
+                      </Row>
+                    </ListGroupItem>
+                    <ListGroupItem header="Candidate 2">Candidates are sorted by match score</ListGroupItem>
+                    <ListGroupItem header="Candidate 3">...</ListGroupItem>
+                  </ListGroup>
 
-              </Modal.Body>
-              <Modal.Footer>
-                <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
-              </Modal.Footer>
-            </Paper>
-          </div>
-          <div className="jp-content">
-            <div>
-              <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
-              <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
-              <ul>
-                <li>View / contact candidates who match your listing, sorted by score</li>
-                <li>Higher listing display priority for searchers</li>
-                <li>Listing analytics</li>
-                <li>
-                  <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
+                </Modal.Footer>
+              </Paper>
+            </Col>
+            <Col md={6} xs={12} className="jp-content">
+              <div>
+                <h3><span className="jp-role">EMPLOYERS</span> Find Needles in The Haystack</h3>
+                <p>View candidates for whom your job is a great match; and let matching users find <em>you</em>.</p>
+                <ul>
+                  <li>View / contact candidates who match your listing, sorted by score</li>
+                  <li>Higher listing display priority for searchers</li>
+                  <li>Listing analytics</li>
+                  <li>
+                    <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!
+                  </li>
+                </ul>
+              </div>
+            </Col>
+          </Row>
+        </Grid>
 
         <Footer />
 
