@@ -50,10 +50,15 @@ export default class Front extends React.Component {
           scoreCt: this.state.scoreCt + 1
         });
       });
-    if (!this.scored) {
+    //if (!this.scored) { // Experimenting with counting all scores real quick
       _ga.event('engagement', 'sample-thumb');
-      this.scored = true;
-    }
+      //this.scored = true;
+    //}
+  };
+
+  clickCTA = (ctaSource, action) => {
+    _ga.event('engagement', 'cta:' + ctaSource);
+    this.refs.auth.open(action);
   };
 
   onSeed = user => {
@@ -97,7 +102,7 @@ export default class Front extends React.Component {
       content = (
         <CardText>
           <h4>Ok, you get the concept. Let's get your scores into the database so you don't lose progress, shall we?</h4>
-          <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={() => this.refs.auth.open(AUTH_ACTIONS.REGISTER)}>Register</Button>
+          <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={() => this.clickCTA('persist-demo', AUTH_ACTIONS.REGISTER)}>Register</Button>
         </CardText>
       );
     } else {
@@ -149,7 +154,7 @@ export default class Front extends React.Component {
           <div>
             <h1 className='title'>Jobpig</h1>
             <div className="login">
-              <RaisedButton label='Login' onTouchTap={()=>this.refs.auth.open()}/>
+              <RaisedButton label='Login' onTouchTap={() => this.clickCTA('login')}/>
             </div>
           </div>
         </div>
@@ -161,7 +166,14 @@ export default class Front extends React.Component {
               {false && isEmployer? 'Matchmade candidates' : 'Rate Jobs, Find Matches'}
             </h2>
 
-            <Button bsStyle="success" bsSize="lg" className="get-started" onClick={() => this.refs.auth.open(isEmployer? AUTH_ACTIONS.POST_JOB : AUTH_ACTIONS.REGISTER)}>Get Started</Button>
+            <Button
+              bsStyle="success"
+              bsSize="lg"
+              className="get-started"
+              onClick={() => this.clickCTA('get-started', isEmployer? AUTH_ACTIONS.POST_JOB : AUTH_ACTIONS.REGISTER)}
+            >
+              Get Started
+            </Button>
           </div>
         </div>
 
@@ -241,7 +253,7 @@ export default class Front extends React.Component {
 
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={()=>this.refs.auth.open(AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
+                  <Button bsStyle="success" bsSize="lg" className="cta-button" onClick={() => this.clickCTA('post-job', AUTH_ACTIONS.POST_JOB)}>Post a Job</Button>
                 </Modal.Footer>
               </Paper>
             </Col>
