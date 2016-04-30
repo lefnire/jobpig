@@ -119,35 +119,28 @@ body {
   & .jumbo {
     background: linear-gradient(#21365F, #0C5FA7);
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
     align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: center;
 
-
+    & > * { padding: 0px 50px; }
 
     @media (max-width: 700px) {
       & > .pig {display: none;}
     }
 
-    @media (max-width: 1024px) {
-      & > * { padding: 0; }
-      & .pig {
-        /*width: 20%;*/
-      }
-    }
-
     & .jumbo-right {
       display: flex;
       flex-direction: column;
-      height: 267px;
-      justify-content: space-around;
+      //justify-content: space-between;
+      align-items: center;
+      //height: 200px;
+      & > * { margin: 15px 0px; }
     }
 
     & .get-started {
       border-radius: 25px;
       width: 80%;
-      margin: 0 auto;
     }
 
     & .subtitle {
