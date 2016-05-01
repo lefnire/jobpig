@@ -7,6 +7,7 @@ import {
   FloatingActionButton,
   FontIcon,
   RaisedButton,
+  IconButton
 } from 'material-ui';
 import Auth from './Auth';
 import Footer from '../Footer';
@@ -25,6 +26,7 @@ import {
   ListGroupItem,
 } from 'react-bootstrap';
 import striptags from 'striptags';
+import smoothScroll from 'smoothscroll';
 
 export default class Front extends React.Component {
   constructor() {
@@ -142,14 +144,16 @@ export default class Front extends React.Component {
     let {user, viewScores} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
-    let isEmployer = this.props.location.pathname === '/employer';
+
+    // A/B GA Experiments
+    let {pathname} = this.props.location,
+      orig = pathname === '/',
+      showArrow = pathname === '/1',
+      ctaToContent = pathname === '/2';
 
     return (
       <div className="frontpage">
 
-        {/* Github Ribbon (interfering with the pig)
-         <a href="https://github.com/lefnire/jobpig"><img style={{position: 'absolute', top: 0, left: 0, border: 0}} src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" /></a>
-         */}
         <div className="jp-nav">
           <div>
             <h1 className='title'>Jobpig</h1>
@@ -159,25 +163,37 @@ export default class Front extends React.Component {
           </div>
         </div>
 
-        <div className="jumbo" style={{height: window.innerHeight}}>
+        <div className="jumbo" style={{height: window.innerHeight - (showArrow? 65 : 0)}}>
           <img src="Pig.png" className='pig'/>
           <div className="jumbo-right">
-            <h2 className='subtitle'>
-              {false && isEmployer? 'Matchmade candidates' : 'Rate Jobs, Find Matches'}
-            </h2>
+            <h2 className='subtitle'>Rate Jobs, Find Matches</h2>
 
             <Button
               bsStyle="success"
               bsSize="lg"
               className="get-started"
-              onClick={() => this.clickCTA('get-started', isEmployer? AUTH_ACTIONS.POST_JOB : AUTH_ACTIONS.REGISTER)}
+              onClick={() =>
+                ctaToContent ? smoothScroll(document.getElementById('content-section'), 500)
+                : this.clickCTA('get-started', AUTH_ACTIONS.REGISTER)
+              }
             >
               Get Started
             </Button>
           </div>
         </div>
 
-        <Grid fluid={true}>
+        {showArrow &&
+          <div className="show-more">
+            <FontIcon className="material-icons"
+              style={{fontSize: 100, color: '#767676', cursor: 'pointer'}}
+              onTouchTap={() => smoothScroll(document.getElementById('content-section'), 500)}
+            >
+              expand_more
+            </FontIcon>
+          </div>
+        }
+
+        <Grid fluid={true} id="content-section">
           <Row className="searchers">
             <Col md={6} xs={12} className="jp-content">
               <h3><span className="jp-role">SEARCHERS</span> Rate Jobs, Find Matches</h3>

@@ -80,6 +80,7 @@
     "react-stripe-checkout": "^1.7.2",
     "react-tap-event-plugin": "^0.2.1",
     "sepia": "^2.0.1",
+    "smoothscroll": "^0.2.2",
     "string-replace-webpack-plugin": "0.0.2",
     "striptags": "^2.1.1",
     "style-loader": "^0.13.0",
