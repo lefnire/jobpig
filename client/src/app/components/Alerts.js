@@ -10,6 +10,7 @@ export default class Alerts extends React.Component {
   }
 
   render() {
+    if (!this.state.message) return null;
     return (
       <Snackbar
         open={this.state.open}
