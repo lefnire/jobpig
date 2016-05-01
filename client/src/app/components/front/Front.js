@@ -29,16 +29,12 @@ import striptags from 'striptags';
 import smoothScroll from 'smoothscroll';
 import load from 'load-script';
 
+let variation = jobpig.env === 'production' ? cxApi.chooseVariation() : 0;
+
 export default class Front extends React.Component {
   constructor() {
     super();
-    this.state = {variation: 0};
-
-    // Experiments TODO remove later
-    load('//www.google-analytics.com/cx/api.js?experiment=aY4CSiVGQUisJtyQaq-deQ', (err, script) => {
-      if (err) return;
-      this.setState({variation: cxApi.chooseVariation()});
-    });
+    this.state = {};
   }
 
   registerAnon = () => {
@@ -148,7 +144,7 @@ export default class Front extends React.Component {
   };
 
   render() {
-    let {user, viewScores, variation} = this.state;
+    let {user, viewScores} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
 

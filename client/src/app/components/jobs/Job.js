@@ -24,9 +24,11 @@ import {
   ImageRemoveRedEye,
   EditorInsertChart
 } from 'material-ui/lib/svg-icons';
-import {_fetch, constants} from '../../helpers';
+import {_fetch, constants, me, _ga} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
+import ads from './ads';
 
+let adRotate = 0, ad;
 export default class Job extends Component {
   constructor(){
     super();
@@ -35,15 +37,25 @@ export default class Job extends Component {
     };
   }
 
+  rotateAd = () => {
+    if (adRotate++ % 3 !== 0) return; // not every job
+    me(true).then(profile => {
+      let tag = _(profile.tags).sortBy(t => -t.user_tags.score).find(t => ads[t.key]);
+      ad = tag && _.sample(ads[tag.key]);
+    });
+  };
+
   render() {
     let {job, isEmployer, style} = this.props;
     let {editing} = this.state;
     let isMatch = job.status === FILTERS.MATCH;
     let isInList = _.includes([FILTERS.APPLIED, FILTERS.LIKED, FILTERS.DISLIKED], job.status);
-    let styles = {
-      card: _.defaults({}, style, isInList && {marginBottom: 20})
-    };
+    this.rotateAd();
 
+    let styles = {
+      card: _.defaults({}, style, isInList && {marginBottom: 20}),
+      cardText: {background:'#f8f8f8'}
+    };
     return (
       <div style={styles.card} className={isInList? 'padded': ''}>
         <Card>
@@ -84,10 +96,16 @@ export default class Job extends Component {
             </div>
           )}
           <CardText
-            style={{background:'#f8f8f8'}}
+            style={styles.cardText}
             expandable={isInList}
             ref={c => isInList && c && c.setState({expanded: false})}
           >
+            {!job.user_id && ad && (
+              <div style={{float: 'left', margin: '0px 20px 10px 0px', border: '1px solid #E6E6E6'}}>
+                <h5>Advertisement</h5>
+                <a href={ad.href} onClick={() => {_ga.event('revenue', 'ad-click')}} target="_blank"><img border="0" src={ad.img1} /></a><img src={ad.img2} width="1" height="1" border="0" alt="" style={{border:'none', margin:0}} />
+              </div>
+            )}
             <p dangerouslySetInnerHTML={{__html:job.description}}></p>
             {!job.users? null: (
               <div>
@@ -108,6 +126,7 @@ export default class Job extends Component {
             </CardActions>
           )}
         </Card>
+
 
       </div>
     );

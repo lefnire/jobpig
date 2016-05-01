@@ -75,8 +75,8 @@ export function _fetch(url, opts={}) {
 }
 
 let user;
-export function me() {
-  if (user) return Promise.resolve(user);
+export function me(force) {
+  if (user && !force) return Promise.resolve(user);
   return _fetch('user').then(user => {
     user = user;
     return Promise.resolve(user);
