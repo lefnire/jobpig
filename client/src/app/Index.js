@@ -57,7 +57,7 @@ class Main extends Component {
             </Route>
           ) : (
             <Route onEnter={this.onEnter}>
-              <Route path="/(:variant)" component={Front} />
+              <Route path="/" component={Front} />
               <Route path="/employer" component={Front} />
               <Route path="/reset-password" component={ResetPassword} />
               <Redirect path="*" to="/" />

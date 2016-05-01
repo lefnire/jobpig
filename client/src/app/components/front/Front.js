@@ -27,11 +27,18 @@ import {
 } from 'react-bootstrap';
 import striptags from 'striptags';
 import smoothScroll from 'smoothscroll';
+import load from 'load-script';
 
 export default class Front extends React.Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {variation: 0};
+
+    // Experiments TODO remove later
+    load('//www.google-analytics.com/cx/api.js?experiment=aY4CSiVGQUisJtyQaq-deQ', (err, script) => {
+      if (err) return;
+      this.setState({variation: cxApi.chooseVariation()});
+    });
   }
 
   registerAnon = () => {
@@ -141,15 +148,14 @@ export default class Front extends React.Component {
   };
 
   render() {
-    let {user, viewScores} = this.state;
+    let {user, viewScores, variation} = this.state;
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
 
     // A/B GA Experiments
-    let {pathname} = this.props.location,
-      orig = pathname === '/',
-      showArrow = pathname === '/1',
-      ctaToContent = pathname === '/2';
+    let orig = variation === 0,
+      showArrow = variation === 1,
+      ctaToContent = variation === 2;
 
     return (
       <div className="frontpage">
