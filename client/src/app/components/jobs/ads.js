@@ -1,51 +1,51 @@
 import _ from 'lodash';
 let books = {
   //jsGoodParts: {
-  //  href: "http://www.amazon.com/gp/product/0596517742/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0596517742&linkCode=as2&tag=ha0d2-20&linkId=OFKJRPMME7IVQ2HQ",
-  //  img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=0596517742&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-  //  img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=0596517742"
+  //  href: "//www.amazon.com/gp/product/0596517742/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0596517742&linkCode=as2&tag=ha0d2-20&linkId=OFKJRPMME7IVQ2HQ",
+  //  img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=0596517742&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+  //  img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=0596517742"
   //  // FIXME who?
   //},
   remote: {
-    href:"http://www.amazon.com/gp/product/0804137501/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0804137501&linkCode=as2&tag=ha0d2-20&linkId=DFCJ36ZLNWLTAPUG",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=0804137501&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=0804137501",
+    href:"//www.amazon.com/gp/product/0804137501/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0804137501&linkCode=as2&tag=ha0d2-20&linkId=DFCJ36ZLNWLTAPUG",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=0804137501&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=0804137501",
     target: 'remote'
   },
   webDesign: {
-    href: "http://www.amazon.com/gp/product/1118907442/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1118907442&linkCode=as2&tag=ha0d2-20&linkId=D33VUOUZ267FJUGI",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1118907442&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1118907442",
+    href: "//www.amazon.com/gp/product/1118907442/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1118907442&linkCode=as2&tag=ha0d2-20&linkId=D33VUOUZ267FJUGI",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1118907442&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1118907442",
     target: 'html css design'
   },
   proReact: {
-    href: "http://www.amazon.com/gp/product/1484212614/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1484212614&linkCode=as2&tag=ha0d2-20&linkId=EKNABP3YKMPGS3LT",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1484212614&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1484212614",
+    href: "//www.amazon.com/gp/product/1484212614/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1484212614&linkCode=as2&tag=ha0d2-20&linkId=EKNABP3YKMPGS3LT",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1484212614&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1484212614",
     target: 'react reactjs angular angularjs javascript node nodejs'
   },
   reactNative: {
-    href:"http://www.amazon.com/gp/product/1491929006/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1491929006&linkCode=as2&tag=ha0d2-20&linkId=2AVQVKV5DE6KC6H2",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1491929006&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1491929006",
+    href:"//www.amazon.com/gp/product/1491929006/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1491929006&linkCode=as2&tag=ha0d2-20&linkId=2AVQVKV5DE6KC6H2",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1491929006&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1491929006",
     target: 'ios swift android objective-c react_native reactnative react reactjs'
   },
   pythonML: {
-    href: "http://www.amazon.com/gp/product/1783555130/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1783555130&linkCode=as2&tag=ha0d2-20&linkId=HMINRPD3CNBL4D2O",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1783555130&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1783555130",
+    href: "//www.amazon.com/gp/product/1783555130/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1783555130&linkCode=as2&tag=ha0d2-20&linkId=HMINRPD3CNBL4D2O",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1783555130&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1783555130",
     target: 'python machine_learning machinelearning'
   },
   scala: {
-    href:"http://www.amazon.com/gp/product/1449367933/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449367933&linkCode=as2&tag=ha0d2-20&linkId=QEZE5SJBTLUTUXOD",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449367933&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449367933",
+    href:"//www.amazon.com/gp/product/1449367933/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449367933&linkCode=as2&tag=ha0d2-20&linkId=QEZE5SJBTLUTUXOD",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449367933&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449367933",
     target: 'java spark'
   },
   spark: {
-    href: "http://www.amazon.com/gp/product/1449358624/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449358624&linkCode=as2&tag=ha0d2-20&linkId=AVM3TSWYPPE5NEFF",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449358624&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449358624",
+    href: "//www.amazon.com/gp/product/1449358624/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449358624&linkCode=as2&tag=ha0d2-20&linkId=AVM3TSWYPPE5NEFF",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449358624&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449358624",
     target: 'python scala data_science machine_learning machinelearning'
   },
   //python: {
@@ -66,15 +66,15 @@ let books = {
   //  target: 'spring hybernate'
   //},
   postgres: {
-    href: "http://www.amazon.com/gp/product/1449373194/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449373194&linkCode=as2&tag=ha0d2-20&linkId=QWMNC2P7KUWX646H",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449373194&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449373194",
+    href: "//www.amazon.com/gp/product/1449373194/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1449373194&linkCode=as2&tag=ha0d2-20&linkId=QWMNC2P7KUWX646H",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1449373194&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1449373194",
     target: 'mysql sql postgres'
   },
   xamarin: {
-    href:"http://www.amazon.com/gp/product/1484202155/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1484202155&linkCode=as2&tag=ha0d2-20&linkId=WEUXHL5GIJTUKFTB",
-    img1: "http://ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1484202155&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
-    img2: "http://ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1484202155",
+    href:"//www.amazon.com/gp/product/1484202155/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1484202155&linkCode=as2&tag=ha0d2-20&linkId=WEUXHL5GIJTUKFTB",
+    img1: "//ws-na.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=1484202155&Format=_SL250_&ID=AsinImage&MarketPlace=US&ServiceVersion=20070822&WS=1&tag=ha0d2-20",
+    img2: "//ir-na.amazon-adsystem.com/e/ir?t=ha0d2-20&l=as2&o=1&a=1484202155",
     target: 'xamarin c# .net'
   }
   //php: {},

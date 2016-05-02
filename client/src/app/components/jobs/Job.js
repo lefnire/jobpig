@@ -113,6 +113,7 @@ export default class Job extends Component {
                 {job.users.map(u => <Prospect key={u.id} prospect={u} />)}
               </div>
             )}
+            <div style={{clear: 'both'}}></div>
           </CardText>
 
           {!isMatch? null : (
