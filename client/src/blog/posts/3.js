@@ -35,7 +35,7 @@ let body = <div>
 
   <h4>Tech</h4>
   <p>Here's the thing about code - it's a lot easier than you think; you're psyching yourself out! I've read many accounts of waiter-gone-iOS-apps who put in 1-3 months' learning before cold-turkey. I've personally converted and coached code newbies, seeing 3 months as a standard turnaround; one month in cases where people dedicated 40h/wk learning. You don't need school ({l("don't do school!",'https://www.reddit.com/r/digitalnomad/comments/2zhlmt/what_kind_of_webdev_is_better_for_a_nomad/cpvqjxd')}), just dedication. A common starting web dev rate I see is $40/h 1099. {l('iOS Developer, $80k median','http://www.payscale.com/research/US/Job=iOS_Developer/Salary')}. That's double the best positions above! You're not limited by any factor save wifi (more than can be said for most remote jobs). You can hop countries as often as you want - you're working for home-based companies. It's the most liberating digital nomad arrangement.</p>
-  <p>I think when people consider coding with fear, they're thinking of backend engineers. Target front-end development / design, it has a very low barrier to entry. <Link to="/2">Start here!</Link></p>
+  <p>A common retort is "no way, you're competing against 10yr professionals at $5/h" - you're using the wrong job boards, see <Link to="/1">"the ugly"</Link>. Additionally, backend-engineer jobs tend to be more "hard core"; target front-end development / design, it has a very low barrier to entry. <Link to="/2">Start here!</Link></p>
 </div>;
 
 export default {title, date, teaser, body};

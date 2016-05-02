@@ -71,7 +71,7 @@ let body = <div>
     <li>{l('Flexjobs', 'https://www.flexjobs.com')}</li>
   </ul>
   <h4>The Ugly</h4>
-  <p>And finally, the penny boards. Posted by upstart college-grads looking for a $5 Facebook clone; your competition is offshore, so balk all you want, they'll get what they requested. While I disparage these boards for finding quality gigs yourself, they're great for two things. (1) Building your portfolio in unfamiliar technology (you're bootstrapping or pivoting). (2) Hiring talent for <em>your</em> projects - I use these sites for commissioning logos, icons, and discrete chunks of small independent work.</p>
+  <p>And finally, the penny boards (aka bid boards, content mills, etc). Posted by upstart college-grads looking for a $100 Facebook clone; your competition is offshore highly-experienced professionals charging $5/h. Which means (a) you won't make western wages; (b) you likely won't even land the gig. While I disparage these boards for finding quality gigs yourself, they're great for two things. (1) Building your portfolio in unfamiliar technology (you're bootstrapping or pivoting). (2) Hiring talent for <em>your</em> projects - I use these sites for commissioning logos, icons, and discrete chunks of small independent work.</p>
   <ul>
     <li>oDesk / Elance / Upwork (all the same, rebranded as Upwork)</li>
     <li>Freelancer</li>
