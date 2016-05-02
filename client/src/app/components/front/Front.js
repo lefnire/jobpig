@@ -29,7 +29,7 @@ import striptags from 'striptags';
 import smoothScroll from 'smoothscroll';
 import load from 'load-script';
 
-let variation = jobpig.env === 'production' ? cxApi.chooseVariation() : 0;
+let variation = jobpig.env === 'production' && window.cxApi ? window.cxApi.chooseVariation() : 0;
 
 export default class Front extends React.Component {
   constructor() {
