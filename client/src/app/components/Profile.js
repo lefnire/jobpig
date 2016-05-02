@@ -16,7 +16,6 @@ import {
   List,
   RaisedButton,
 } from 'material-ui';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import Formsy from 'formsy-react'
 import {
   FormsyText
@@ -161,7 +160,7 @@ export default class Profile extends React.Component{
         )}
         rightIconButton={(
           <IconMenu iconButtonElement={
-            <IconButton><MoreVertIcon /></IconButton>
+            <IconButton><FontIcon className="material-icons">more_vert</FontIcon></IconButton>
           }>
             <MenuItem onTouchTap={() => this.refs.dialog.open(tag)}>Edit</MenuItem>
             <MenuItem onTouchTap={() => this._removeTag(tag.id)}>Remove</MenuItem>

@@ -97,15 +97,18 @@ let config = {
       exclude: [nodeModulesPath]
     }, {
       test: /\.css$/,
-      loader: "style!css" // "style-loader!css-loader?importLoaders=1"
+      loader: "style-loader!css-loader"
     }, {
       test: /\.pcss$/,
       loader: "style-loader!css-loader!postcss-loader"
     }, {
       test: /\.scss$/, loaders: ["style", "css", "sass"]
     }, {
-      test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-      loader: 'url-loader' //'url-loader?limit=100000'
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      loaders: [
+        'url-loader',
+        'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}'
+      ]
     }]
   },
   //eslint config options. Part of the eslint-loader package

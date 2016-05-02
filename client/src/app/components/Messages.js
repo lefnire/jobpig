@@ -61,7 +61,7 @@ export default class Messages extends React.Component {
               <span>
                 {message.subject}
                 {message.user_id !== this.state.user.id ? null :
-                <IconButton iconClassName="material-icons" tooltip="You sent this">forward</IconButton>}
+                <IconButton iconClassName="material-icons" title="You sent this">forward</IconButton>}
               </span>
             }/>
             <CardHeader

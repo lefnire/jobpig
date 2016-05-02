@@ -13,17 +13,6 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import Prospect from '../employer/Prospect';
-import {
-  NavigationMoreVert,
-  ActionFindInPage,
-  ActionSupervisorAccount,
-  ActionRoom,
-  ActionThumbUp,
-  ActionLabel,
-  ActionSchedule,
-  ImageRemoveRedEye,
-  EditorInsertChart
-} from 'material-ui/lib/svg-icons';
 import {_fetch, constants, me, _ga} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
 import ads from './ads';
@@ -137,12 +126,12 @@ export default class Job extends Component {
     let score = job.score && (job.score > 0 ? '+' : '') + job.score;
     let _getFeat = type => _.get(_.find(job.tags, {type}), 'text');
     let items = _.filter([
-      {text: _getFeat(TAG_TYPES.COMPANY), icon: <ActionSupervisorAccount tooltip="Company" />},
-      {text: _getFeat(TAG_TYPES.LOCATION), icon: <ActionRoom tooltip="Location" />},
-      {text: _getFeat(TAG_TYPES.COMMITMENT), icon: <ActionSchedule tooltip="Commitment" />},
+      {text: _getFeat(TAG_TYPES.COMPANY), icon: <FontIcon className="material-icons" title="Company">supervisor_account</FontIcon>},
+      {text: _getFeat(TAG_TYPES.LOCATION), icon: <FontIcon className="material-icons" title="Location">room</FontIcon>},
+      {text: _getFeat(TAG_TYPES.COMMITMENT), icon: <FontIcon className="material-icons" title="Commitment">schedule</FontIcon>},
       {
         text: (score ? `(${score}) ` : '') + _(job.tags).filter({type: TAG_TYPES.SKILL}).map('text').join(', '),
-        icon: <ActionLabel tooltip="Tags"/>
+        icon: <FontIcon className="material-icons" title="Tags">label</FontIcon>
       }
     ], 'text');
     return (
@@ -153,7 +142,7 @@ export default class Job extends Component {
         {this.props.isEmployer? (
           <ListItem
             primaryText={`${job.views} Views, ${job.likes} Likes, ${job.dislikes} Dislikes`}
-            leftIcon={<EditorInsertChart tooltip="Views" />}
+            leftIcon={<FontIcon className="material-icons" title="Views">insert_chart</FontIcon>}
           />
         ): null}
       </span>
