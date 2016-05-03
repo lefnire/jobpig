@@ -27,6 +27,7 @@ export default class Job extends Component {
   }
 
   rotateAd = () => {
+    return; // remove ad temporarily; wait till I can a/b test
     if (adRotate++ % 3 !== 0) return; // not every job
     me(true).then(profile => {
       let tag = _(profile.tags).sortBy(t => -t.user_tags.score).find(t => ads[t.key]);
