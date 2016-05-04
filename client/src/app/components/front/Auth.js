@@ -134,7 +134,8 @@ class Register extends React.Component{
   }
 
   submit = body => {
-    let coupon = this.props.coupon;
+    let {query} = this.props.location;
+    let coupon = query.coupon || (query.nfj && -1);
     if (coupon) _.assign(body, {coupon});
     _fetch('register', {method:"POST", body})
       .then(json => {
@@ -172,11 +173,11 @@ export default class Auth extends React.Component {
       <Modal show={this.state.open} onHide={this.close} bsSize="large" animation={!isSmall}>
         <Modal.Body>
           <Tabs initialSelectedIndex={initialTab}>
-            <Tab label="Login">
+            <Tab label="Login" location={this.props.location}>
               <Login />
             </Tab>
             <Tab label="Register">
-              <Register action={this.state.action} coupon={this.props.coupon} />
+              <Register action={this.state.action} location={this.props.location}/>
             </Tab>
           </Tabs>
           <hr/>

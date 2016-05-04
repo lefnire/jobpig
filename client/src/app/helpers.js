@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import _ from 'lodash';
 
 global.jobpig = {
   env: "<nconf:NODE_ENV>"
@@ -77,11 +78,12 @@ export function _fetch(url, opts={}) {
 let user;
 export function me(force) {
   if (user && !force) return Promise.resolve(user);
-  return _fetch('user').then(user => {
-    user = user;
+  return _fetch('user').then(_user => {
+    user = _user;
     return Promise.resolve(user);
   });
 }
+if (jwt) me(); // kick off profile-fetch immediately, since it gets cached (and is needed right away in most cases)
 
 let tags = {};
 export function getTags(type=TAG_TYPES.SKILL) {

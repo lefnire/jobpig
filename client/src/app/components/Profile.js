@@ -1,5 +1,5 @@
 import React from 'react';
-import {API_URL, _fetch, logout, isSmall} from '../helpers';
+import {API_URL, _fetch, logout, isSmall, me} from '../helpers';
 import {
   FlatButton,
   TextField,
@@ -226,7 +226,7 @@ export default class Profile extends React.Component{
     )
   }
 
-  _refresh = () => _fetch('user').then(profile => this.setState({profile}));
+  _refresh = () => me(true).then(profile => this.setState({profile}));
 
   _submitProfile = (body) => {
     _fetch(`user`, {method: "PUT", body})

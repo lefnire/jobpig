@@ -145,9 +145,8 @@ export default class Front extends React.Component {
 
   render() {
     let {user, viewScores} = this.state;
-    let isEmployer = this.props.location.pathname === '/employer';
-    let coupon = /coupon=([^&]*)/.exec(location.search);
-    coupon = coupon && coupon[1];
+    let {location} = this.props;
+    let isEmployer = location.pathname === '/employer';
 
     // A/B GA Experiments
     let orig = variation === 0,
@@ -284,9 +283,11 @@ export default class Front extends React.Component {
                   <li>View / contact candidates who match your listing, sorted by score</li>
                   <li>Higher listing display priority for searchers</li>
                   <li>Listing analytics</li>
-                  <li>
-                    <span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!
-                  </li>
+                  {location.query.nfj ? (
+                    <li>$99 for 30 days</li>
+                  ) : (
+                    <li><span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!</li>
+                  )}
                 </ul>
               </div>
             </Col>
@@ -295,7 +296,7 @@ export default class Front extends React.Component {
 
         <Footer />
 
-        <Auth ref='auth' coupon={coupon}/>
+        <Auth ref='auth' location={location}/>
       </div>
     );
   }

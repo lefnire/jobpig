@@ -102,15 +102,19 @@ export default class Employer extends React.Component {
               <li>View / contact candidates who match your listing, sorted by score</li>
               <li>Higher listing display priority for searchers</li>
               <li>Listing analytics</li>
-              <li>
-                <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
-                {
-                  free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
-                    : <span><b>Free post per share</b> <small>(click a button below)</small></span>
-                }
-                {/* Go to www.addthis.com/dashboard to customize your tools */}
-                <div className="addthis_sharing_toolbox"></div>
-              </li>
+              {free_jobs === -1 ? (
+                <li>$99 for 30 days</li>
+              ) : (
+                <li>
+                  <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
+                  {
+                    free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
+                      : <span><b>Free post per share</b> <small>(click a button below)</small></span>
+                  }
+                  {/* Go to www.addthis.com/dashboard to customize your tools */}
+                  <div className="addthis_sharing_toolbox"></div>
+                </li>
+              )}
             </ul>
           </CardText>
         </Card>
@@ -126,16 +130,16 @@ export default class Employer extends React.Component {
 
     return (
       <div>
-        <CreateJob ref={c => global.jobpig.createJob = c} onCreate={this._refresh} free_jobs={this.state.free_jobs} />
+        <CreateJob ref={c => global.jobpig.createJob = c} onCreate={() => this._refresh(true)} free_jobs={this.state.free_jobs} />
         {isEmpty? this.renderEmpty() : this.renderJobs()}
       </div>
     )
   }
 
-  _refresh = () => {
+  _refresh = (force) => {
     Promise.all([
       _fetch('jobs/mine', {method: "GET"}),
-      me()
+      me(force)
     ]).then(vals => {
       this.setState({
         jobs: vals[0],

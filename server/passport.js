@@ -43,12 +43,20 @@ exports.setup = app => {
     let userObj = {email, pic};
 
     let p = Promise.resolve();
-    if (coupon) p = Coupon.validate(coupon).then(found => {
-      if (!found)
-        throw deny("Coupon code invalid", 400); // have to throw to break promise chain
-      userObj.free_jobs = found.value;
-      coupon = found;
-    });
+
+    // hack handling of nfj experiment
+    if (coupon === -1) {
+      userObj.free_jobs = -1;
+      coupon = false;
+    }
+    if (coupon) {
+      p = Coupon.validate(coupon).then(found => {
+        if (!found)
+          throw deny("Coupon code invalid", 400); // have to throw to break promise chain
+        userObj.free_jobs = found.value;
+        coupon = found;
+      });
+    }
     p.then(() => new Promise((resolve, reject) =>
       User.register(userObj, password, (err, _user) => err? reject(deny(err)) : resolve(_user))
     )).then(_user => {

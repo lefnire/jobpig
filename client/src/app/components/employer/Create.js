@@ -2,6 +2,7 @@ import React from 'react';
 import load from 'load-script';
 import {
   FlatButton,
+  RaisedButton,
 } from 'material-ui';
 import _ from 'lodash';
 import {_fetch, getTags, constants, filterOptions, _ga, isSmall} from '../../helpers';
@@ -32,15 +33,21 @@ export default class CreateJob extends React.Component {
 
     return (
       <Modal show={this.state.open} onHide={this.close} bsSize="large" dialogClassName="full-modal"  animation={!isSmall}>
-        <Modal.Header>
+        <Modal.Header style={{border: 'none'}}>
           <Modal.Title>
-            <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
-            {
-              free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
-                : <span><b>Free post per share</b> <small>(click a button below)</small></span>
-            }
+            {free_jobs === -1 ? (
+              '$99 for 30 days'
+            ) : (
+              <div>
+                <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
+                {
+                  free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
+                    : <span><b>Free post per share</b> <small>(click a button below)</small></span>
+                }
+                <div className="addthis_sharing_toolbox"></div>
+              </div>
+            )}
           </Modal.Title>
-          <div className="addthis_sharing_toolbox"></div>
         </Modal.Header>
         <Modal.Body>
           <StripeCheckout
@@ -112,9 +119,9 @@ export default class CreateJob extends React.Component {
 
           </Formsy.Form>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{border: 'none'}}>
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>
-          <FlatButton label="Submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
+          <RaisedButton label="Submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         </Modal.Footer>
       </Modal>
     )
