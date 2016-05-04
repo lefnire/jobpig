@@ -145,6 +145,7 @@ export default class Front extends React.Component {
 
   render() {
     let {user, viewScores} = this.state;
+    let isEmployer = this.props.location.pathname === '/employer';
     let coupon = /coupon=([^&]*)/.exec(location.search);
     coupon = coupon && coupon[1];
 
@@ -168,7 +169,7 @@ export default class Front extends React.Component {
         <div className="jumbo" style={{height: window.innerHeight - (showArrow? 65 : 0)}}>
           <img src="Pig.png" className='pig'/>
           <div className="jumbo-right">
-            <h2 className='subtitle'>Rate Jobs, Find Matches</h2>
+            <h2 className='subtitle'>{isEmployer? 'Find Matching Candidates' : 'Rate Jobs, Find Matches'}</h2>
 
             <Button
               bsStyle="success"
@@ -176,7 +177,7 @@ export default class Front extends React.Component {
               className="get-started"
               onClick={() =>
                 ctaToContent ? smoothScroll(document.getElementById('content-section'), 500)
-                : this.clickCTA('get-started', AUTH_ACTIONS.REGISTER)
+                : this.clickCTA('get-started', isEmployer? AUTH_ACTIONS.POST_JOB : AUTH_ACTIONS.REGISTER)
               }
             >
               Get Started
