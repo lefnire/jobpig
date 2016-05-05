@@ -35,9 +35,10 @@ export function login(token, action) {
   //jwt = token;
 
   window.location = {
-    [AUTH_ACTIONS.POST_JOB]: '/?flash=POST_JOB&redirect=/#/employer',
-    //[AUTH_ACTIONS.REGISTER]: '/?flash=FILL_PROFILE&redirect=/#/profile'
+    [AUTH_ACTIONS.POST_JOB]: '/#/?redirect=employer', //&flash=POST_JOB
+    //[AUTH_ACTIONS.REGISTER]: '/#/?redirect=profile&flash=FILL_PROFILE'
   }[action] || '/';
+  window.location.reload(true);
 }
 
 export function logout() {

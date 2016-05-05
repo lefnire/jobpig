@@ -30,14 +30,25 @@ exports.create = function(req, res, next) {
   // FIXME add some pre-validators here so it doesn't get through
   let body = req.body,
     user = req.user;
+
+  // Allow finalizing draft jobs
+  if (body.job_id && user.free_jobs > 0) {
+    user.free_jobs--;
+    return Promise.resolve([
+      db.Job.update({pending: false}, {where: {id: body.job_id}}),
+      user.save()
+    ]).then(() => res.json({})).catch(next);
+  }
+
+  // Draft new job
   body.pending = !(user.free_jobs > 0);
   let p = [db.Job.addCustom(req.user.id, body)];
-  if (user.free_jobs) {
+  if (user.free_jobs > 0) {
     user.free_jobs--;
     p.push(user.save());
   }
   Promise.all(p).then(vals => res.json(vals[0])).catch(next);
-}
+};
 
 exports.addNote = function(req, res, next){
   db.UserJob.upsert({job_id: req.params.id, user_id: req.user.id, note: req.body.note})

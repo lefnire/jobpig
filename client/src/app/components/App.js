@@ -28,6 +28,11 @@ export default class App extends React.Component {
     this.state = {open: false};
   }
 
+  componentWillMount() {
+    let {redirect} = this.props.location.query;
+    if (redirect) this._goto(redirect);
+  }
+
   componentDidMount() {
     this._notifyFillProfile();
   }
