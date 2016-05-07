@@ -81,6 +81,7 @@
     "react-select": "1.0.0-beta12",
     "react-stripe-checkout": "^1.7.2",
     "react-tap-event-plugin": "^0.2.1",
+    "rollbar-browser": "^1.9.1",
     "sepia": "^2.0.1",
     "smoothscroll": "^0.2.2",
     "string-replace-webpack-plugin": "0.0.2",

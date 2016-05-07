@@ -1,9 +1,21 @@
 import fetch from 'isomorphic-fetch';
 import _ from 'lodash';
+import rollbar from 'rollbar-browser/dist/rollbar.umd.nojson.min.js';
 
 global.jobpig = {
   env: "<nconf:NODE_ENV>"
 };
+
+// Setup Rollbar
+if (jobpig.env === 'production') {
+  let Rollbar = rollbar.init({
+    accessToken: "1d3e521cc08d4e8c9bb80476ad58ba20",
+    captureUncaught: true,
+    payload: {
+      environment: "production"
+    }
+  });
+}
 
 let anon;
 export function setAnon(user) {
