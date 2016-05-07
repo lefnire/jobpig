@@ -29,13 +29,20 @@ import striptags from 'striptags';
 import smoothScroll from 'smoothscroll';
 import load from 'load-script';
 
-let variation = jobpig.env === 'production' && window.cxApi ? window.cxApi.chooseVariation() : 0;
-
 export default class Front extends React.Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {variation: 0};
+    //this.setupExperiment();
   }
+
+  setupExperiment = () => {
+    if (jobpig.env !== 'production') return;
+    load('//www.google-analytics.com/cx/api.js?experiment=aY4CSiVGQUisJtyQaq-deQ', (err, script) => {
+      if (err || !window.cxApi) return;
+      this.setState({variation: window.cxApi.chooseVariation()});
+    });
+  };
 
   registerAnon = () => {
     this.setState({user: {}}); // show 'seed tags' now; still loading from server
@@ -149,6 +156,7 @@ export default class Front extends React.Component {
     let isEmployer = location.pathname === '/employer';
 
     // A/B GA Experiments
+    let {variation} = this.state;
     let orig = variation === 0,
       showArrow = variation === 1,
       ctaToContent = variation === 2;

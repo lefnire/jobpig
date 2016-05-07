@@ -7,7 +7,7 @@ import {
 import _ from 'lodash';
 import Job from './Job';
 import SeedTags from '../SeedTags'
-import {_fetch, constants} from '../../helpers';
+import {_fetch, constants, _ga} from '../../helpers';
 const {FILTERS} = constants;
 
 export default class Jobs extends Component {
@@ -72,12 +72,17 @@ export default class Jobs extends Component {
         {fetching? <CircularProgress mode="indeterminate" size={1.5} />
           : isEmpty? emptySection
           : this.state.jobs.map(job =>
-            <Job job={job} key={job.id} onSetStatus={() => this._fetchJobs()} />
+            <Job job={job} key={job.id} onSetStatus={this.onSetStatus} />
           )
         }
       </div>
     );
   }
+
+  onSetStatus = () => {
+    _ga.pageview();
+    this._fetchJobs();
+  };
 
   _fetchJobs = (filter) => {
     this.setState({isFetching: true});

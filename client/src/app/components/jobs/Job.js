@@ -16,18 +16,31 @@ import Prospect from '../employer/Prospect';
 import {_fetch, constants, me, _ga} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
 import ads from './ads';
+import load from 'load-script';
 
 let adRotate = 0, ad;
+
+// Keep variation up here; Job will be constructed many times, but we only want to call setupExperiment() once
+let variation = null;
 export default class Job extends Component {
   constructor(){
     super();
     this.state = {
       editing: false
     };
+    this.setupExperiment();
   }
 
+  setupExperiment = () => {
+    if (variation !== null || jobpig.env !== 'production') return;
+    load('//www.google-analytics.com/cx/api.js?experiment=DKkWC2b4QpexgU6N_gZEFA', (err, script) => {
+      if (err || !window.cxApi) return;
+      variation = window.cxApi.chooseVariation();
+    });
+  };
+
   rotateAd = () => {
-    return; // remove ad temporarily; wait till I can a/b test
+    if (variation !== 1) return;
     if (adRotate++ % 3 !== 0) return; // not every job
     me(true).then(profile => {
       let tag = _(profile.tags).sortBy(t => -t.user_tags.score).find(t => ads[t.key]);
