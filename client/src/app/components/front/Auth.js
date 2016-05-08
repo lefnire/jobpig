@@ -51,7 +51,7 @@ class Login extends React.Component {
             hintText="Password"
             fullWidth={true}
             type="password"/>
-          <RaisedButton type="submit" label="Submit" primary={true} disabled={!this.state.canSubmit}/>
+          <RaisedButton type="submit" label="Submit" primary={true} disabled={false && !this.state.canSubmit}/>
         </Formsy.Form>
         <div style={{marginTop: 10}}>
           <a onClick={() => this.setState({forgotPass: !this.state.forgotPass})} style={{cursor: 'pointer'}}>Forgot Password</a>
@@ -128,7 +128,7 @@ class Register extends React.Component{
           hintText="Confirm Password"
           fullWidth={true}
           type="password"/>
-        <RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+        <RaisedButton primary={true} label='Submit' type='submit' disabled={false && !this.state.canSubmit}/>
       </Formsy.Form>
     )
   }

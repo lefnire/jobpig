@@ -66,7 +66,7 @@ class DeleteAccount extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>
-          <FlatButton label="Delete" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
+          <FlatButton label="Delete" primary={true} disabled={false && !this.state.canSubmit} onTouchTap={() => this.refs.form.submit()}/>
         </Modal.Footer>
       </Modal>
     );
@@ -199,7 +199,7 @@ export default class Profile extends React.Component{
               <FormsyText name='twitter_url' hintText="Twitter URL" value={profile.twitter_url} fullWidth={true} validations="isUrl" validationError={isUrl}/>
               <FormsyText name='bio' hintText="Bio" value={profile.bio} fullWidth={true} multiLine={true} rows={3}/>
 
-              <RaisedButton label="Save" primary={true} type='submit' disabled={!this.state.canSubmit} />
+              <RaisedButton label="Save" primary={true} type='submit' disabled={false && !this.state.canSubmit} />
               <a className="destroy-link" onClick={()=>this.refs.delete.open()}>Delete account</a>
 
             </Formsy.Form>

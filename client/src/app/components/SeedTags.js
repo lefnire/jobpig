@@ -77,7 +77,7 @@ export default class SeedTags extends React.Component {
                     <MenuItem value={TAG_TYPES.LOCATION} primaryText="Location" />
                     <MenuItem value={TAG_TYPES.COMPANY} primaryText="Company" />
                   </FormsySelect>
-                  <RaisedButton label="Add" type="submit" disabled={!this.state.canSubmit} />
+                  <RaisedButton label="Add" type="submit" disabled={false && !this.state.canSubmit} />
                 </Formsy.Form>
               </CardText>
             </Card>

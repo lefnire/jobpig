@@ -49,7 +49,7 @@ export default class ResetPassword extends React.Component {
                 hintText="Confirm Password"
                 fullWidth={true}
                 type="password"/>
-              <RaisedButton primary={true} label='Submit' type='submit' disabled={!this.state.canSubmit}/>
+              <RaisedButton primary={true} label='Submit' type='submit' disabled={false && !this.state.canSubmit}/>
             </Formsy.Form>
 
           </CardText>

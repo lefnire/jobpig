@@ -282,7 +282,7 @@ export default class Employer extends React.Component {
         </Modal.Body>
         <Modal.Footer style={{border: 'none'}}>
           <FlatButton label="Cancel" secondary={true} onTouchTap={this.close}/>
-          <RaisedButton label="Submit" primary={true} disabled={!this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
+          <RaisedButton label="Submit" primary={true} disabled={false && !this.state.canSubmit} onTouchTap={() => this.refs.form.submit()} />
         </Modal.Footer>
       </div>
     )
