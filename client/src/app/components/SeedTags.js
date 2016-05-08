@@ -12,7 +12,7 @@ import Formsy from 'formsy-react'
 import {
   FormsyText,
   FormsySelect
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import _ from 'lodash';
 import {_fetch, getTags, me, constants, filterOptions, isSmall} from '../helpers';
 import Select from 'react-select';

@@ -25,13 +25,15 @@ export function gotoSocialAuth(network) {
   window.location = `${API_URL}/auth/${network}${anon? '?anon=' + anon.id : ''}`;
 }
 
-export const isSmall = window.screen.height < 900;
+let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+export const isSmall = width < 780;
 
 // Maybe put this file in a common/ dir?
 exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
+//export const API_URL = 'http://10.0.2.2:3002';
 
 // On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
 // This doubles as "wake up, heroku!" which sleeps if not accessed for a while.

@@ -19,7 +19,7 @@ import {
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import update from 'react-addons-update';
 import SeedTags from './SeedTags';
 import {

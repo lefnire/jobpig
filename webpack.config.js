@@ -78,7 +78,7 @@ let config = {
     loaders: [{
       test: /\.jsx?$/,
       loaders: (prod ? [] : ['react-hot']).concat([
-        'babel-loader?optional=runtime&stage=0',
+        'babel-loader',
         StringReplacePlugin.replace({
           replacements: [{
             // replace server url based on release (ie, localhost:3000 or jobpigapp.herokuapp.com)

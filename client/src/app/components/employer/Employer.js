@@ -16,7 +16,7 @@ import Formsy from 'formsy-react';
 import {
   FormsyText,
   FormsyCheckbox
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import Select from 'react-select';
 import StripeCheckout from 'react-stripe-checkout';
 import Error from '../Error';
@@ -118,9 +118,9 @@ export default class Employer extends React.Component {
     let {free_jobs} = this.state;
     return (
       <Card style={{marginBottom: 15}}>
-        <CardHeader>
+        <CardText>
           <RaisedButton label="Post Job" primary={true} onTouchTap={()=> global.jobpig.createJob.open()} />
-        </CardHeader>
+        </CardText>
         <CardText>
           <ul className="empty-text">
             <li>View / contact candidates who match your listing, sorted by score</li>

@@ -7,7 +7,7 @@ import {_fetch, _ga, isSmall} from '../../helpers';
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import {
   Modal
 } from 'react-bootstrap';

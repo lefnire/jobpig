@@ -10,7 +10,7 @@ import {login, logout, _fetch, constants, _ga, gotoSocialAuth, isSmall} from '..
 import Formsy from 'formsy-react'
 import {
   FormsyText
-} from 'formsy-material-ui';
+} from 'formsy-material-ui/lib';
 import Error from '../Error';
 import update from 'react-addons-update';
 const {AUTH_ACTIONS} = constants;
@@ -74,13 +74,13 @@ class Login extends React.Component {
         this.setState({forgotEmail: ''});
       })
       .catch(global.jobpig.alerts.alert);
-  }
+  };
 
   submitForm = (body) => {
     _fetch(`login`, {method:"POST", body})
       .then(json => login(json.token))
       .catch(error => this.setState({error}))
-  }
+  };
 }
 
 class Register extends React.Component{

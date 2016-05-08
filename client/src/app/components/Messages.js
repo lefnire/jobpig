@@ -10,7 +10,7 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import Formsy from 'formsy-react'
-import fui from 'formsy-material-ui';
+import fui from 'formsy-material-ui/lib';
 import {_fetch, me} from '../helpers';
 import Footer from './Footer';
 
