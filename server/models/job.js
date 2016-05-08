@@ -212,7 +212,7 @@ let Job = sequelize.define('jobs', {
           key,
           user_id,
           source: 'jobpig',
-          url: job.url || 'http://jobpigapp.com/jobs/' + key,
+          url: job.url || 'http://jobpigapp.com', // FIXME need job.id to set the real url; replacing url in other locations
           pending: job.pending // Set to true after they've paid; false if they have free jobs (coupons)
         }).value();
       return this.bulkCreateWithTags([job])

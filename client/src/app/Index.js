@@ -24,6 +24,7 @@ import App from './components/App';
 import Front from './components/front/Front';
 import ResetPassword from './components/front/ResetPassword';
 import Jobs from './components/jobs/Jobs';
+import JobView from './components/front/JobView';
 import Employer from './components/employer/Employer';
 import Messages from './components/Messages'
 import Profile from './components/Profile';
@@ -49,6 +50,7 @@ class Main extends Component {
                 onUpdate={() => window.scrollTo(0, 0)}
               >
                 <Route path="jobs/:filter" component={Jobs} />
+                <Route path="job/:id" component={JobView} />
                 <Route path="employer" component={Employer} />
                 <Route path="profile" component={Profile} />
                 <Route path="logout" onEnter={logout} />
@@ -60,6 +62,7 @@ class Main extends Component {
               <Route onEnter={this.onEnter}>
                 <Route path="/(employer)" component={Front} />
                 <Route path="/reset-password" component={ResetPassword} />
+                <Route path="/job/:id" component={JobView} />
                 <Redirect path="*" to="/" />
               </Route>
             )}

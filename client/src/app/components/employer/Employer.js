@@ -32,7 +32,12 @@ class ShareModal extends React.Component {
     super();
     this.state = {open: false};
   }
-  open = () => {
+  open = (created, tags) => {
+    window.addthis_share = {
+      url: `https://jobpigapp.com/#/job/${created.id}`, //?uid=${created.user_id}`,
+      title: tags[0] ? `Seeking ${tags[0].label} experts on Jobpig, a matchmaking Jobboard!` : `I'm posting a job on Jobpig, a candidate matchmaking tool!`,
+      description: "Jobpig is a matchmaking job board. Whether looking for work or candidates, let Jobpig's algorithm find your perfect match!"
+    };
     this.setState({open: true});
     this._setupAddthis();
   };
@@ -194,13 +199,8 @@ export default class Employer extends React.Component {
     ]).then(vals => {
       this.setState({
         jobs: vals[0],
-        free_jobs: vals[1].free_jobs
+        free_jobs: vals[1].free_jobs,
       });
-      window.addthis_share = {
-        url: `https://jobpigapp.com?uid=${vals[1].id}`,
-        title: `I'm posting a job on Jobpig, a candidate matchmaking tool!`,
-        //description: "My Description"
-      };
     });
   };
 
@@ -256,7 +256,7 @@ export default class Employer extends React.Component {
               noResultsText="Start typing"
               filterOptions={filterOptions(true)}
             />
-            <p>Skills are how your job gets found. Enter as many of the most important skills required for this position. 5-10 items is a good amount, but if you can only think of one that's OK.</p>
+            <p>Skills are how your job gets found. Enter as many of the most important skills required for this position as you can.</p>
             <FormsyCheckbox
               name='remote'
               label="Remote"
@@ -324,7 +324,7 @@ export default class Employer extends React.Component {
 
         // They don't have free job; but can get one with a social share
         if (free_jobs === 0) {
-          return this.refs.share.open();
+          return this.refs.share.open(created, tags);
         }
 
         // Neither above

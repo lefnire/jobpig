@@ -13,7 +13,7 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import Prospect from '../employer/Prospect';
-import {_fetch, constants, me, _ga} from '../../helpers';
+import {_fetch, constants, me, _ga, loggedIn} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
 import ads from './ads';
 import load from 'load-script';
@@ -49,21 +49,41 @@ export default class Job extends Component {
   };
 
   render() {
-    let {job, isEmployer, style} = this.props;
+    let {job, isEmployer, style, anon} = this.props;
     let {editing} = this.state;
     let isMatch = job.status === FILTERS.MATCH;
     let isInList = _.includes([FILTERS.APPLIED, FILTERS.LIKED, FILTERS.DISLIKED], job.status);
+    let jobLink = !job.url || ~job.url.indexOf('jobpigapp.com') ? job.title
+      : <a className="job-title" href={job.url} target='_blank'>{job.title}</a>
     this.rotateAd();
 
     let styles = {
       card: _.defaults({}, style, isInList && {marginBottom: 20}),
       cardText: {background:'#f8f8f8'}
     };
+
+    let actions = null;
+    if (isEmployer) {
+      actions = null;
+    } else if (anon && !loggedIn()) {
+      //actions = [<FlatButton label="Contact" onTouchTap={() => {}} />]
+      actions = null;
+    } else {
+      actions = [
+        <FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
+        <FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
+        <FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
+      ];
+      if (!isMatch) actions.unshift(
+        <FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
+      );
+    }
+
     return (
       <div style={styles.card} className={isInList? 'padded': ''}>
         <Card>
           <CardTitle
-            title={<a className="job-title" href={job.url} target='_blank'>{job.title}</a>}
+            title={jobLink}
             subtitle={this._meta(job)}
             actAsExpander={isInList}
             showExpandableButton={isInList}
@@ -85,17 +105,7 @@ export default class Job extends Component {
                   <p>{job.note}</p>
                 </Paper>
               }
-              {isEmployer? null : (
-                <CardActions>{
-                  (!isMatch ? [
-                    <FlatButton label="Send to Matches" onTouchTap={() => this._setStatus(FILTERS.MATCH)}/>
-                  ] : []).concat(
-                    <FlatButton label="Mark Applied" onTouchTap={() => this._setStatus(FILTERS.APPLIED)}/>,
-                    <FlatButton label={isMatch ? 'Skip' : 'Hide'} onTouchTap={() => this._setStatus(FILTERS.HIDDEN)}/>,
-                    <FlatButton label="Add Note" onTouchTap={() => this.setState({editing: true})}/>
-                  )
-                }</CardActions>
-              )}
+              {actions && <CardActions>{actions}</CardActions>}
             </div>
           )}
           <CardText
@@ -110,6 +120,9 @@ export default class Job extends Component {
               </div>
             )}
             <p dangerouslySetInnerHTML={{__html:job.description}}></p>
+            {anon && !loggedIn() && (
+              <p className="alert alert-warning">Register to contact this employer (click "Get Started" below)</p>
+            )}
             {!job.users? null: (
               <div>
                 <h4>Matching Candidates</h4>

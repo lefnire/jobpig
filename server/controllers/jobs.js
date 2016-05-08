@@ -101,4 +101,9 @@ exports.getTags = (req, res, next) => {
     _tags[type] = {tags, debounce: moment()};
     res.send(tags)
   }).catch(next);
+};
+
+exports.getJob = (req, res, next) => {
+  db.Job.findById(req.params.id, {include: [db.Tag]})
+    .then(job => res.json(job)).catch(next);
 }
