@@ -230,25 +230,25 @@ export default class Employer extends React.Component {
             <FormsyText
               name='title'
               required
-              hintText="*Job Title"
+              hintText="Job title (required)"
               fullWidth={true}
             />
             <FormsyText
               name='company'
               required
-              hintText="*Company"
+              hintText="Company (required)"
               fullWidth={true}
             />
             <FormsyText
               name='url'
-              hintText="Job URL (optional)"
+              hintText="External job URL (optional)"
               fullWidth={true}
               validations="isUrl"
               validationError="Enter a valid URL"
 
             />
             <Select.Async
-              placeholder="Tags"
+              placeholder="Skills (required)"
               multi={true}
               value={this.state.tags}
               loadOptions={() => getTags().then(options => ({options})) }
@@ -256,7 +256,7 @@ export default class Employer extends React.Component {
               noResultsText="Start typing"
               filterOptions={filterOptions(true)}
             />
-            <br/>
+            <p>Skills are how your job gets found. Enter as many of the most important skills required for this position. 5-10 items is a good amount, but if you can only think of one that's OK.</p>
             <FormsyCheckbox
               name='remote'
               label="Remote"
@@ -272,7 +272,7 @@ export default class Employer extends React.Component {
             <FormsyText
               name='description'
               required
-              hintText="*Job Description"
+              hintText="Job description (required)"
               multiLine={true}
               rows={3}
               fullWidth={true}
