@@ -45,7 +45,7 @@ export function login(token, action) {
 
   window.localStorage.setItem('jwt', token);
   let d = new Date();
-  window.localStorage.setItem('expire', d.setDate(d.getDate() + 30)); // expire token in 30d
+  window.localStorage.setItem('expire', d.setDate(d.getDate() + 7)); // expire token in 7d
   //jwt = token;
 
   window.location = {
