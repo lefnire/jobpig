@@ -38,7 +38,7 @@ setupGoogle();
 
 let hash = {};
 let posts = _.times(4, i => {
-  let post = require('./posts/' + i);
+  let post = require('./posts/' + i).default;
   post.id = i;
   hash[i] = post;
   return post;
