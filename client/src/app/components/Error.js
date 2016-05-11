@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 export default class Error extends React.Component {
   render(){
-    var {error} = this.props;
+    let {error} = this.props;
     if (!error) return null;
     let err = _.get(error, 'json.message')
       || _.get(error, 'response.statusText')

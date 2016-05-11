@@ -37,7 +37,7 @@ import {_ga, setupGoogle} from '../app/helpers';
 setupGoogle();
 
 let hash = {};
-let posts = _.times(4, i => {
+let posts = _.times(5, i => {
   let post = require('./posts/' + i).default;
   post.id = i;
   hash[i] = post;
@@ -104,7 +104,7 @@ class Entry extends React.Component {
           icon={<FontIcon className="material-icons">arrow_back</FontIcon>}
         />
         <Card>
-          <CardTitle title={post.title} subtitle={post.date}/>
+          <CardTitle titleStyle={{fontSize: 32}} title={post.title} subtitle={post.date}/>
           <CardText className="content">
             <div className="content">
               {post.body}
