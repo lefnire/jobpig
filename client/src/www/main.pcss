@@ -256,7 +256,7 @@ body {
 .blog {
   & .content {
     & h4 { font-size: 24px; }
-    & p { font-size: 16px; }
+    & p { font-size: 16px;}
     line-height: 1.5;
   }
   & .pig {
@@ -267,6 +267,13 @@ body {
 
   & h3 {
     background-color: #eee;
+  }
+
+  & .pic {
+    padding-bottom: 20px !important;
+    @media(max-width: 800px) {
+      width: 100%;
+    }
   }
 
   /*.content {
