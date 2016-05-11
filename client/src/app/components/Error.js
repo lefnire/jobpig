@@ -3,10 +3,11 @@ import _ from 'lodash';
 
 export default class Error extends React.Component {
   render(){
-    if (!this.props.error) return null;
-    let err = _.get(this.props, 'error.json.message')
-      || _.get(this.props, 'error.response.statusText')
-      || (err.toString && err.toString())
+    var {error} = this.props;
+    if (!error) return null;
+    let err = _.get(error, 'json.message')
+      || _.get(error, 'response.statusText')
+      || (error.toString && error.toString())
       || "An error occurred";
     return <div style={{color:'red'}}>{err}</div>;
   }
