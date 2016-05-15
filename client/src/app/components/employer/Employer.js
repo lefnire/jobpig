@@ -9,7 +9,7 @@ import {
 } from 'material-ui';
 import Job from '../jobs/Job';
 import _ from 'lodash';
-import {_fetch, me, getTags, constants, filterOptions, _ga, isSmall} from '../../helpers';
+import {_fetch, me, getTags, constants, filterOptions, _ga, IS_SMALL, PRICE} from '../../helpers';
 const {TAG_TYPES} = constants;
 import load from 'load-script';
 import Formsy from 'formsy-react';
@@ -78,10 +78,10 @@ class ShareModal extends React.Component {
   render() {
     let {open} = this.state;
     return (
-      <Modal show={open} onHide={this.close} bsSize="large" animation={!isSmall}>
+      <Modal show={open} onHide={this.close} bsSize="large" animation={!IS_SMALL}>
         <Modal.Header>
           <Modal.Title>Share socially and this post is free!</Modal.Title>
-          <p>Click on a sharing button below. If you prefer to pay ($99 for a 30 day post), click the "Pay with Card" button.</p>
+          <p>Click on a sharing button below. If you prefer to pay (${PRICE} for a 30 day post), click the "Pay with Card" button.</p>
         </Modal.Header>
         <Modal.Body className="share-modal">
           <div>
@@ -132,10 +132,10 @@ export default class Employer extends React.Component {
             <li>Higher listing display priority for searchers</li>
             <li>Listing analytics</li>
             {free_jobs === -1 ? (
-              <li>$99 for 30 days</li>
+              <li>${PRICE} for 30 days</li>
             ) : (
               <li>
-                <span style={{textDecoration: 'line-through'}}>($99 for 30 days)</span>&nbsp;
+                <span style={{textDecoration: 'line-through'}}>(${PRICE} for 30 days)</span>&nbsp;
                 {
                   free_jobs? <b>{free_jobs} Free Post{free_jobs>1? 's': ''}!</b>
                     : <span><b>Free post with social share</b></span>
@@ -215,7 +215,7 @@ export default class Employer extends React.Component {
             ref={c => {if (c) stripeRef = c}}
             token={this.onToken}
             stripeKey="<nconf:stripe:public>"
-            amount={9900}>
+            amount={PRICE * 100}>
             <span>{/* StripeCheckout wants to render its own button unless we give it an element; but we don't want to render a button */}</span>
           </StripeCheckout>
 

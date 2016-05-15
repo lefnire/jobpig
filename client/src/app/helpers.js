@@ -1,13 +1,16 @@
 import fetch from 'isomorphic-fetch';
 import _ from 'lodash';
 import rollbar from 'rollbar-browser/dist/rollbar.umd.nojson.min.js';
+// Maybe put this file in a common/ dir?
+exports.constants = require('../../../server/lib/constants');
 
-global.jobpig = {
-  env: "<nconf:NODE_ENV>"
-};
+global.jobpig = {};
+
+export const ENV = "<nconf:NODE_ENV>";
+export const {PRICE} = exports.constants;
 
 // Setup Rollbar
-if (jobpig.env === 'production') {
+if (ENV === 'production') {
   let Rollbar = rollbar.init({
     accessToken: "1d3e521cc08d4e8c9bb80476ad58ba20",
     captureUncaught: true,
@@ -26,10 +29,8 @@ export function gotoSocialAuth(network) {
 }
 
 let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-export const isSmall = width < 780;
+export const IS_SMALL = width < 780;
 
-// Maybe put this file in a common/ dir?
-exports.constants = require('../../../server/lib/constants');
 const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
@@ -127,7 +128,7 @@ export const filterOptions = (allowCreate, text='Add') => (options, filter, curr
 // Setup google analytics
 let ga_ready = false;
 export const setupGoogle = () => {
-  if (jobpig.env !== 'production') return;
+  if (ENV !== 'production') return;
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

@@ -3,6 +3,7 @@ const nconf = require('nconf');
 const db = require('../models');
 const _ = require('lodash');
 const stripe = require('stripe')(nconf.get(`stripe:${nconf.get('NODE_ENV')}:private`));
+const PRICE = require('../lib/constants').PRICE;
 
 exports.validate = (req, res, next) => {
   let job_id = req.body.job_id;
@@ -15,7 +16,7 @@ exports.validate = (req, res, next) => {
     source: token.id
   }).then(customer => {
     return stripe.charges.create({
-      amount: 9900,
+      amount: PRICE * 100,
       currency: 'usd',
       customer: customer.id
     })

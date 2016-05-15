@@ -13,7 +13,7 @@ import {
 } from 'material-ui';
 import _ from 'lodash';
 import Prospect from '../employer/Prospect';
-import {_fetch, constants, me, _ga, loggedIn} from '../../helpers';
+import {_fetch, constants, me, _ga, loggedIn, ENV} from '../../helpers';
 const {FILTERS, TAG_TYPES} = constants;
 import ads from './ads';
 import load from 'load-script';
@@ -32,7 +32,7 @@ export default class Job extends Component {
   }
 
   setupExperiment = () => {
-    if (variation !== null || jobpig.env !== 'production') return;
+    if (variation !== null || ENV !== 'production') return;
     load('//www.google-analytics.com/cx/api.js?experiment=DKkWC2b4QpexgU6N_gZEFA', (err, script) => {
       if (err || !window.cxApi) return;
       variation = window.cxApi.chooseVariation();

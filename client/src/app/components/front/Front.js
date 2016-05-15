@@ -12,7 +12,7 @@ import {
 import Auth from './Auth';
 import Footer from '../Footer';
 import _ from 'lodash';
-import {constants, _ga, _fetch, setAnon, isSmall} from '../../helpers';
+import {constants, _ga, _fetch, setAnon, IS_SMALL, PRICE, ENV} from '../../helpers';
 const {AUTH_ACTIONS, FILTERS} = constants;
 import Seedtags from '../SeedTags';
 import {
@@ -37,7 +37,7 @@ export default class Front extends React.Component {
   }
 
   setupExperiment = () => {
-    if (jobpig.env !== 'production') return;
+    if (ENV !== 'production') return;
     load('//www.google-analytics.com/cx/api.js?experiment=aY4CSiVGQUisJtyQaq-deQ', (err, script) => {
       if (err || !window.cxApi) return;
       this.setState({variation: window.cxApi.chooseVariation()});
@@ -49,7 +49,7 @@ export default class Front extends React.Component {
     window.onunload = () => _fetch('register/anon', {method: "DELETE"});
     _fetch('register/anon', {method: 'POST'}).then(user => {
       setAnon(user);
-      this.setState({user, viewScores: !isSmall});
+      this.setState({user, viewScores: !IS_SMALL});
     });
   };
 
@@ -292,9 +292,9 @@ export default class Front extends React.Component {
                   <li>Higher listing display priority for searchers</li>
                   <li>Listing analytics</li>
                   {location.query.nfj ? (
-                    <li>$99 for 30 days</li>
+                    <li>${PRICE} for 30 days</li>
                   ) : (
-                    <li><span style={{textDecoration: 'line-through'}}>$99 for 30 days</span> Free post with social share!</li>
+                    <li><span style={{textDecoration: 'line-through'}}>${PRICE} for 30 days</span> Free post with social share!</li>
                   )}
                 </ul>
               </div>

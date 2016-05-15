@@ -19,3 +19,5 @@ exports.AUTH_ACTIONS = {
   REGISTER: 1,
   POST_JOB: 2
 };
+
+exports.PRICE = 5;

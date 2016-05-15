@@ -5,6 +5,8 @@ let title = 'Please Learn to Code';
 
 let date = '2016-05-11';
 
+//Photography © via Splitshare
+
 let teaser = <p>It pays great money and is easy to learn.</p>;
 
 let body = <div>
