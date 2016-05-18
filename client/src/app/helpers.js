@@ -7,7 +7,7 @@ exports.constants = require('../../../server/lib/constants');
 global.jobpig = {};
 
 export const ENV = "<nconf:NODE_ENV>";
-export const {PRICE} = exports.constants;
+export const {PRICE, TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 // Setup Rollbar
 if (ENV === 'production') {
@@ -30,8 +30,6 @@ export function gotoSocialAuth(network) {
 
 let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 export const IS_SMALL = width < 780;
-
-const {TAG_TYPES, AUTH_ACTIONS} = exports.constants;
 
 export const API_URL = "<nconf:urls:server>";
 //export const API_URL = 'http://10.0.2.2:3002';
