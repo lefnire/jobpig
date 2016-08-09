@@ -95,7 +95,7 @@ let adaptors = [
   'remotecoder',
   //'remoteok', // [deleted@7857574] not useful (scrapes the same things we do)
   //'remoteworkhunt', // dead
-  'virtualvocations', // consider removing, poor content // TODO hydrate
+  // 'virtualvocations', // deleted for poor content // TODO hydrate
   'weworkremotely',
   'wfh',
 
