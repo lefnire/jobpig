@@ -25,4 +25,4 @@ module.exports = class WeWorkRemotely extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

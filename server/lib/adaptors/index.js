@@ -45,7 +45,7 @@ exports.Adaptor = class Adaptor {
           // job ids in database are alphanumeric URLs (in case of repeats from other websites)
           job.key = job.key || job.url.replace(/\W+/g, "");
           job.tags = job.tags || [];
-        })
+        });
         return this.addTagsFromContent(jobs);
       })
       .then(db.Job.bulkCreateWithTags);
@@ -63,7 +63,7 @@ exports.Adaptor = class Adaptor {
             return m;
           }, [])
         );
-      })
+      });
       return Promise.resolve(jobs);
     })
   }
@@ -73,7 +73,7 @@ exports.Adaptor = class Adaptor {
       job.remote = /(remote|telecommut)/gi.test(job.description); // telecommute, telecommuting
     });
   }
-}
+};
 
 let adaptors = [
   // Process those which seed tags first
@@ -91,16 +91,16 @@ let adaptors = [
   'jobspresso',
   'landing_jobs',
   //'offsite_careers', // dead
-  'pythonjobs', // TODO hydrate
+  // 'pythonjobs', // rss dead? // TODO hydrate
   'remotecoder',
   //'remoteok', // [deleted@7857574] not useful (scrapes the same things we do)
   //'remoteworkhunt', // dead
-  'virtualvocations', // TODO hydrate
+  'virtualvocations', // consider removing, poor content // TODO hydrate
   'weworkremotely',
   'wfh',
 
   // And the really slow adaptors last
-  'workingnomads',
+  // 'workingnomads', // rss dead?
 ].map( a => new (require('./'+a))() );
 
 exports.adaptors = adaptors;
@@ -110,7 +110,7 @@ exports.adaptors = adaptors;
 exports.refresh = () => Bluebird.each(adaptors, adaptor =>
   adaptor._refresh().catch(err => {
     // Don't stop the rest from refreshing when one fails, so pretend all is fine (TODO email admin)
-    console.error(err);
+    console.error(err.stack);
     return Promise.resolve();
   })
 );

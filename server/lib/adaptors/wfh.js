@@ -23,4 +23,4 @@ module.exports = class WFH extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

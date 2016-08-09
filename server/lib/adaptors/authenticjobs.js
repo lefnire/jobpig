@@ -45,4 +45,4 @@ module.exports = class AuthenticJobs extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

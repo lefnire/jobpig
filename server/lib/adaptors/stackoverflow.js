@@ -23,4 +23,4 @@ module.exports = class StackOverflow extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

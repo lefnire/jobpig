@@ -29,4 +29,4 @@ module.exports = class Jobspresso extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

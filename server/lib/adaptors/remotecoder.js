@@ -31,4 +31,4 @@ module.exports = class Remotecoder extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

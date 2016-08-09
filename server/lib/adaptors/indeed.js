@@ -32,8 +32,8 @@ module.exports = class Indeed extends Adaptor {
           remote,
           tags: []
         };
-      })
+      });
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

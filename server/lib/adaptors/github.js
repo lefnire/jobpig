@@ -31,8 +31,8 @@ module.exports = class Github extends Adaptor {
           description: item.content[0]._,
           tags: []
         }
-      })
+      });
       return Promise.resolve({jobs, feed});
-    })
+    });
   }
 }

@@ -30,8 +30,8 @@ module.exports = class Jobmote extends Adaptor {
           remote: true,
           tags: []
         }
-      })
+      });
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

@@ -6,7 +6,7 @@
   "scripts": {
     "server": "nodemon --watch server server/index.js",
     "start": "node server/index.js",
-    "test-server": "NODE_ENV=test mocha --harmony_arrow_functions server/test/index.mocha.js",
+    "test-server": "NODE_ENV=test mocha server/test/index.mocha.js",
     "client": "webpack-dev-server --config webpack.config.js --progress --inline --colors",
     "build-client": "NODE_ENV=production webpack --config webpack.config.js --progress --colors"
   },

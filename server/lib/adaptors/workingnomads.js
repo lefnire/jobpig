@@ -23,4 +23,4 @@ module.exports = class Workingnomads extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

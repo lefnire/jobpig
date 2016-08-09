@@ -23,4 +23,4 @@ module.exports = class VirtualVocations extends Adaptor {
       return Promise.resolve({jobs, feed});
     })
   }
-}
+};

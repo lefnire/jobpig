@@ -36,12 +36,9 @@ export const API_URL = "<nconf:urls:server>";
 
 // On initial page load, run cron on the server to refresh jobs (if it needs it). Better in a on-page-load than per request
 // This doubles as "wake up, heroku!" which sleeps if not accessed for a while.
-//fetch(API_URL + '/jobs/cron'); // Moved to below, previously unecessary amount of crons
+fetch(API_URL + '/jobs/cron');
 
 export function login(token, action) {
-  // They're logging in; look alive, fetch some jobs
-  fetch(API_URL + '/jobs/cron');
-
   window.localStorage.setItem('jwt', token);
   let d = new Date();
   window.localStorage.setItem('expire', d.setDate(d.getDate() + 7)); // expire token in 7d
