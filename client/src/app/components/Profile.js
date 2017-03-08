@@ -73,7 +73,7 @@ class DeleteAccount extends React.Component {
   }
 }
 
-export default class TagEdit extends React.Component {
+export class TagEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {tag: null, open: false};
