@@ -8,19 +8,19 @@ import datetime
 import data_helpers
 from text_cnn import TextCNN
 from tensorflow.contrib import learn
-import pandas as pd
 import sqlalchemy
-from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 import re
+
+db = sqlalchemy.create_engine('postgres://localhost:5432/jobpig')
+meta = sqlalchemy.MetaData(bind=db, reflect=True)
 
 # Parameters
 # ==================================================
 
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
-tf.flags.DEFINE_string("positive_data_file", "./data/jobs.pos", "Data source for the positive data.")
-tf.flags.DEFINE_string("negative_data_file", "./data/jobs.neg", "Data source for the negative data.")
+tf.flags.DEFINE_boolean("seed", False, "Seed with initial tags")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
@@ -31,14 +31,13 @@ tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 200, "Number of training epochs (default: 200)")
-tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
-tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
+tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("evaluate_every", 50, "Evaluate model on dev set after this many steps (default: 100)")
+tf.flags.DEFINE_integer("checkpoint_every", 25, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
-tf.flags.DEFINE_boolean("seed", False, "Seed with initial tags")
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
@@ -48,13 +47,15 @@ for attr, value in sorted(FLAGS.__flags.items()):
 print("")
 
 
-def train(uid=1):
+def train(uid):
     # Data Preparation
     # ==================================================
 
     # Load data
     print("Loading data...")
-    x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    pos = './data/' + str(uid) + '/jobs.pos'
+    neg = './data/' + str(uid) + '/jobs.neg'
+    x_text, y = data_helpers.load_data_and_labels(pos, neg)
 
     # Build vocabulary
     max_document_length = max([len(x.split(" ")) for x in x_text])
@@ -192,12 +193,8 @@ def train(uid=1):
                     print("Saved model checkpoint to {}\n".format(path))
 
 
-def seed(uid=1):
-    db = sqlalchemy.create_engine('postgres://localhost:5432/jobpig')
-    meta = sqlalchemy.MetaData(bind=db, reflect=True)
-
-    good = ['react', 'reactjs', 'redux', 'python', 'machine learning', 'tensorflow', 'node', 'flask', 'postgres',
-            'remote', 'portland']
+def seed(uid, tags):
+    # tags = ['react', 'reactjs', 'react.js', 'redux', 'python', 'machine learning', 'tensorflow', 'nlp', 'natural language processing', 'flask', 'postgres', 'remote']
     regex = re.compile(r"\s+", flags=re.MULTILINE)  # "or `\s\s+` ?
     query = """select j.id, lower(j.title), lower(j.description) from jobs j"""
 
@@ -207,14 +204,15 @@ def seed(uid=1):
         soup = BeautifulSoup(row[2], 'html.parser')
         text = str(row[0]) + " " + row[1] + " " + regex.sub(" ", soup.get_text())
         count = 0
-        for kw in good: count += text.count(kw)
+        for kw in tags: count += text.count(kw)
         all_clean.append((text, count))
     all_clean = sorted(all_clean, key=lambda x: x[1])  # sort by #keyword occurences
 
-    with open('data/jobs.pos', 'w') as fo:
+    #TODO create /data/uid if !exists
+    with open('./data/' + str(uid) + '/jobs.pos', 'w') as fo:
         fo.write('\n'.join([row[0] for row in all_clean[-100:] if row[1] >= 5]))
-    with open('data/jobs.neg', 'w') as fo:
+    with open('./data/' + str(uid) + '/jobs.neg', 'w') as fo:
         fo.write('\n'.join([row[0] for row in all_clean[:100]]))
-    train()
+    train(uid)
 
-seed() if FLAGS.seed else train()
+# seed() if FLAGS.seed else train()

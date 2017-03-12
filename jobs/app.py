@@ -1,6 +1,7 @@
-import os, csv, subprocess
+import os, csv, subprocess, json
 from kombu import Connection, Exchange, Queue, Producer
 from kombu.mixins import ConsumerMixin
+import train
 
 exchange = Exchange('jobs')
 conn = Connection('amqp://')
@@ -12,20 +13,14 @@ class C(ConsumerMixin):
 
     def get_consumers(self, Consumer, channel):
         return [
-            Consumer([Queue('train:start', exchange, 'train:start')], callbacks=[self.train_start]),
-            Consumer([Queue('predict:start', exchange, 'predict:start')], callbacks=[self.predict_start]),
+            Consumer([Queue('train:seed:start', exchange, 'train:seed:start')], callbacks=[self.train_seed_start]),
+            # Consumer([Queue('predict:start', exchange, 'predict:start')], callbacks=[self.predict_start]),
         ]
 
-    def train_start(self, body, message):
+    def train_seed_start(self, body, message):
         message.ack()
-        filename = os.path.join(os.path.dirname(__file__), 'data/sgd/train.csv')
-        with open(filename, 'a', newline='\n') as csvfile:
-            writer = csv.writer(csvfile, quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            # writer.writerow(['Context', 'Utterance', 'Distractor'])
-            writer.writerow(body['body'])
-        subprocess.call(['python', 'jobs/prepare_data.py'])
-        # Call training in the background, it's heavy
-        subprocess.Popen(['python', 'jobs/train.py'])
+        decoded = json.loads(body)
+        train.seed(decoded['uid'], decoded['tags'])
 
     def predict_start(self, body, message):
         predictions = subprocess.check_output(["python", "jobs/predict.py", '--context="%s"' % body['body']])

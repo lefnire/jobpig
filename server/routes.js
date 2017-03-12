@@ -20,6 +20,7 @@ router.put('/user/tags/:id', ensureAuth, user.override);
 router.delete('/user/tags/:id', ensureAuth, user.override);
 router.put('/user', ensureAuth, user.updateProfile);
 router.post('/user/seed-tags', ensureAuth, user.seedTags);
+router.post('/user/seed-tags2', ensureAuth, user.seedTags2);
 router.get('/user/activate', user.activate);
 router.post('/user/forgot-password', user.forgotPassword);
 router.post('/user/reset-password', user.resetPassword);

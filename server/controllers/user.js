@@ -3,6 +3,7 @@ const db = require('../models');
 const _ = require('lodash');
 const nconf = require('nconf');
 const mail = require('../lib/mail');
+const open = require('amqplib').connect('amqp://localhost');
 
 const nconfUrl = clientOrServer => nconf.get('urls:' + nconf.get('NODE_ENV') + ':' + clientOrServer);
 
@@ -48,6 +49,34 @@ exports.seedTags = (req, res, next) => {
   .catch(next);
 };
 
+exports.seedTags2 = (req, res, next) => {
+  let tags = _.map(req.body.tags, 'text');
+  let q = 'train:seed:start';
+
+  // Publisher
+  open.then(function(conn) {
+    return conn.createChannel();
+  }).then(function(ch) {
+    return ch.assertQueue(q).then(function(ok) {
+      return ch.sendToQueue(q, new Buffer(JSON.stringify({uid: req.user.id, tags})));
+    });
+  }).catch(console.warn);
+
+  //// Consumer
+  // open.then(function(conn) {
+  //   return conn.createChannel();
+  // }).then(function(ch) {
+  //   return ch.assertQueue(q).then(function(ok) {
+  //     return ch.consume(q, function(msg) {
+  //       if (msg !== null) {
+  //         console.log(msg.content.toString());
+  //         ch.ack(msg);
+  //       }
+  //     });
+  //   });
+  // }).catch(console.warn);
+};
+
 exports.activate = (req, res, next) => {
   let email = req.query.email,
     key = req.query.key;
@@ -62,7 +91,7 @@ exports.activate = (req, res, next) => {
 
 exports.resetTags = (req, res, next) => {
   db.UserTag.destroy({where:{user_id: req.user.id}}).then(res.send({})).catch(next);
-}
+};
 
 exports.forgotPassword = (req, res, next) => {
   let email = req.body.email;
