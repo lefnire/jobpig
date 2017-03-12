@@ -28,9 +28,9 @@
     }
   },
   "development": {
-    "username": "username",
+    "username": "postgres",
     "password": null,
-    "database": "database",
+    "database": "jobpig",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
