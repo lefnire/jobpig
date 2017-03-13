@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Remotecoder extends Adaptor {
   refresh() {
     return this.fetchFeed('http://feedpress.me/remotecoder').then(results => {
-      let feed = results.rss.channel[0].item.slice(0,100);
+      let feed = results.rss.channel[0].item;//.slice(0,100);
       let jobs = feed.map(j => {
 
         let description = j.description[0],

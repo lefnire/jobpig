@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class WeWorkRemotely extends Adaptor {
   refresh() {
     return this.fetchFeed('https://weworkremotely.com/jobs.rss').then(results => {
-      let feed = results.rss.channel["0"].item.slice(0,100);
+      let feed = results.rss.channel["0"].item;//.slice(0,100);
       let jobs = feed.map(item => {
         let title = item.title[0];
         //TODO regex location from description

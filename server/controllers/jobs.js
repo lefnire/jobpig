@@ -6,12 +6,13 @@ const TAG_TYPES = constants.TAG_TYPES;
 const FILTERS = constants.FILTERS;
 const nconf = require('nconf');
 const moment = require('moment');
+const rabbit = require('../lib/utils').rabbit;
 
 exports.mine = function(req, res, next){
   db.Job.findMine(req.user)
     .then(jobs=> res.json(jobs))
     .catch(next);
-}
+};
 
 exports.list = function(req, res, next){
   if (req.user.anon) {
@@ -54,7 +55,7 @@ exports.addNote = function(req, res, next){
   db.UserJob.upsert({job_id: req.params.id, user_id: req.user.id, note: req.body.note})
     .then(() => res.send({}))
     .catch(next);
-}
+};
 
 exports.setStatus = function(req, res, next){
   let status = +req.params.status;
@@ -68,8 +69,12 @@ exports.setStatus = function(req, res, next){
   }
 
   db.Job.score(user.id, req.params.id, status)
-    .then(()=> res.send({})).catch(next);
-}
+    .then(()=> {
+      let payload = new Buffer(JSON.stringify({uid: user.id}));
+      rabbit.then(ch => ch.sendToQueue('train:start', payload));
+      return res.send({});
+    }).catch(next);
+};
 
 // Idea from https://www.drupal.org/project/poormanscron
 let runCron = nconf.get('NODE_ENV') === 'production'
@@ -79,7 +84,7 @@ let runCron = nconf.get('NODE_ENV') === 'production'
 exports.poormanscron = function(req, res, next) {
   runCron();
   res.send({});
-}
+};
 
 let _tags = {}; // {tags, debounce}
 exports.getTags = (req, res, next) => {
@@ -106,4 +111,4 @@ exports.getTags = (req, res, next) => {
 exports.getJob = (req, res, next) => {
   db.Job.findById(req.params.id, {include: [db.Tag]})
     .then(job => res.json(job)).catch(next);
-}
+};

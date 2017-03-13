@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class AuthenticJobs extends Adaptor {
   refresh() {
     return this.fetchFeed('https://authenticjobs.com/rss/custom.php').then(results => {
-      let feed = results.rss.channel["0"].item.slice(0,100);
+      let feed = results.rss.channel["0"].item;//.slice(0,100);
       let jobs = feed.map(item => {
 
         let title = item.title[0],

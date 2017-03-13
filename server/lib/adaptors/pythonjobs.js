@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class PythonJobs extends Adaptor {
   refresh() {
     return this.fetchFeed('http://www.pythonjobs.com/jobs.atom').then(results => {
-      let feed = results.feed.entry.slice(0,100);
+      let feed = results.feed.entry;//.slice(0,100);
       let jobs = feed.map(j => {
         let title = j.title[0],
           location = title.match( /at .*\((.+?)\)$/ )[1],

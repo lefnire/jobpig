@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Jobmote extends Adaptor {
   refresh() {
     return this.fetchFeed('http://jobmote.com/feed.rss').then(results => {
-      let feed = results.rss.channel[0].item.slice(0,100);
+      let feed = results.rss.channel[0].item;//.slice(0,100);
       let jobs = feed.map(j => {
         let description = j.description[0],
           parts = /^(.*?)\((.*?)\) /.exec(description),

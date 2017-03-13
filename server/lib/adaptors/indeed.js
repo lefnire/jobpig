@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Indeed extends Adaptor {
   refresh() {
     return this.fetchFeed('http://rss.indeed.com/rss').then(results => {
-      let feed = results.rss.channel[0].item.slice(0,100);
+      let feed = results.rss.channel[0].item;//.slice(0,100);
       let jobs = feed.map(j => {
         let parts = j.title[0].split(' - '); // "Job Title (which may have a -) - Company - Location"
         while (parts.length > 3) {

@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Frontenddevjob extends Adaptor {
   refresh() {
     return this.fetchFeed('https://zapier.com/engine/rss/242783/frontenddevjob').then(results=> {
-      let feed = results.rss.channel[0].item.slice(0,100);
+      let feed = results.rss.channel[0].item;//.slice(0,100);
       let jobs = feed.map(j => {
 
         let title = j.title[0], //title = /^.*?\s(.*?) at/.exec(title)[1] //TODO full title until we've validated it parses well

@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class StackOverflow extends Adaptor {
   refresh() {
     return this.fetchFeed('http://careers.stackoverflow.com/jobs/feed').then(results => {
-      let feed = results.rss.channel[0].item.slice(0,500);
+      let feed = results.rss.channel[0].item;//.slice(0,500);
       let jobs = feed.map(item => {
         return {
           key: item.guid[0]._,

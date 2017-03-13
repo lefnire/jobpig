@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class VirtualVocations extends Adaptor {
   refresh() {
     return this.fetchFeed('https://www.virtualvocations.com/rss').then(results => {
-      let feed = results.rss.channel[0].item.slice(0,100);
+      let feed = results.rss.channel[0].item;//.slice(0,100);
       let jobs = feed.map(j => {
         return {
           //key: j.guid[0],

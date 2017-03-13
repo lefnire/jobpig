@@ -18,10 +18,10 @@ exports.Adaptor = class Adaptor {
   }
 
   fetchFeed(url) {
-    return new Promise((resolve,reject)=>{
-      request(url, (err, response, body)=> {
+    return new Promise((resolve,reject) => {
+      request(url, (err, response, body) => {
         if (err) return reject(err);
-        parser.parseString(body, (err, results)=>resolve(results));
+        parser.parseString(body, (err, results) => resolve(results));
       });
     })
   }
@@ -41,37 +41,14 @@ exports.Adaptor = class Adaptor {
           );
         }
 
-        jobs.forEach(job=> {
+        jobs.forEach(job => {
           // job ids in database are alphanumeric URLs (in case of repeats from other websites)
           job.key = job.key || job.url.replace(/\W+/g, "");
           job.tags = job.tags || [];
         });
-        return this.addTagsFromContent(jobs);
+        return Promise.resolve(jobs);
       })
       .then(db.Job.bulkCreateWithTags);
-  }
-
-  addTagsFromContent(jobs) {
-    return db.Tag.findAll({where: {pending: {$not: true}}, attributes: ['key']}).then(tags=> {
-      jobs.forEach(job=> {
-        job.tags = job.tags.concat(
-          _.reduce(tags, (m, v)=> {
-            // check whole word, but allow for punctuation
-            let exp = RegExp(`\\b${_.escapeRegExp(v.key)}\\b`, 'gi');
-            if (exp.test(job.description) || exp.test(job.title))
-              m.push(v.key);
-            return m;
-          }, [])
-        );
-      });
-      return Promise.resolve(jobs);
-    })
-  }
-
-  addRemoteFromContent(jobs) {
-    _.each(jobs, job=> {
-      job.remote = /(remote|telecommut)/gi.test(job.description); // telecommute, telecommuting
-    });
   }
 };
 
@@ -92,7 +69,7 @@ let adaptors = [
   'landing_jobs',
   //'offsite_careers', // dead
   // 'pythonjobs', // rss dead? // TODO hydrate
-  'remotecoder',
+  // 'remotecoder', // dead
   //'remoteok', // [deleted@7857574] not useful (scrapes the same things we do)
   //'remoteworkhunt', // dead
   // 'virtualvocations', // deleted for poor content // TODO hydrate
@@ -101,16 +78,19 @@ let adaptors = [
 
   // And the really slow adaptors last
   // 'workingnomads', // rss dead?
-].map( a => new (require('./'+a))() );
+].map( a => ({name: a, adaptor: new (require('./'+a))() }));
 
 exports.adaptors = adaptors;
 
 // On production, adaptors.refresh() maxes resources - so we run serially (Bluebird.each, since no Promise.each).
 // We also get UniqueConstraint race conditions if parallel. FIXME when sequelize postgres upsert supported
-exports.refresh = () => Bluebird.each(adaptors, adaptor =>
-  adaptor._refresh().catch(err => {
-    // Don't stop the rest from refreshing when one fails, so pretend all is fine (TODO email admin)
-    console.error(err.stack);
-    return Promise.resolve();
-  })
-);
+exports.refresh = () => Bluebird.each(adaptors, a => {
+  console.log('Refreshing ' + a.name + '...');
+  return a.adaptor._refresh()
+    .then(() => console.log(a.name + ' refreshed.'))
+    .catch(err => {
+      // Don't stop the rest from refreshing when one fails, so pretend all is fine (TODO email admin)
+      console.error(err.stack);
+      return Promise.resolve();
+    });
+}).then(() => console.log('Cron complete.'));

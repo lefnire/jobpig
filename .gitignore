@@ -6,6 +6,7 @@ client/build
 tmp
 /fixtures
 /server/lib/adaptors/json_dumps
+runs/
 
 # remove these when ready to add migrations to the mi
 /migrations

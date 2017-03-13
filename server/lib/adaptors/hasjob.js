@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Hasjob extends Adaptor {
   refresh() {
     return this.fetchFeed('https://hasjob.co/feed').then(results => {
-      let feed = results.feed.entry.slice(0,100);
+      let feed = results.feed.entry;//.slice(0,100);
       let jobs = feed.map(j => {
         let description = j.content[0]._,
           location = j.location[0],

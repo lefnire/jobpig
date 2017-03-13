@@ -25,7 +25,7 @@ let Job = sequelize.define('jobs', {
   classMethods: {
     filterJobs(user, status) {
       status = status || FILTERS.MATCH;
-      return sequelize.query(`
+      let q = `
         SELECT
         j.*
         ,COALESCE(uj.status, :match) status
@@ -47,7 +47,26 @@ let Job = sequelize.define('jobs', {
           -- length(j.description) DESC, -- show "fuller" jobs first; TODO fix hydration
           j.created_at DESC
         LIMIT :limit;
-      `, {
+      `;
+
+      // new system (ML). TODO this is copy/paste/modify from above, consolidate
+      if (status === FILTERS.MATCH) {
+        q = `SELECT j.*, uj.status, uj.note, json_agg(tags) tags, 0 as score
+
+        FROM jobs j
+
+        LEFT JOIN (job_tags jt INNER JOIN tags ON tags.id=jt.tag_id) ON j.id=jt.job_id
+        LEFT JOIN user_tags ut ON ut.tag_id=jt.tag_id AND ut.user_id=:user_id
+        LEFT JOIN user_jobs uj ON uj.job_id=j.id AND uj.user_id=:user_id
+
+        WHERE j.pending <> TRUE
+        GROUP BY j.id, uj.note, uj.status
+        HAVING uj.status = :status
+        ORDER BY j.user_id::BOOLEAN ASC, -- (NULLS LAST) show custom jobs first
+          j.created_at DESC
+        LIMIT :limit;`;
+      }
+      return sequelize.query(q, {
         type: sequelize.QueryTypes.SELECT,
         replacements: {
           status,

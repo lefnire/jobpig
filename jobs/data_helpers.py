@@ -2,9 +2,15 @@ import numpy as np
 import re
 import itertools
 from collections import Counter
+from jobs import db
+from bs4 import BeautifulSoup
 
-
+sane_whitespace = re.compile(r"\s+", flags=re.MULTILINE)  # "or `\s\s+` ?
 def clean_str(string):
+    # TODO mine: need these?
+    soup = BeautifulSoup(string, 'html.parser')
+    string = sane_whitespace.sub(" ", soup.get_text())
+
     """
     Tokenization/string cleaning for all datasets except for SST.
     Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py
@@ -25,16 +31,20 @@ def clean_str(string):
     return string.strip().lower()
 
 
-def load_data_and_labels(positive_data_file, negative_data_file):
+def load_data_and_labels(uid, seed=False):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
     # Load data from files
-    positive_examples = list(open(positive_data_file, "r").readlines())
-    positive_examples = [s.strip() for s in positive_examples]
-    negative_examples = list(open(negative_data_file, "r").readlines())
-    negative_examples = [s.strip() for s in negative_examples]
+    rows = list(db.execute("""
+        SELECT uj.status, j.id::VARCHAR || ' ' || LOWER(j.title) || ' ' || LOWER(j.description) AS body
+        FROM jobs j
+        INNER JOIN user_jobs uj ON j.id=uj.job_id AND uj.user_id={}
+    """.format(uid)))
+
+    positive_examples = [s[1] for s in rows if s[0] == (1 if seed else 3)] # 3=liked; 1=match. Train from matches on seed, since they don't have likes yet
+    negative_examples = [s[1] for s in rows if s[0] == 2]
     # Split by words
     x_text = positive_examples + negative_examples
     x_text = [clean_str(sent) for sent in x_text]
@@ -44,14 +54,20 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     y = np.concatenate([positive_labels, negative_labels], 0)
     return [x_text, y]
 
-def load_data(all_data_file):
+def load_data(uid):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
     # Load data from files
-    examples = list(open(all_data_file, "r").readlines())
-    examples = [s.strip() for s in examples]
+    rows = list(db.execute("""
+        SELECT uj.status, j.id::VARCHAR || ' ' || LOWER(j.title) || ' ' || LOWER(j.description) AS body
+        FROM jobs j
+        LEFT JOIN user_jobs uj ON j.id=uj.job_id AND uj.user_id={}
+        WHERE uj.status IS NULL -- NOT IN (2,3,4,5) -- exclude things they've seen
+    """.format(uid)))
+
+    examples = [s[1].strip() for s in rows]
     # Split by words
     x_text = [clean_str(sent) for sent in examples]
     return x_text

@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class LandingJobs extends Adaptor {
   refresh() {
     return this.fetchFeed('https://landing.jobs/feed').then(results => {
-      let feed = results.feed.entry.slice(0,100);
+      let feed = results.feed.entry;//.slice(0,100);
       let jobs = feed.map(j => {
         let description = j.content[0]._,
           parts = />At (.*?) \((.*?)\), in (.*?)</.exec(description),

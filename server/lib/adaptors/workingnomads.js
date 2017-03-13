@@ -6,7 +6,7 @@ let _ = require('lodash');
 module.exports = class Workingnomads extends Adaptor {
   refresh() {
     return this.fetchFeed('http://www.workingnomads.co/jobs/feed/all.atom').then(results => {
-      let feed = results.feed.entry.slice(0,100);
+      let feed = results.feed.entry;//.slice(0,100);
       let jobs = feed.map(j => {
         return {
           key: j.id[0],

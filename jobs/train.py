@@ -2,60 +2,22 @@
 
 import tensorflow as tf
 import numpy as np
-import os
-import time
-import datetime
-import data_helpers
-from text_cnn import TextCNN
+import os, time, datetime
 from tensorflow.contrib import learn
-import sqlalchemy
-from bs4 import BeautifulSoup
-import re
 
-db = sqlalchemy.create_engine('postgres://localhost:5432/jobpig')
-meta = sqlalchemy.MetaData(bind=db, reflect=True)
-
-# Parameters
-# ==================================================
-
-# Data loading params
-tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
-tf.flags.DEFINE_boolean("seed", False, "Seed with initial tags")
-
-# Model Hyperparameters
-tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
-tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
-tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
-tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
-tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
-
-# Training parameters
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 200)")
-tf.flags.DEFINE_integer("evaluate_every", 50, "Evaluate model on dev set after this many steps (default: 100)")
-tf.flags.DEFINE_integer("checkpoint_every", 25, "Save model after this many steps (default: 100)")
-tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
-# Misc Parameters
-tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
-tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
+from jobs import data_helpers, db
+from jobs.text_cnn import TextCNN
 
 FLAGS = tf.flags.FLAGS
-FLAGS._parse_flags()
-print("\nParameters:")
-for attr, value in sorted(FLAGS.__flags.items()):
-    print("{}={}".format(attr.upper(), value))
-print("")
 
-
-def train(uid):
+def train(uid, seed=False):
+    print('Training...')
     # Data Preparation
     # ==================================================
 
     # Load data
     print("Loading data...")
-    pos = './data/' + str(uid) + '/jobs.pos'
-    neg = './data/' + str(uid) + '/jobs.neg'
-    x_text, y = data_helpers.load_data_and_labels(pos, neg)
+    x_text, y = data_helpers.load_data_and_labels(uid, seed)
 
     # Build vocabulary
     max_document_length = max([len(x.split(" ")) for x in x_text])
@@ -138,7 +100,7 @@ def train(uid):
             saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
 
             # Write vocabulary
-            vocab_processor.save(os.path.join(out_dir, "vocab"))
+            vocab_processor.save(os.path.join(out_dir, "..", "vocab"))
 
             # Initialize all variables
             sess.run(tf.global_variables_initializer())
@@ -193,26 +155,35 @@ def train(uid):
                     print("Saved model checkpoint to {}\n".format(path))
 
 
-def seed(uid, tags):
-    # tags = ['react', 'reactjs', 'react.js', 'redux', 'python', 'machine learning', 'tensorflow', 'nlp', 'natural language processing', 'flask', 'postgres', 'remote']
-    regex = re.compile(r"\s+", flags=re.MULTILINE)  # "or `\s\s+` ?
-    query = """select j.id, lower(j.title), lower(j.description) from jobs j"""
+def seed(body, channel):
+    uid, tags = str(body['uid']), body['tags']
+    min_count = 5 # len(tags) // 2 # minimum occurence count for a post to be "positive". Could just use some hard-coded number
 
-    all_clean = []
-    rows = db.execute(query)
-    for i, row in enumerate(rows):
-        soup = BeautifulSoup(row[2], 'html.parser')
-        text = str(row[0]) + " " + row[1] + " " + regex.sub(" ", soup.get_text())
-        count = 0
-        for kw in tags: count += text.count(kw)
-        all_clean.append((text, count))
-    all_clean = sorted(all_clean, key=lambda x: x[1])  # sort by #keyword occurences
+    for k in ['pos', 'neg']:
+        #FIXME protect against sql injection!!!
+        q = """
+            SELECT * from (SELECT id, {score} FROM jobs) j
+            WHERE {where} ORDER BY j.score {order} LIMIT 500;
+        """.format(
+            score=" + ".join(map(lambda t: "ARRAY_LENGTH(STRING_TO_ARRAY(LOWER(title || description), '{}'), 1) - 1".format(t), tags)) + " AS score",
+            where="j.score > {}".format(min_count) if k == 'pos' else "j.score = 0",
+            order="DESC" if k == 'pos' else "ASC"
+        )
+        rows = db.execute(q)
 
-    #TODO create /data/uid if !exists
-    with open('./data/' + str(uid) + '/jobs.pos', 'w') as fo:
-        fo.write('\n'.join([row[0] for row in all_clean[-100:] if row[1] >= 5]))
-    with open('./data/' + str(uid) + '/jobs.neg', 'w') as fo:
-        fo.write('\n'.join([row[0] for row in all_clean[:100]]))
-    train(uid)
+        q2 = """
+            INSERT INTO user_jobs (status, note, created_at, updated_at, job_id, user_id)
+            VALUES {values}
+            ON CONFLICT (job_id, user_id) DO UPDATE SET status=EXCLUDED.status, updated_at=now();
+        """.format(
+            values=",".join(map(lambda j: "({status}, '', now(), now(), {job_id}, {user_id})".format(
+                status=1 if k == "pos" else 2, #1=match, 2=dislike
+                job_id=j[0],
+                user_id=uid
+            ), rows))
+        )
+        db.execute(q2)
+
+    train(uid, True)
 
 # seed() if FLAGS.seed else train()

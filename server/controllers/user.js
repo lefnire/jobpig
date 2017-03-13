@@ -3,7 +3,7 @@ const db = require('../models');
 const _ = require('lodash');
 const nconf = require('nconf');
 const mail = require('../lib/mail');
-const open = require('amqplib').connect('amqp://localhost');
+const rabbit = require('../lib/utils').rabbit;
 
 const nconfUrl = clientOrServer => nconf.get('urls:' + nconf.get('NODE_ENV') + ':' + clientOrServer);
 
@@ -50,31 +50,21 @@ exports.seedTags = (req, res, next) => {
 };
 
 exports.seedTags2 = (req, res, next) => {
-  let tags = _.map(req.body.tags, 'text');
-  let q = 'train:seed:start';
+  let tags = req.body.tags;
+  tags = _(tags.split(',')).map(_.strip).uniq().compact().value();
 
   // Publisher
-  open.then(function(conn) {
-    return conn.createChannel();
-  }).then(function(ch) {
-    return ch.assertQueue(q).then(function(ok) {
-      return ch.sendToQueue(q, new Buffer(JSON.stringify({uid: req.user.id, tags})));
-    });
-  }).catch(console.warn);
+  let payload = new Buffer(JSON.stringify({uid: req.user.id, tags}));
+  rabbit.then(ch => ch.sendToQueue('train:seed:start', payload));
 
   //// Consumer
-  // open.then(function(conn) {
-  //   return conn.createChannel();
-  // }).then(function(ch) {
-  //   return ch.assertQueue(q).then(function(ok) {
-  //     return ch.consume(q, function(msg) {
-  //       if (msg !== null) {
-  //         console.log(msg.content.toString());
-  //         ch.ack(msg);
-  //       }
-  //     });
-  //   });
-  // }).catch(console.warn);
+  // rabbit.consume('train:seed:end', msg => {
+  //   if (msg !== null) {
+  //     console.log(msg.content.toString());
+  //     channel.ack(msg);
+  //   }
+  // });
+  //.catch(console.warn);
 };
 
 exports.activate = (req, res, next) => {
